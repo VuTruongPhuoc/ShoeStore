@@ -1,0 +1,103 @@
+﻿
+@{
+    ViewData["Title"] = "Giới thiệu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_styles.css">
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_responsive.css">
+<link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
+<link rel="stylesheet" href="~/assets/plugins/themify-icons/themify-icons.css">
+
+<style>
+    /* Thiết lập font và padding cho phần header */
+    .header_introduce {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f2f2f2;
+    }
+
+        /* Tùy chỉnh phần tiêu đề h1 */
+        .header_introduce h1 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Tùy chỉnh phần mô tả */
+        .header_introduce p {
+            font-size: 18px;
+            color: #666;
+        }
+
+    /* Thiết lập font và margin cho phần section */
+    section {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+
+        /* Tùy chỉnh phần tiêu đề h2 */
+        section h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Tùy chỉnh phần nội dung */
+        section p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+</style>
+<div class="container contact_container">
+	<div class="row">
+		<div class="col">
+
+			<!-- Breadcrumbs -->
+
+			<div class="breadcrumbs d-flex flex-row align-items-center">
+				<ul>
+					<li><a asp-controller="home" asp-action="index">Trang chủ</a></li>
+					<li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Giới thiệu</a></li>
+				</ul>
+			</div>
+
+		</div>
+	</div>
+	<!-- Container -->
+    <div class="header_introduce">
+        <h1>Giày thể thao online</h1>
+        <p>
+            Kính chào quý khách !<br />
+            Lời đầu tiên, xin cảm ơn quý khách đã tham quan và mua sắm tại website của cửa hàng chúng tôi !
+        </p>
+
+    </div>
+
+    <section>
+        <h2>Giới Thiệu về Giày Thể Thao</h2>
+        <p>
+            Chúng tôi tự hào mang đến cho bạn những đôi giày thể thao nam chất lượng cao với kiểu dáng thời trang và phong cách đa dạng.
+            Tại cửa hàng của chúng tôi, bạn sẽ tìm thấy những sản phẩm phản ánh sự thoải mái, linh hoạt và đẳng cấp.
+        </p>
+
+        <h2>Danh Mục Sản Phẩm </h2>
+        <p>
+            Dòng sản phẩm của chúng tôi bao gồm các loại giày thể thao đa dụng, phù hợp cho các hoạt động thể thao như đá bóng,chạy bộ
+            và các hoạt động vận động khác.
+        </p>
+
+        <h2>Cam Kết Chất Lượng </h2>
+        <p>
+            Chúng tôi cam kết cung cấp giày thể thao nam chất lượng tốt nhất, với các chất liệu thoáng khí, co giãn và bền đẹp.
+            Đảm bảo mọi sản phẩm đều đáp ứng các tiêu chuẩn cao nhất về thiết kế và sự thoải mái.
+        </p>
+    </section>
+	
+</div>
+
+
+
+
+

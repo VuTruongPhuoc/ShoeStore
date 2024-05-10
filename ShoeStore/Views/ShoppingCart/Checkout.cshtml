@@ -1,0 +1,306 @@
+﻿@model ShoeStore.ViewModels.OrderVM
+@{
+    ViewData["Title"] = "Thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_styles.css">
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_responsive.css">
+<link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
+<link rel="stylesheet" href="~/assets/plugins/themify-icons/themify-icons.css">
+
+<style>
+    .error {
+        color: red;
+    }
+    .form-item{
+        margin-bottom: 15px;
+    }
+    /* Form select */
+    .form-select {
+        width: 100%; 
+        border: 1px solid #ccc; 
+        padding: 8px;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    /* Button */
+    .btn-success {
+        background-color: #28a745;
+        color: #fff; 
+        padding: 8px;
+        border-radius: 4px; 
+        font-weight: bold; 
+    }
+
+    .btn-success:hover {
+        background-color: #218838; 
+    }
+    /* Đơn hàng */
+    .order-info {
+      /*   background-color: #f0f0f0; /* Màu nền */ */
+        padding: 10px; /* Khoảng cách giữa nội dung và viền */
+        border-radius: 5px; /* Độ cong của góc */
+        width: 120%; /* Chiều rộng */
+        font-size: 16px;
+    }
+
+    .order-table {
+        width: 100%; /* Chiều rộng */
+    }
+
+        .order-table tr,
+        .order-table td {
+            padding: 8px; /* Khoảng cách giữa nội dung và viền */
+        }
+
+        tr {
+            text-align: left; /* Căn lề trái cho tiêu đề */
+            padding: 10px;
+        }
+
+        .order-table td {
+            vertical-align: top; /* Hiệu chỉnh căn giữa */
+            
+        }
+
+    .order-total {
+        font-weight: bold; /* In đậm */
+    }
+
+    #coupon {
+        border-radius: 3px;
+        border: 1px solid #d1d1d1;
+        padding: 4px;
+        margin-bottom: 5px;
+        width: 67%;
+        margin-right: 5px;
+    }
+
+    #getCoupon {
+        border-radius: 0;
+        padding: 4px 15px;
+        vertical-align: top;
+        background: #abdbe3;
+        float: right;
+        border-radius: 5px;
+    }
+
+</style>
+<div class="container contact_container">
+    <div class="row">
+        <div class="col">
+
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs d-flex flex-row align-items-center">
+                <ul>
+                    <li><a asp-controller="Home" asp-action="index">Trang chủ</a></li>
+                    <li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Thanh toán</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Container -->
+    <form asp-action="Checkout" asp-controller="ShoppingCart" id="myForm" method="post" enctype="multipart/form-data">
+        <div class="row g-5">
+            <div class="col-md-5">
+                <h4 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;width:120%">THÔNG TIN GIAO HÀNG</h4>
+                @* <input type="checkbox" id="GiongKhachHang" class="form-check-input" name="Accounts" value="false" style="margin-left:0px"> *@
+               @*  <label class="" for="Account-1" style="margin-left:20px">Giống thông tin khách hàng ?</label> *@
+                
+                <div class="form-item delivery-info">
+                    <input type="text" class="form-control" name="CustomerName" asp-for="CustomerName" placeholder="Họ Tên">
+                    <span asp-validation-for="CustomerName" class="text-danger"></span>
+                </div>
+                <div class="form-item delivery-info">
+                    <input type="text" class="form-control" name="Phone" asp-for="Phone" placeholder="Số điện thoại">
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+                <div class="form-item delivery-info">
+                    <input type="text" class="form-control" name="Email" asp-for="Email" placeholder="Email">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-item delivery-info">
+                    <input type="text" class="form-control" name="Address" asp-for="Address" placeholder="Địa chỉ">
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+                <div class="form-item delivery-info">
+                    <select class="form-select form-select-sm " id="city" name="city"  aria-label=".form-select-sm">
+                        <option value="" asp-for="City" selected>Chọn tỉnh thành</option>
+                    </select>
+                    <input type="text" hidden class="form-control" name="City" asp-for="City" placeholder="Địa chỉ">
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+                <div class="row delivery-info">
+                    <div class="col">
+                        <select class="form-select form-select-sm" id="district" name="district"  aria-label=".form-select-sm">
+                            <option value="" asp-for="District" selected>Chọn quận huyện</option>
+                          
+                        </select>
+                        <input type="text" hidden class="form-control" name="District" asp-for="District" placeholder="Địa chỉ">
+                        <span asp-validation-for="District" class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <select class="form-select form-select-sm" id="ward" name="ward"  aria-label=".form-select-sm">
+                            <option value="" asp-for="Ward" selected>Chọn phường xã</option>
+                            <!-- Thêm các tùy chọn phường/xã ở đây -->
+                        </select>
+                        <input type="text" hidden class="form-control" name="Ward" asp-for="Ward" placeholder="Địa chỉ">
+                        <span asp-validation-for="Ward" class="text-danger"></span>
+                    </div>
+                </div>
+                 <div class="">
+                    <textarea name="Note" class="form-control" spellcheck="false" placeholder="Ghi chú đơn hàng" style="margin-top:10px"></textarea>
+                </div>
+                <div class="form-group" delivery-info>
+                    <label>Hình thức thanh toán</label>
+                    <select class="form-control" name="TypePayment">
+                        <option value="1" asp-for="TypePayment" selected>COD</option>
+                        <option value="2">Chuyển khoản</option>
+                    </select>
+                </div>
+              
+            </div>
+            <div class="col-md-1">
+            </div >
+            <div class="col-md-5 order-info">
+                <h4 style="border-bottom: 2px solid black; padding-bottom: 5px">THÔNG TIN ĐƠN HÀNG</h4>
+                @if (ViewBag.CheckCart != null)
+                {
+                    var tongtien = decimal.Zero;
+                    <div class="order-table">
+                        <table class="table">
+                            @foreach (var item in ViewBag.CheckCart)
+                            {
+                                tongtien += item.TotalPrice;
+                                <tr>
+                                    <td>@item.ProductName</td>
+                                    <td></td>
+                                    <td>@ShoeStore.Common.Common.FormatNumber(item.Price, 0) VND</td>
+                                </tr>
+                                <tr>
+                                    <td>Size: @item.Size</td>
+                                    <td></td>
+                                    <td>x @item.Quantity</td>
+                                </tr>
+                            }
+                            <tr style="border-top: 2px dashed #2596be ">
+                                <td colspan="2">Đơn hàng:</td>
+                                <td>@ShoeStore.Common.Common.FormatNumber(tongtien, 0)</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Giảm giá:</td>
+                                <td>- @decimal.Zero VND</td>
+                            </tr>
+                            <tr style="border-bottom: 2px dashed #2596be">
+                                <td colspan="2">Phí vận chuyển:</td>
+                                <td>@decimal.Zero VND</td>
+                            </tr>
+                            <tr class="order-total">
+                                <td colspan="2" style="">Tổng cộng:</td>
+                                <td>@ShoeStore.Common.Common.FormatNumber(tongtien, 0) VND</td>
+                            </tr>
+                            <tr class="couponBlock">
+                                <td><input placeholder="Nhập vào nếu có" id="coupon" type="text" name="couponCode" /></td>
+                                <td></td>
+                                <td><button type="button" id="getCoupon" style="margin: 0" class="btn tp_button">Áp dụng</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="form-group " style="margin-top:20px">
+                        <button type="submit" class="btn btn-block" style="padding: 20px;background-color: #f15e2c;font-size: 30px ; color:#fff" >Đặt hàng</button>
+                    </div>
+                }
+               
+            </div>
+        </div>
+
+    </form>
+
+</div>
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // $("#GiongKhachHang").change(function () {
+            //     if ($(this).prop("checked")) {
+            //         $(this).val(true)
+            //         $(".delivery-info").addClass("d-none");
+            //     } else {
+            //         $(this).val(false);
+            //         $(".delivery-info").removeClass("d-none");
+            //     }
+            // });
+        })
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script>
+        var citis = document.getElementById("city");
+        var districts = document.getElementById("district");
+        var wards = document.getElementById("ward");
+        var Parameter = {
+            url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+            method: "GET",
+            responseType: "application/json",
+        };
+        var promise = axios(Parameter);
+        promise.then(function (result) {
+            renderCity(result.data);
+        });
+
+        function renderCity(data) {
+            for (const x of data) {
+                citis.options[citis.options.length] = new Option(x.Name, x.Id);
+            }
+            citis.onchange = function () {
+                district.length = 1;
+                ward.length = 1;
+                if (this.value != "") {
+                    const result = data.filter(n => n.Id === this.value);
+
+                    for (const k of result[0].Districts) {
+                        district.options[district.options.length] = new Option(k.Name, k.Id);
+                    }
+                }
+            };
+            district.onchange = function () {
+                ward.length = 1;
+                const dataCity = data.filter((n) => n.Id === citis.value);
+                if (this.value != "") {
+                    const dataWards = dataCity[0].Districts.filter(n => n.Id === this.value)[0].Wards;
+
+                    for (const w of dataWards) {
+                        wards.options[wards.options.length] = new Option(w.Name, w.Id);
+                    }
+                }
+            };
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('form').addEventListener('submit', function (event) {
+                event.preventDefault(); // Ngăn chặn gửi form đi
+
+                var address = document.querySelector('input[name="Address"]').value;
+                var city = document.getElementById('city');
+                var district = document.getElementById('district');
+                var ward = document.getElementById('ward');
+
+                var cityName = city.options[city.selectedIndex].text;
+                var districtName = district.options[district.selectedIndex].text;
+                var wardName = ward.options[ward.selectedIndex].text;
+
+                // var fullAddress = address + ' ' + wardName + ' ' + districtName + ' ' + cityName;
+
+                document.querySelector('input[name="City"]').value = cityName;
+                document.querySelector('input[name="District"]').value = districtName;
+                document.querySelector('input[name="Ward"]').value = wardName;
+                // Tiếp tục gửi form
+                event.target.submit();
+            });
+        });
+
+    </script>
+
+
+}
