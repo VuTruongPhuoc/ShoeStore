@@ -1,0 +1,92 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+body {
+    background-color: #92b5f4;
+}
+
+.containerlogin_register {
+    background-color: #fff;
+    max-width: 40rem;
+    margin: 4rem auto;
+    padding: 2.4rem 2rem;
+    border-radius: 1rem;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 2.4rem;
+    font-size: 2.8rem;
+}
+
+input, .btn {
+    display: inline-block;
+    width: 100%;
+    padding: 1.2rem;
+    font-size: 1.4rem;
+    border-radius: 5px;
+    border: 1px solid #777;
+    margin-bottom: 1.8rem;
+}
+
+.btn-submit {
+    background-color: #0171d3;
+    color: #fff;
+}
+
+label {
+    display: inline-block;
+    font-size: 1.4rem;
+    color: #555;
+    margin-bottom: 0.8rem;
+}
+
+a {
+    text-decoration: none;
+}
+
+.link {
+    display: inline-block;
+    font-size: 1.4rem;
+    color: #256cf0;
+    margin-bottom: 2rem;
+    margin-left: 0.8rem;
+}
+
+.face {
+    background-color: #4267b2;
+    color: #fff;
+    margin-top: 2rem;
+    background-image: url(/assets/images/icons8-facebook.svg);
+    background-repeat: no-repeat;
+    background-size: 35px;
+    background-position: 3px;
+}
+
+.google {
+    color: #555;
+    background-image: url(/assets/images/icons8-google.svg);
+    background-repeat: no-repeat;
+    background-size: 30px;
+    background-position: 3px;
+}
+
+.line {
+    display: inline-block;
+    border-bottom: solid 1px #aaa;
+    width: 44%;
+}
+
+.center {
+    color: #777;
+    margin: 0 0.8rem;
+    font-size: 1.4rem;
+}

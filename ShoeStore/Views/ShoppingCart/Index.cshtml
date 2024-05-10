@@ -1,0 +1,100 @@
+﻿@model IEnumerable<ShoeStore.ViewModels.ShoppingCartItem>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_styles.css">
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_responsive.css">
+<link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
+<link rel="stylesheet" href="~/assets/plugins/themify-icons/themify-icons.css">
+
+
+<div class="container contact_container">
+	<div class="row">
+		<div class="col">
+
+			<!-- Breadcrumbs -->
+			<div class="breadcrumbs d-flex flex-row align-items-center">
+				<ul>
+					<li><a asp-controller="Home" asp-action="index">Trang chủ</a></li>
+					<li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Giỏ hàng</a></li>
+				</ul>
+			</div>
+            <div class="col-md-12" id="load_data">
+                <table class="table">
+                    <tr class="text-center">
+                        <th>STT</th>
+                        <th>Ảnh sản phẩm</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Size</th>
+                        <th>Giá</th>
+                        <th style="width:100px;">Số lượng</th>
+                        <th>Thành tiền</th>
+                        <th style="width:200px;">
+
+                        </th>
+                    </tr>
+                    @if (Model != null && Model.Any())
+                    {
+                        var i = 0;
+                        var tongtien = decimal.Zero;
+                        foreach (var item in Model)
+                        {
+                            tongtien += item.TotalPrice;
+                            <tr class="text-center" id="trow_@item.ProductId">
+                                <td>@(i + 1)</td>
+                                <td><img src="@item.ProductImg" width="60" /></td>
+                                <td>
+                                    <a asp-controller="shop" asp-action="detail" asp-route-id="@item.ProductId" )">
+                                        @item.ProductName
+                                    </a>
+                                </td>
+                                <td>@item.CategoryName</td>
+                                <td>@item.Size</td>
+                                <td class="txt-price">@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</td>
+                                <td><input type="number" data-code="@item.ProductId" class="form-control txt-quantity-cart" id="Quantity_@item.ProductId" value="@item.Quantity" min="0" /></td>
+                                <th class="txt-total">@ShoeStore.Common.Common.FormatNumber(item.TotalPrice, 2)</th>
+                                <td>
+                                    <a href="#" data-id="@item.ProductId" class="btn btn-sm btn-danger btnDelete">Xóa</a>
+                                    <a href="#" data-id="@item.ProductId" class="btn btn-sm btn-success btnUpdate">Cập nhật</a>
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                        <tr>
+                            <th colspan="7" class="text-right">Tổng tiền: </th>
+                            <th id="txt-total-cart" class="text-center">@ShoeStore.Common.Common.FormatNumber(tongtien, 0)</th>
+                            <th></th>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <th colspan="7">Không có sản phẩm trong giỏ hàng !</th>
+                        </tr>
+                    }
+                </table>
+              
+                <div class="col-md-12">
+                    <div class="text-right">
+                    @if (Model != null && Model.Any())
+                    {
+                        <a asp-controller="shoppingcart" asp-action="checkout" class="btn btn-success">Thanh toán</a>
+                    }
+                    else
+                    {
+                        <a href="#" class="btn btn-success" aria-disabled="true" style="pointer-events: none; opacity: 0.5;">Thanh toán</a>
+                    }
+                    </div>
+                </div>
+               
+
+            </div>
+               
+		</div>
+	</div>
+	<!-- Container -->
+   
+
+</div>

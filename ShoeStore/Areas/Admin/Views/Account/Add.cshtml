@@ -1,0 +1,147 @@
+﻿@model ShoeStore.Models.Account
+@{
+    ViewData["Title"] = "Thêm mới tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@section naviheader {
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/account/index" class="nav-link">Tài khoản</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="#" class="nav-link">Thêm mới</a>
+        </li>
+    </ul>
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Thêm mới tài khoản</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">tài khoản</a></li>
+                    <li class="breadcrumb-item active">Thêm mới</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Thông tin thêm mới tài khoản</h3>
+        </div>
+        <div class="card-body">
+            <div class="bs-stepper-content">
+                <form asp-controller="account" asp-action="add" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
+                        <div class="form-group">
+                            <label name="Username" class="Username">Tên tài khoản</label>
+                            <input name="Username" class="form-control" />
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label name="FullName" class="FullName">Tên đầy đủ</label>
+                            <input name="FullName" class="form-control" />
+                            <span asp-validation-for="Fullname" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label name="Email" class="control-label">Email</label>
+                            <input name="Email" class="form-control" type="text"/>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label name="PhoneNumber" class="control-label">Số điện thoại</label>
+                            <input name="PhoneNumber" class="form-control" type="number"></input>
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="Password" class="control-label">Mật khẩu</label>
+                            <div class="input-group">
+                                <input name="Password" class="form-control" id="txtPassword" type="password">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" id="btnTogglePassword">
+                                        <i class="fa fa-eye" aria-hidden="true"></i> <!-- Biểu tượng hiển thị mật khẩu -->
+                                    </button>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label name="RoleId" class="control-label">Chọn quyền</label>
+                            <select name="RoleId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
+                                @if (ViewBag.Role != null)
+                                {
+                                    foreach (var item in ViewBag.Role)
+                                    {
+                                        <option value="@item.Id.ToString()"> @item.Name</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <a href="/admin/account/index" class="btn btn-danger">Quay lại</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+</section>
+<!-- /.content -->
+@section Styles {
+    <link rel="stylesheet" href="~/lib/jqueryui/themes/base/theme.css" />
+    <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" href="~/admin/content/elfinder/css/elfinder.full.css" />
+    <link rel="stylesheet" href="~/admin/content/elfinder/css/theme.min.css" />
+    <link rel="stylesheet" href="~/admin/content/elfinder-material-theme/Material/css/theme-gray.css" />
+}
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.getElementById('btnTogglePassword').addEventListener('click', function () {
+            var passwordInput = document.getElementById('txtPassword');
+            var icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+    </script>
+}
+

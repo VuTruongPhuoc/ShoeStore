@@ -1,0 +1,66 @@
+﻿@model ShoeStore.ViewModels.LoginVM
+@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutLogin.cshtml";
+}
+<div class="card-body login-card-body">
+    <p class="login-box-msg">Đăng nhập vào trang quản trị</p>
+    <form asp-controller="account" asp-action="login" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+        {
+            <div class="alert alert-warning alert-dismissible" role="alert">
+                @ViewData["ErrorMessage"]
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(ViewData["Sucsess"] as string))
+        {
+            <div class="alert alert-success" role="alert">
+                @ViewData["Sucsess"]
+
+            </div>
+        }
+        <div class="input-group mb-3">
+            <input name="Email" class="form-control" placeholder="Tài khoản" />
+            <div class="input-group-append">
+                <div class="input-group-text">
+                    <span class="fas fa-envelope"></span>
+                </div>
+            </div>
+        </div>
+        <div class="input-group mb-3">
+            <input name="Password" class="form-control" placeholder="Mật khẩu" type="password" />
+            <div class="input-group-append">
+                <div class="input-group-text">
+                    <span class="fas fa-lock"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @* <div class="col-6">
+                <div class="icheck-primary">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label">Nhớ tôi</label>
+                </div>
+            </div> *@
+            <div class="col-6">
+                <p class="mb-1">
+                    <a href="~/account/forgotpassword">Quên mật khẩu</a>
+                </p>
+            </div>
+         
+            <!-- /.col -->
+            <div class="col-6 login-box">
+                <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+            </div>
+            <!-- /.col -->
+        </div>
+    </form>
+    <!-- /.social-auth-links -->
+
+   
+    @*<p class="mb-0">
+    <a href="register.html" class="text-center">Register a new membership</a>
+    </p>*@
+</div>

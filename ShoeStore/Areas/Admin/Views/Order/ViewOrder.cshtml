@@ -1,0 +1,165 @@
+﻿@model ShoeStore.Models.Order
+@{
+    ViewData["Title"] = "ViewOrder";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@section naviheader {
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin" class="nav-link">Trang chủ</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="#" class="nav-link">Chi tiết đơn hàng</a>
+        </li>
+    </ul>
+}
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Chi tiết đơn hàng</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Mã đơn hàng</label>
+                        <p class="form-control">@Model.Code</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Họ tên khách</label>
+                        <p class="form-control">@Model.CustomerName</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Tổng tiền</label>
+                        <p class="form-control">@ShoeStore.Common.Common.FormatNumber(Model.TotalAmount, 0) đ</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Số điện thoại</label>
+                        <p class="form-control">@Model.Phone</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Ngày tạo</label>
+                        <p class="form-control">@Model.CreateAt.Value.ToString("dd/MM/yyyy")</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <p class="form-control">@Model.Email</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Hình thức thanh toán</label>
+                        <p class="form-control">@(Model.TypePayment == 1 ? "COD" : "Chuyển khoản")</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Trạng thái</label>
+                        <p class="form-control">@(Model.StatusOrder == 1 ? "Chờ xác nhận" : "Đang vận chuyển")</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <h2>Danh sách sản phẩm</h2>
+                </div>
+                <div class="col-12">
+                    
+                    @if (ViewBag.Orderdetail != null )
+                    {
+                        int i = 1;
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Size</th>
+                                    <th>Màu sắc</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.Orderdetail)
+                                {
+                                    <tr>
+                                        <td>@i</td>
+                                        @foreach (var pd in ViewBag.Productdetail)
+                                        {
+                                            @foreach(var p in ViewBag.Product)
+                                            {
+                                                if (p.Id == pd.ProductId)
+                                                {
+                                                    <td>@p.Name</td>
+                                                } 
+                                            }
+                                            @foreach (var s in ViewBag.Size)
+                                            {
+                                                if (s.Id == pd.SizeId)
+                                                {
+                                                    <td>@s.Name</td>
+                                                }
+                                            }
+                                            @foreach (var c in ViewBag.Color)
+                                            {
+                                                if (c.Id == pd.ColorId)
+                                                {
+                                                    <td>@c.Name</td>
+                                                }
+                                            }
+                                        }
+                                        <td>@item.Price</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@ShoeStore.Common.Common.FormatNumber((item.Price * item.Quantity), 0)</td>
+                                    </tr>
+                                    i++;
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+</section>
+<!-- /.content -->
+
