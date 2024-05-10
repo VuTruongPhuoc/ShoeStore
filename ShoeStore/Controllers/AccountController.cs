@@ -249,6 +249,9 @@ namespace ShoeStore.Controllers
 
         }
         #endregion
+        #region historyorder
+
+        #endregion
         public async Task<IActionResult> Logout()
 		{
 			HttpContext.Session.Clear();
