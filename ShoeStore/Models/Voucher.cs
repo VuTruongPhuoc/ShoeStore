@@ -11,7 +11,7 @@ public partial class Voucher
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    public int? AccountId { get; set; }
+    public string Name { get; set; }
 
     public int? Value { get; set; }
 
@@ -19,11 +19,12 @@ public partial class Voucher
 
     public int? Quantity { get; set; }
 
+    public decimal DiscountAmount { get; set; }
+    public DateTime? CreateAt { get; set; }
+    public DateTime? UpdateAt { get; set; }
     public DateTime? StartDate { get; set; }
 
     public DateTime? EndDate { get; set; }
-
-    public virtual Account? Account { get; set; }
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

@@ -1,4 +1,4 @@
-﻿
+﻿@model ShoeStore.Models.Account
 @{
     ViewData["Title"] = "Thông tin cá nhân";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,6 +7,98 @@
 <link rel="stylesheet" type="text/css" href="~/assets/styles/contact_responsive.css">
 <link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
 <link rel="stylesheet" href="~/assets/plugins/themify-icons/themify-icons.css">
+ <style>
+    .breadcrumbs {
+        margin-bottom: 0px;
+    }
+
+        .breadcrumbs ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+            .breadcrumbs ul li {
+                display: inline-block;
+                font-size: 14px;
+            }
+
+                .breadcrumbs ul li.active {
+                    font-weight: bold;
+                }
+
+                    .breadcrumbs ul li.active a {
+                        color: #333; /* Màu chữ khi active */
+                    }
+
+    /* Order Details Table */
+    .order_details h2 {
+        margin-bottom: 20px;
+    }
+
+    .order_details_table {
+        margin-bottom: 30px;
+    }
+
+        .order_details_table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order_details_table th, .order_details_table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd; /* Đường viền */
+        }
+
+        .order_details_table th {
+            background-color: #f2f2f2; /* Màu nền tiêu đề */
+        }
+
+        .order_details_table tbody tr:nth-child(even) {
+            background-color: #f9f9f9; /* Màu nền của dòng chẵn */
+        }
+
+        .order_details_table img {
+            max-width: 100px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .order_details_table h5 {
+            margin: 0;
+        }
+
+        .order_details_table p {
+            margin: 0;
+        }
+
+    /* Button */
+    .cancel-button {
+        background-color: royalblue;
+        border-radius: 12px;
+        border: none;
+        color: black;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+        .cancel-button:hover {
+            background-color: #0069d9; /* Màu khi hover */
+        }
+
+    /* Other */
+    hr {
+        border: 0;
+        border-top: 1px solid #ccc; /* Màu của đường gạch ngang */
+        margin: 10px 0;
+    }
+</style>
 <div class="container contact_container">
     <div class="row">
         <div class="col">
@@ -14,15 +106,63 @@
             <div class="breadcrumbs d-flex flex-row align-items-center">
                 <ul>
                     <li><a asp-controller="home" asp-action="index">Trang chủ</a></li>
-                    <li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Thông tin tài khoản</a></li>
+                    <li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Lịch sử đơn hàng</a></li>
                 </ul>
+            </div>
+            <div class="">
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="p-3 py-5">
+                            <form asp-action="profile" asp-controller="account" id="profileForm" enctype="multipart/form-data" method="post">
+                                <div class="mb-3">
+                                    <label asp-for=Username class="labels">Tên đăng nhập</label>
+                                    <input asp-for=Username type="text" class="form-control" placeholder="Nhập tên đăng nhập" value="@Model.Username">
+                                    <span asp-validation-for="Username"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for=FullName class="labels">Tên đầy đủ</label>
+                                    <input asp-for=FullName type="text" class="form-control" placeholder="Nhập tên đăng nhập" value="@Model.FullName">
+                                    <span asp-validation-for="FullName"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for=Email class="labels">Email</label>
+                                    <input asp-for=Email type="email" class="form-control" placeholder="Nhập địa chỉ email của bạn" value="@Model.Email">
+                                    <span asp-validation-for="Email"></span>
+                                </div>
+                                <div hidden class="mb-3">
+                                    <label asp-for=Password hidden class="labels">Mật khẩu</label>
+                                    <input asp-for=Password hidden type="password" class="form-control" placeholder="Nhập mật khẩu của bạn" value="@Model.Password">
+                                    <span asp-validation-for="Password"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="PhoneNumber" class="labels">Số điện thoại</label>
+                                    <input asp-for=PhoneNumber type="text" class="form-control" placeholder="Nhập số điện thoại của bạn" value="@Model.PhoneNumber">
+                                    <span asp-validation-for="PhoneNumber"></span>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label asp-for=Address class="labels">Địa chỉ cụ thể</label>
+                                        <input asp-for=Address type="text" class="form-control" placeholder="Nhập địa chỉ cụ thể của bạn" value="@Model.Address">
+                                        <span asp-validation-for="Address"></span>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="hover">
+                                        <div class="btn-group" role="group" aria-label="Hành động trên Hồ sơ" style="gap:10px">
+                                            <button type="submit" value="submit" class="btn btn-sm btn-info">Lưu thay đổi</button>
+                                            <a class="btn btn-sm btn-primary" href="~/Account/ChangePassword">Đổi mật khẩu</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <!-- Container -->
-    <div >
-        <h1>Thông tin tài khoản</h1>
-    </div>
+    
 </div>
 
 

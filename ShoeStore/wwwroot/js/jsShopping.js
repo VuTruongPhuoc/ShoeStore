@@ -1,6 +1,7 @@
-﻿$(document).ready(function () {
-    ShowCount();
+﻿var idproductdetail;
+$(document).ready(function () {
     var sizea;
+   
     $('.product_size li').click(function () {
         sizea = $(this).text();
     });
@@ -49,78 +50,82 @@
                     if (rs.success) {
                         $('#checkout_items').html(rs.count);
                         $('#trow_' + id).remove();
-                        alert(rs.msg); 
+                        if (rs.count == 0) {
+                            location.reload();
+                        }
+                        UpdateTotalAndCart(id, 0);
+                        
                     }
                 }
             });
         }
 
     });
+    $(".txt-quantity-cart").on("change", function () {
+        idproductdetail = $(this).data("code");
+        var productid = $(this).data("code"); // Lấy mã sản phẩm
+        var quantity = $(this).val(); // Lấy số lượng mới
+        if (quantity == 0) {
+
+        }    
+        UpdateCheckQuantity(productid, quantity);
+        UpdateTotalAndCart(productid, quantity);
+    });
 });
-function ShowCount() {
+function UpdateTotalAndCart(productid, quantity) {
     $.ajax({
-        url: '/shoppingcart/showcount',
-        type: 'GET',
+        url: "/ShoppingCart/UpdateQuantity",
+        method: "POST",
+        data: { productid: productid, quantity: quantity },
         success: function (rs) {
             if (rs.success) {
-                alert('123')
-                $('#checkout_items').html(rs.count);
+                var totalPriceFormatted = rs.totalprice.toLocaleString('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND'
+                });
+                $("#txt-total-cart").text(totalPriceFormatted);
+                    
+                var totalFormatted = rs.total.toLocaleString('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND'
+                });
+                $(".txt-total[data-productid='" + productid + "']").text(totalFormatted);
+               
+                $('#Quantity_' + productid).val(rs.quantity);
+            } else {
             }
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
         }
     });
 }
-function DeleteAll() {
+function UpdateCheckQuantity(productid, quantity) {
     $.ajax({
-        url: '/shoppingcart/DeleteAll',
-        type: 'POST',
+        url: "/ShoppingCart/CheckQuantity",
+        method: "post",
+        data: { productId: productid, quantity: quantity },
+
         success: function (rs) {
-            if (rs.Success) {
-                alert(rs.msg);
-            }
-        }
-    });
-}
-function Update(id, quantity) {
-    $.ajax({
-        url: '/shoppingcart/Update',
-        type: 'POST',
-        data: { id: id, quantity: quantity },
-        success: function (rs) {
-            if (rs.Success) {
-                LoadCart();
-            }
-        }
-    });
-}
-(function () {
-    function initial() {
-        registerEvents();
-    }
-    function registerEvents() {
-        $(document).on('blur', '.txt-quantity-cart', function () {
-            var self = $(this);
-            var parentTr = self.closest('tr');
-            var price = parseFloat(parentTr.find('.txt-price').text().replaceAll('.', ''));
-            var quantity = parseFloat(self.val());
-            var total = price * quantity;
-            parentTr.find('.txt-total').text(total.toLocaleString("vi-Vn", {
-                style: 'currency',
-                currency: 'VND'
-            }));
-            var totalCart = 0;
-            var trs = $('#tbody-cart tr');
-            for (var i = 0; i < trs.length; i++) {
-                if (i === trs.length - 1) {
-                    break;
+            if (!rs.success) {
+                if (quantity > rs.quantity) {
+                    alert("Số lượng sản phẩm chỉ còn " + rs.quantity);
+                    $('#Quantity_' + productid).val(rs.quantity);
+                    UpdateTotalAndCart(productid, rs.quantity);
+
                 }
-                var total = parseFloat($(trs[i]).find('.txt-total').text().replaceAll('đ', '').replaceAll('.', ''));
-                totalCart += total;
+                if (rs.quantity == 0) {
+                    alert("Chỉ được nhập tối tiểu 1 sản phẩm vui lòng");
+                    UpdateTotalAndCart(productid,1);
+                }
+            } else {
+               
             }
-            $('#txt-total-cart').text(totalCart.toLocaleString("vi-VN"), {
-                style: 'currency',
-                currency: 'VND'
-            });
-        });
-    }
-    initial();
-});
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        }
+    });
+}
+
+

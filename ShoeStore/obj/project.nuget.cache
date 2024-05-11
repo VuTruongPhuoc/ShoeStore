@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "9hDsRlcLO0ytKUn0W8Xbz6oHCEoDjnTgSo7LA7xvu3lSXNid7UEDZHfUlXuBJOcgU0eKCFfqoxvonINkyb1WCQ==",
+  "dgSpecHash": "FLu/9FlZWS/+YAo8XsjVV+oQwpXLluAuAozsju/KBysD/9N9hURmauxyOGHwsbpl4YeS9Cf6daNOpE+QEJgWIA==",
   "success": true,
   "projectFilePath": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\ShoeStore.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\phuoc\\.nuget\\packages\\aspnetcorehero.toastnotification\\1.1.0\\aspnetcorehero.toastnotification.1.1.0.nupkg.sha512",
     "C:\\Users\\phuoc\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\phuoc\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
     "C:\\Users\\phuoc\\.nuget\\packages\\bouncycastle.cryptography\\2.3.0\\bouncycastle.cryptography.2.3.0.nupkg.sha512",

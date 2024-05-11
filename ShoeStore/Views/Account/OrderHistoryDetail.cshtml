@@ -1,0 +1,358 @@
+﻿@{
+    ViewData["Title"] = "Lịch sử đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @using System.Globalization;
+    List<Order> order = ViewBag.vieworder;
+    List<OrderDetail> orderct = ViewBag.vieworderct;
+    List<ProductDetail> prdct = ViewBag.viewprdct;
+    List<Product> prd = ViewBag.viewprd;
+    List<Size> size = ViewBag.size;
+    List<Color> color = ViewBag.color;
+    List<ProductImage> image = ViewBag.image;
+    List<Voucher> voucher = ViewBag.Voucher;
+}
+
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_styles.css">
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_responsive.css">
+<link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
+<link rel="stylesheet" href="~/assets/plugins/themify-icons/themify-icons.css">
+<style>
+
+    .breadcrumbs {
+        margin-bottom: 30px;
+    }
+
+        .breadcrumbs ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+            .breadcrumbs ul li {
+                display: inline-block;
+                font-size: 14px;
+            }
+
+                .breadcrumbs ul li.active {
+                    font-weight: bold;
+                }
+
+                    .breadcrumbs ul li.active a {
+                        color: #333; /* Màu chữ khi active */
+                    }
+
+    /* Order Details Table */
+    .order_details h2 {
+        margin-bottom: 20px;
+    }
+
+    .order_details_table {
+        margin-bottom: 30px;
+    }
+
+        .order_details_table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order_details_table th, .order_details_table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd; /* Đường viền */
+        }
+
+        .order_details_table th {
+            background-color: #f2f2f2; /* Màu nền tiêu đề */
+        }
+
+        .order_details_table tbody tr:nth-child(even) {
+            background-color: #f9f9f9; /* Màu nền của dòng chẵn */
+        }
+
+        .order_details_table img {
+            max-width: 100px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .order_details_table h5 {
+            margin: 0;
+        }
+
+        .order_details_table p {
+            margin: 0;
+        }
+
+    /* Button */
+    .cancel-button {
+        background-color: royalblue;
+        border-radius: 12px;
+        border: none;
+        color: black;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+        .cancel-button:hover {
+            background-color: #0069d9; /* Màu khi hover */
+        }
+
+    /* Other */
+    hr {
+        border: 0;
+        border-top: 1px solid #ccc; /* Màu của đường gạch ngang */
+        margin: 10px 0;
+    }
+</style>
+<div class="container contact_container">
+    <div class="row">
+        <div class="col">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs d-flex flex-row align-items-center">
+                <ul>
+                    <li><a asp-controller="home" asp-action="index">Trang chủ</a></li>
+                    <li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Lịch sử đơn hàng</a></li>
+                </ul>
+            </div>
+            <div class="">
+                @foreach (var itemorder in order)
+                {
+                    var userorderct = orderct.Where(c => c.OrderId == itemorder.Id).ToList();
+
+                    var vouchers = voucher.FirstOrDefault(c => c.Id == itemorder.VoucherId);
+                    <!--================ Start Header Menu Area =================-->
+                    <!-- ================ end banner area ================= -->
+                    <!--================Order Details Area =================-->
+                    <section class="order_details section-margin--small">
+                        <div class="container">
+                            <div class="order_details_table">
+                                <h2>Chi tiết đơn hàng @itemorder.Code</h2>
+                                <div class="table-responsive">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <!--================End Order Details Area =================-->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">STT</th>
+                                <th scope="col">Tên sản phẩm</th>
+                                <th scope="col">Số lượng</th>
+                                <th scope="col">Size</th>
+                                <th scope="col">Màu</th>
+                                <th scope="col">Giá</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ord in userorderct)
+                            {
+                                var pct = prdct.FirstOrDefault(c => c.Id == ord.ProductDetailId);
+                                var pro = prd.FirstOrDefault(c => c.Id == pct.ProductId);
+                                var siz = size.FirstOrDefault(c => c.Id == pct.SizeId);
+                                var colo = color.FirstOrDefault(c => c.Id == pct.ColorId);
+                                var img = image.FirstOrDefault(c => c.ProductDetailId == pct.Id);
+
+                                <tr>
+                                    <td>
+                                        @if (@img.Image != null)
+                                        {
+                                            <img src="@img.Image" style="width: 100px; height:auto" alt="">
+                                        }
+
+                                    </td>
+                                    <td style="200px">
+                                        <p><h5>@pro.Name<h5></p>
+                                    </td>
+                                    <td>
+                                        <p><h5>@ord.Quantity</h5></p>
+                                    </td>
+                                    <td>
+                                        <p><h5>@siz.Name</h5></p>
+                                    </td>
+                                    <td>
+                                        <p><h5>@colo.Name</h5></p>
+                                    </td>
+                                    <td>
+                                        <h5>@ord.Price.Value.ToString("C0", new CultureInfo("vi-VN"))</h5>
+                                    </td>
+
+                                </tr>
+
+                            }
+                            <tr>
+                                <td colspan="2"><h4 style="color:black"><hr style="color:black"></h4></td>
+                                <td colspan="2"><h4 style="color:black"><hr style="color:black"></h4></td>
+                                <td colspan="2"><h4 style="color:black"><hr style="color:black"></h4></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h4>Voucher</h4>
+                                </td>
+                                <td colspan="4">
+                                    <h5>
+                                        @if (itemorder.VoucherId != null)
+                                        {
+                                            if (vouchers != null)
+                                            {
+                                                <span>Mã: @vouchers.Code</span> <br></br>
+                                                <span>Giảm: @vouchers.Value%</span> <br></br>
+                                                <span>Giảm tối đa: @vouchers.DiscountAmount.ToString("C0", new CultureInfo("vi-VN"))</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Không có voucher áp dụng</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>Không có voucher áp dụng</span>
+                                        }
+                                    </h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h4>Phí ship</h4>
+                                </td>
+                                <td colspan="4">
+                                    <h5>@string.Format(new CultureInfo("vi-VN"), "{0:C0}", itemorder.ShipFee)</h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h4>Số điện thoại</h4>
+                                </td>
+                                <td colspan="4">
+                                    <h5>@itemorder.Phone</h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h4>Địa chỉ</h4>
+                                </td>
+                                <td colspan="4">
+                                    <h5>@itemorder.Address</h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h4>Trạng thái đơn hàng </h4>
+                                </td>
+                                <td colspan="4">
+                                    <h5>
+                                        @if (itemorder.StatusOrder == 1)
+                                        {
+                                            <span>Chờ xác nhận</span>
+                                        }
+                                        else if (itemorder.StatusOrder == 2)
+                                        {
+                                            <span>Đã xác nhận đơn hàng </span>
+                                        }
+                                        else if (itemorder.StatusOrder == 3)
+                                        {
+                                            <span> Đang giao hàng </span>
+                                        }
+                                        else if (itemorder.StatusOrder == 4)
+                                        {
+                                            <span>Giao hàng thành công </span>
+                                        }
+                                        else if (itemorder.StatusOrder == 5)
+                                        {
+                                            <span>Đơn chờ hủy </span>
+                                        }
+                                        else if (itemorder.StatusOrder == 0)
+                                        {
+                                            <span>Đơn đã hủy </span>
+                                        }
+                                    </h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h4>Tổng tiền</h4>
+                                </td>
+                                <td colspan="4">
+                                    @if (ViewBag.VoucherAcc != null)
+                                    {
+                                        var priceProd = itemorder.TotalAmount ?? 0;
+                                        var percent = vouchers.Value / 100;
+                                        var priceXpercent = priceProd * percent;
+                                        @if (priceXpercent > vouchers.DiscountAmount)
+                                        {
+                                            itemorder.TotalAmount = (decimal)(priceProd - vouchers.DiscountAmount) + itemorder.ShipFee ?? 0;
+                                        }
+                                        else
+                                        {
+                                            itemorder.TotalAmount = (priceProd - priceXpercent) + itemorder.ShipFee;
+                                        }
+                                        <h5><span>@itemorder.TotalAmount.Value.ToString("C0", new CultureInfo("vi-VN"))</span></h5>
+                                    }
+                                    else
+                                    {
+                                        <p>@itemorder.TotalAmount.Value.ToString("C0", new CultureInfo("vi-VN"))</p>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @* @if (itemorder.StatusOrder == 1)
+                                {
+                                <button style="background-color:royalblue ; border-radius:12px ; border:none"> @Html.ActionLink("Đổi thông tin nhận hàng", "UpdateAddress", new { id = itemorder.Id }, new { style = "color:black;" }) </button>
+
+
+                                } *@
+                                    @if (itemorder.StatusOrder == 1 || itemorder.StatusOrder == 2)
+
+                                    {
+                                        <button class="cancel-button" data-itemid="@itemorder.Id" style="background-color:royalblue ; border-radius:12px ; border:none">
+                                            <a href="@Url.Action("CancelOrder", new { id = itemorder.Id })" style="color:black;">Hủy Đơn</a>
+                                        </button>
+
+                                    }
+
+                                    @if (itemorder.StatusOrder == 3)
+                                    {
+                                        <button class="btn btn-sm btn-primary" style="background-color:royalblue ;border-radius:12px;border:none"> @Html.ActionLink("Đã nhận hàng", "Received", new { id = itemorder.Id }, new { style = "color:black;" }) </button>
+                                    }
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var cancelButtons = document.querySelectorAll('.cancel-button');
+
+        cancelButtons.forEach(function (cancelButton) {
+            cancelButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                var itemId = this.getAttribute('data-itemid');
+                var confirmation = confirm("Bạn có chắc chắn muốn hủy đơn này không?");
+
+                if (confirmation) {
+                    // Chuyển hướng đến action HuyDon nếu xác nhận
+                    window.location.href = '@Url.Action("cancelorder", "account")?id=' + itemId;
+                } else {
+                    // Không làm gì nếu hủy
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,351 @@
+﻿
+@{
+    ViewData["Title"] = "OrderHistory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @model X.PagedList.IPagedList<ShoeStore.Models.Order>
+    @using X.PagedList;
+    @using X.PagedList.Mvc.Core;
+    @using X.PagedList.Web.Common;
+    @using System.Globalization;
+}
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_styles.css">
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_responsive.css">
+<link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
+<link rel="stylesheet" href="~/assets/plugins/themify-icons/themify-icons.css">
+<style>
+
+    .breadcrumbs {
+        margin-bottom: 30px;
+    }
+
+        .breadcrumbs ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+            .breadcrumbs ul li {
+                display: inline-block;
+                font-size: 14px;
+            }
+
+                .breadcrumbs ul li.active {
+                    font-weight: bold;
+                }
+
+                    .breadcrumbs ul li.active a {
+                        color: #333; /* Màu chữ khi active */
+                    }
+
+    /* Order Details Table */
+    .order_details h2 {
+        margin-bottom: 20px;
+    }
+
+    .order_details_table {
+        margin-bottom: 30px;
+    }
+
+        .order_details_table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order_details_table th, .order_details_table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd; /* Đường viền */
+        }
+
+        .order_details_table th {
+            background-color: #f2f2f2; /* Màu nền tiêu đề */
+        }
+
+        .order_details_table tbody tr:nth-child(even) {
+            background-color: #f9f9f9; /* Màu nền của dòng chẵn */
+        }
+
+        .order_details_table img {
+            max-width: 100px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .order_details_table h5 {
+            margin: 0;
+        }
+
+        .order_details_table p {
+            margin: 0;
+        }
+
+    /* Button */
+    .cancel-button {
+        background-color: royalblue;
+        border-radius: 12px;
+        border: none;
+        color: black;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+        .cancel-button:hover {
+            background-color: #0069d9; /* Màu khi hover */
+        }
+
+    /* Other */
+    hr {
+        border: 0;
+        border-top: 1px solid #ccc; /* Màu của đường gạch ngang */
+        margin: 10px 0;
+    }
+</style>
+<div class="container contact_container">
+    <div class="row">
+        <div class="col ">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs d-flex flex-row align-items-center">
+                <ul>
+                    <li><a asp-controller="home" asp-action="index">Trang chủ</a></li>
+                    <li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Thông tin tài khoản</a></li>
+                </ul>
+            </div>
+            <div class="">
+                <section class="order_details section-margin--small">
+                    <div class="row">
+                        <div class="col-md-3">
+                        <form id="searchForm" asp-controller="account" asp-action="orderhistory" method="get">
+                            <div class="input-group input-group-sm">
+                                <select id="statusFilter" name="status" class="form-control">
+                                    <option value="">Chọn trạng thái</option>
+                                    <!option value="1" @(ViewBag.status == 1 ? "selected" : "")>Chờ xác nhận</!option>
+                                    <!option value="2" @(ViewBag.status == 2 ? "selected" : "")>Đã xác nhận</!option>
+                                    <!option value="3" @(ViewBag.status == 3 ? "selected" : "")>Đang giao hàng</!option>
+                                    <!option value="4" @(ViewBag.status == 4 ? "selected" : "")>Giao hàng thành công</!option>
+                                    <!option value="5" @(ViewBag.status == 5 ? "selected" : "")>Chờ hủy</!option>
+                                    <!option value="0" @(ViewBag.status == 0 ? "selected" : "")>Đơn đã hủy</!option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="col-3">
+                        <!-- Tìm kiếm  -->
+                        <form id="searchForm2" asp-controller="account" asp-action="orderhistory" method="get">
+                            <div class="input-group input-group-sm">
+                                <input id="searchtext" type="text" name="searchtext" class="form-control" value="@ViewBag.searchtext" />
+                                <span class="input-group-append">
+                                    <button type="submit" class="btn btn-info btn-flat">Tìm</button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <form id="searchForm3" asp-controller="account" asp-action="orderhistory" method="get" class="row">
+                            <div class="form-group col-md-5">
+
+                                <input type="date" id="startdate" name="startdate" class="form-control" placeholder="Từ ngày" value="@ViewBag.startdate">
+
+                            </div>
+                            <div class="form-group col-md-5">
+
+                                <input type="date" id="enddate" name="enddate" class="form-control" placeholder="Đến ngày" value="@ViewBag.startdate">
+                            </div>
+                            <span class="input-group-append">
+                                <button type="submit" class="btn btn-info btn-flat">Lọc</button>
+                            </span>
+                        </form>
+                    </div>
+
+                </div>
+                </section>
+                <div style="padding-top:10px">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+@*                                 <th>Mã đơn hàng</th>
+                                <th>Tên khách hàng</th> *@
+                                <th>Số điện thoại </th>
+                                <th>Tiền </th>
+                                <th>Hình thức thanh toán</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tạo</th>
+                                <th style="width:150px">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
+
+                                foreach (var item in Model)
+                                {
+                                    <tr id="trow_@item.Id">
+                                        <td>@i</td>
+                                        <td>@item.Code</td>
+                                      @*   <td>@item.CustomerName</td>
+                                        <td>@item.Phone</td> *@
+                                        <td>@item.TotalAmount.Value.ToString("C0", new CultureInfo("vi-VN"))</td>
+                                        <td style="text-align:center">@item.TypePayment</td>
+                                        @if (item.StatusOrder == 1)
+                                        {
+                                            <td><span>Chờ xác nhận</span></td>
+                                            <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                            <td>
+
+                                                <div class="btn btn-sm btn-info">
+                                                    <a href="@Url.Action("orderhistorydetail", new { orderid = item.Id })" style="text-decoration: none; color: white;">
+                                                        <span>Xem đơn hàng</span>
+                                                    </a>
+                                                </div>
+
+
+
+                                            </td>
+                                        }
+                                        else if (item.StatusOrder == 2)
+                                        {
+                                            <td><span>Đã xác nhận đơn hàng </span></td>
+                                            <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                            <td>
+
+                                                <div class="btn btn-sm btn-info">
+                                                    <a href="@Url.Action("orderhistorydetail", new { orderid = item.Id })" style="text-decoration: none; color: white;">
+                                                        <span>Xem đơn hàng</span>
+                                                    </a>
+                                                </div>
+
+
+                                            </td>
+                                        }
+                                        else if (item.StatusOrder == 3)
+                                        {
+                                            <td>
+                                                <span> Đang giao hàng </span>
+                                            <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                            </td>
+                                            <td>
+
+                                                <div class="btn btn-sm btn-info">
+                                                    <a href="@Url.Action("orderhistorydetail", new { orderid = item.Id })" style="text-decoration: none; color: white;">
+                                                        <span>Xem đơn hàng</span>
+                                                    </a>
+                                                </div>
+
+
+                                            </td>
+
+                                        }
+                                        else if (item.StatusOrder == 4)
+                                        {
+                                            <td>
+                                                <span>Giao hàng thành công </span>
+                                            <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                            </td>
+                                            <td>
+
+                                                <div class="btn btn-sm btn-info">
+                                                    <a href="@Url.Action("orderhistorydetail", new { orderid = item.Id })" style="text-decoration: none; color: white;">
+                                                        <span>Xem đơn hàng</span>
+                                                    </a>
+                                                </div>
+
+
+                                            </td>
+
+                                        }
+                                        else if (item.StatusOrder == 5)
+                                        {
+                                            <td>
+                                                <span>Đơn chờ hủy </span>
+                                            <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                            </td>
+                                            <td>
+                                                <div class="btn btn-sm btn-info">
+                                                    <a href=" @Url.Action("orderhistorydetail", new { orderid = item.Id })">
+
+                                                        <span>Xem đơn hàng</span>
+                                                    </a>
+                                                </div>
+                                            </td>
+
+
+                                        }
+                                        else if (item.StatusOrder == 0)
+                                        {
+                                            <td>
+                                                <span>Đơn đã hủy </span>
+                                            <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                            </td>
+                                            <td>
+                                                <div class="btn btn-sm btn-info">
+                                                    <a href="@Url.Action("orderhistorydetail", new { orderid = item.Id })" style="text-decoration: none; color: white;">
+                                                        <span>Xem đơn hàng</span>
+                                                    </a>
+                                                </div>
+                                            </td>
+
+                                        }
+                                    </tr>
+                                    i = i + 1;
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4">Không có bản ghi nào!</td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (Model != null && Model.Any())
+                {
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-end" style="float:right">
+                            <a href="#">
+                                @Html.PagedListPager(Model, page => Url.Action("orderhistory", new { page = page, sort = ViewBag.sort, searchtext = ViewBag.searchtext, status = ViewBag.status, startdate = ViewBag.startdate, enddate = ViewBag.enddate }), new PagedListRenderOptions()
+                       {
+                           ActiveLiElementClass = "active",
+                           PageClasses = new[] { "page-link" },
+                           LiElementClasses = new[] { "page-item" },
+                           UlElementClasses = new[] { "pagination", "justify-content-center", "mt-3", "size" },
+                           LinkToNextPageFormat = "Tiếp",
+                           LinkToPreviousPageFormat = "Trước",
+                           MaximumPageNumbersToDisplay = 15,
+                           DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                           DisplayLinkToNextPage = PagedListDisplayMode.Always
+                       })
+                            </a>
+
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://unpkg.com/gijgo@1.9.14/js/gijgo.min.js" type="text/javascript"></script>
+<link href="https://unpkg.com/gijgo@1.9.14/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        $('#statusFilter').change(function () {
+            $('#searchForm').submit();
+        })
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        $("#startdate").datepicker();
+        $("#enddate").datepicker();
+    });
+</script>

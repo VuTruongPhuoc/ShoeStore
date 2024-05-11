@@ -41,6 +41,7 @@ public partial class ShoeStoreContext : DbContext
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
     public virtual DbSet<Voucher> Vouchers { get; set; }
+    public virtual DbSet<VoucherForAcc> VoucherForAccs { get; set; }
 
     public virtual DbSet<WishList> WishLists { get; set; }
 
@@ -180,10 +181,6 @@ public partial class ShoeStoreContext : DbContext
                 .IsUnicode(true);
             entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.StartDate).HasColumnType("datetime");
-
-            entity.HasOne(d => d.Account).WithMany(p => p.Vouchers)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK_Voucher_Account");
         });
 
         modelBuilder.Entity<WishList>(entity =>

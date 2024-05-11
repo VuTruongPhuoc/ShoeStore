@@ -27,7 +27,7 @@ namespace ShoeStore.Models
 
         public decimal? TotalAmount { get; set; }
 
-        public int? TypePayment { get; set; }
+        public string? TypePayment { get; set; }
         public string? Note { get; set; }
         public DateTime? CreateAt { get; set; }
 
@@ -35,7 +35,7 @@ namespace ShoeStore.Models
 
         public virtual Account? Account { get; set; }
 
-        public virtual OrderDetail IdNavigation { get; set; } = null!;
+        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual Voucher? Voucher { get; set; }
     }
 }

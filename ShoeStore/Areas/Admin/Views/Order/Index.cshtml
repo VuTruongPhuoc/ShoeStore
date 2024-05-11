@@ -1,5 +1,7 @@
 ﻿@using X.PagedList;
+@using X.PagedList.Web.Common;
 @using X.PagedList.Mvc.Core;
+ @using System.Globalization;
 @model X.PagedList.PagedList<ShoeStore.Models.Order>
 @{
     ViewData["Title"] = "Danh sách đơn hàng";
@@ -46,75 +48,234 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-6">
-                    <!-- Tìm kiếm  -->
-                    <form id="searchForm" asp-controller="color" asp-action="Index" method="get">
-                        <div class="input-group input-group-sm">
-                            <input id="searchText" type="text" name="Searchtext" class="form-control" />
-                            <span class="input-group-append">
-                                <button type="submit" class="btn btn-info btn-flat">Tìm kiếm</button>
-                            </span>
+                  
+                         <div class="col-md-4">
+                             <form id="searchForm" asp-controller="order" asp-action="Index" method="get">
+                            <div class="input-group input-group-sm">
+                                <select id="statusFilter" name="status" class="form-control">
+                                    <option value="">Chọn trạng thái</option>
+                                    <option value="1" @(ViewBag.status == 1 ? "selected" : "")>Chờ xác nhận</option>
+                                    <option value="2" @(ViewBag.status == 2 ? "selected" : "")>Đã xác nhận</option>
+                                    <option value="3" @(ViewBag.status == 3 ? "selected" : "")>Đang giao hàng</option>
+                                    <option value="4" @(ViewBag.status == 4 ? "selected" : "")>Giao hàng thành công</option>
+                                    <option value="5" @(ViewBag.status == 5 ? "selected" : "")>Chờ hủy</option>
+                                    <option value="0" @(ViewBag.status == 0 ? "selected" : "")>Đơn đã hủy</option>
+                                </select>
+                            </div>
+                             </form>
                         </div>
-                    </form>
-                </div>
+                        <div class="col-4">
+                            <!-- Tìm kiếm  -->
+                    <form id="searchForm2" asp-controller="order" asp-action="Index" method="get">
+                            <div class="input-group input-group-sm">
+                                <input id="searchtext" type="text" name="searchtext" class="form-control" value="@ViewBag.searchtext" />
+                                <span class="input-group-append">
+                                    <button type="submit" class="btn btn-info btn-flat">Tìm kiếm</button>
+                                </span>
+                            </div>
+                            </form>
+                        </div>
+                    
+              
             </div>
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Mã đơn hàng</th>
-                        <th>Tên khách hàng</th>
-                        <th>Số điện thoại </th>
-                        <th>Tiền </th>
-                        <th>Hình thức thanh toán</th>
-                        <th>Trạng thái</th>
-                        <th>Ngày tạo</th>
-                        <th style="width:150px">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
-
-                        foreach (var item in Model)
-                        {
-                            <tr id="trow_@item.Id">
-                                <td>@i</td>
-                                <td>@item.Code</td>
-                                <td>@item.CustomerName</td>
-                                <td>@item.Phone</td>
-                                <td>@ShoeStore.Common.Common.FormatNumber(@item.TotalAmount,2)</td>
-                                <td style="text-align:center">@(item.TypePayment == 1 ? "COD" : "Chuyển khoản ngân hàng") </td>
-                                <td>@(item.StatusOrder == 1 ? "Chờ xác nhận" : "Đang vận chuyển") </td>
-                                <td>@item.CreateAt.Value.ToString("dd/MM/yyy")</td>
-                                <td>
-                                    <a href="~/admin/order/vieworder/@item.Id" class="btn btn-sm btn-primary">Xem</a>
-                                </td>
-                            </tr>
-                            i = i + 1;
-                        }
-                    }
-                    else
-                    {
+            <div style="padding-top:10px">
+                <table class="table table-hover table-bordered">
+                    <thead>
                         <tr>
-                            <td colspan="4">Không có bản ghi nào!</td>
+                            <th>STT</th>
+                            <th>Mã đơn hàng</th>
+                            <th>Tên khách hàng</th>
+                            <th>Số điện thoại </th>
+                            <th>Tiền </th>
+                            <th>Hình thức thanh toán</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th style="width:150px">Hành động</th>
                         </tr>
-                    }
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
 
-                </tbody>
-            </table>
+                            foreach (var item in Model)
+                            {
+                                <tr id="trow_@item.Id">
+                                    <td>@i</td>
+                                    <td>@item.Code</td>
+                                    <td>@item.CustomerName</td>
+                                    <td>@item.Phone</td>
+                                    <td>@item.TotalAmount.Value.ToString("C0", new CultureInfo("vi-VN"))</td>
+                                    <td style="text-align:center">@item.TypePayment</td>
+                                    @if (item.StatusOrder == 1)
+                                    {
+                                        <td><span>Chờ xác nhận</span></td>
+                                        <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Thao tác
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <a href=" @Url.Action("vieworder", new { id = item.Id })" class="dropdown-item ">
+                                                        <i class="mdi mdi-eye-outline me-2"></i>
+                                                        <span>Xem đơn hàng</span>
+                                                    </a>
+                                                    <a href="@Url.Action("Confirm", new { id = item.Id })" class="dropdown-item">
+                                                        <i class="mdi mdi-receipt-text-check-outline"></i>
+                                                        <span>Xác nhận</span>
+                                                    </a>
+                                                    <a data-itemid="@item.Id" href="@Url.Action("CancelOrder", new { id = item.Id })" class="dropdown-item delete-record">
+                                                        <i class="mdi mdi-receipt-text-remove"></i>
+                                                        <span>Hủy đơn</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    }
+                                    else if (item.StatusOrder == 2)
+                                    {
+                                        <td><span>Đã xác nhận đơn hàng </span></td>
+                                        <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                         <td>
+                                        <div class="dropdown">
+                                                <button class="btn btn-sm btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Thao tác
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <a href=" @Url.Action("vieworder", new { id = item.Id })" class="dropdown-item ">
+                                                    <i class="mdi mdi-eye-outline me-2"></i>
+                                                    <span>Xem đơn hàng</span>
+                                                </a>
+                                                <a href="@Url.Action("Delivery", new { id = item.Id })" class="dropdown-item">
+                                                    <i class="mdi mdi-receipt-text-check-outline"></i>
+                                                    <span>Giao hàng</span>
+                                                </a>
+                                                <a data-itemid="@item.Id" href="@Url.Action("CancelOrder", new { id = item.Id })" class="dropdown-item delete-record">
+                                                    <i class="mdi mdi-receipt-text-remove"></i>
+                                                    <span>Hủy đơn</span>
+                                            </div>
+                                        </div>
+                                        </td>
+                                    }
+                                    else if (item.StatusOrder == 3)
+                                    {
+                                        <td>
+                                            <span> Đang giao hàng </span>
+                                        <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Thao tác
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <a href=" @Url.Action("vieworder", new { id = item.Id })" class="dropdown-item ">
+                                                        <i class="mdi mdi-eye-outline me-2"></i>
+                                                        <span>Xem đơn hàng</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                       
+                                    }
+                                    else if (item.StatusOrder == 4)
+                                    {
+                                        <td>
+                                            <span>Giao hàng thành công </span>
+                                        <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Thao tác
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <a href=" @Url.Action("vieworder", new { id = item.Id })" class="dropdown-item ">
+                                                        <i class="mdi mdi-eye-outline me-2"></i>
+                                                        <span>Xem đơn hàng</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                      
+                                    }
+                                    else if (item.StatusOrder == 5)
+                                    {
+                                        <td>
+                                            <span>Đơn chờ hủy </span>
+                                        <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Thao tác
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <a href=" @Url.Action("vieworder", new { id = item.Id })" class="dropdown-item ">
+                                                        <i class="mdi mdi-eye-outline me-2"></i>
+                                                        <span>Xem đơn hàng</span>
+                                                    </a>
+                                                    <a data-itemid="@item.Id" href="@Url.Action("CancelOrder", new { id = item.Id })" class="dropdown-item delete-record">
+                                                        <i class="mdi mdi-receipt-text-remove"></i>
+                                                        <span>Hủy đơn</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                    }
+                                    else if (item.StatusOrder == 0)
+                                    {
+                                        <td>
+                                            <span>Đơn đã hủy </span>
+                                        <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Thao tác
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <a href=" @Url.Action("vieworder", new { id = item.Id })" class="dropdown-item ">
+                                                        <i class="mdi mdi-eye-outline me-2"></i>
+                                                        <span>Xem đơn hàng</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                    }
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">Không có bản ghi nào!</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+           
             @if (Model != null && Model.Any())
             {
                 <div class="row">
                     <div class="col-12 d-flex justify-content-end" style="float:right">
                         <a href="#">
-                            @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page = page }),
-                                     new X.PagedList.Web.Common.PagedListRenderOptions
-                        {
-                            LiElementClasses = new string[] { "page-item" },
-                            PageClasses = new string[] { "page-link" }
-                        })
+                            @Html.PagedListPager(Model, page => Url.Action("index", new { page = page, sort = ViewBag.sort, searchtext = ViewBag.searchtext, status = ViewBag.status }), new PagedListRenderOptions()
+                           {
+                               ActiveLiElementClass = "active",
+                               PageClasses = new[] { "page-link" },
+                               LiElementClasses = new[] { "page-item" },
+                               UlElementClasses = new[] { "pagination", "justify-content-center", "mt-3", "size" },
+                               LinkToNextPageFormat = "Tiếp",
+                               LinkToPreviousPageFormat = "Trước",
+                               MaximumPageNumbersToDisplay = 15,
+                               DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                               DisplayLinkToNextPage = PagedListDisplayMode.Always
+                           })
                         </a>
 
                     </div>
@@ -130,3 +291,30 @@
     <!-- /.card -->
 
 </section>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var cancelButtons = document.querySelectorAll('.dropdown-item.delete-record');
+
+        cancelButtons.forEach(function (cancelButton) {
+            cancelButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                var itemId = this.getAttribute('data-itemid');
+                var confirmation = confirm("Bạn có chắc chắn muốn hủy đơn này không?");
+
+                if (confirmation) {
+                    // Chuyển hướng đến action HuyDon nếu xác nhận
+                    window.location.href = '@Url.Action("CancelOrder", "Order")?id=' + itemId;
+                } else {
+                    // Không làm gì nếu hủy
+                }
+            });
+        });
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+            $('#statusFilter').change(function(){
+                $('#searchForm').submit();
+            })
+    })
+</script>

@@ -12,23 +12,95 @@ using Microsoft.AspNetCore.Identity;
 using System.Text.Encodings.Web;
 using ShoeStore.Services;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using Microsoft.Identity.Client;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using AspNetCoreHero.ToastNotification.Abstractions;
+using MailKit.Search;
+using X.PagedList;
+using Microsoft.IdentityModel.Tokens;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ShoeStore.Controllers
 {
     public class AccountController : Controller
     {
+        private INotyfService _notyf;
         private ISendEmail _sendEmail;
         private ShoeStoreContext db = new ShoeStoreContext();
-        public AccountController(ISendEmail sendEmail, ShoeStoreContext db)
+        public AccountController(ISendEmail sendEmail, ShoeStoreContext db, INotyfService notyf)
         {
             _sendEmail = sendEmail;
             this.db = db;
+            _notyf = notyf;
         }
-
-        public IActionResult Profile()
+        #region profile
+        [HttpGet, Authorize(Roles = "Admin,Employee,Customer")]
+        public IActionResult Profile(int id)
+        {
+            var user = db.Accounts.FirstOrDefault(c => c.Id == id);
+            return View(user);
+        }
+        [HttpPost, AllowAnonymous]
+        public async Task<IActionResult> Profile(AccountVM model)
+        {
+            try
+            {
+                var user = new Account();
+                user.Username = model.Username;
+                user.Email = model.Email;
+                user.PhoneNumber = model.PhoneNumber;
+                user.FullName = model.FullName;
+                user.Address = model.Address;
+                db.SaveChanges();
+                _notyf.Success("Lưu thông tin thành công");
+                return Redirect($"~/Account/Profile?id={model.Id}");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+        #endregion
+        #region changepassword
+        public IActionResult ChangePassword()
         {
             return View();
         }
+        [HttpPost, AllowAnonymous]
+        public async Task<IActionResult> ChangePassword(ChangePasswordVM model)
+        {
+            if (ModelState.IsValid)
+            {
+                var IdUser = ((System.Security.Claims.ClaimsIdentity)User.Identity).FindFirst("Id");
+                string Id_userValue = IdUser?.Value;
+                model.UserId = int.Parse(Id_userValue);
+
+                var user = await db.Accounts.FirstOrDefaultAsync(c => c.Id == model.UserId);
+                if (user != null)
+                {
+                    if (model.OldPassword.ToMd5Hash(user.RandomKey) != user.Password)
+                    {
+                        ViewData["ErrorMessage"] = "Mật khẩu cũ không đúng";
+                        return View("ChangePassword", model);
+                    }
+                    if (model.NewPassWord != model.ConfirmPassword)
+                    {
+                        ViewData["ErrorMessage"] = " Mật khẩu không khớp với mật khẩu mới";
+                        return View("ChangePassword", model);
+                    }
+                    user.Password = model.NewPassWord.ToMd5Hash(user.RandomKey);
+                    db.Update(user);
+                    await db.SaveChangesAsync();
+                    _notyf.Success("Thay đổi mật khẩu thành công");
+                    
+                    return Redirect("~/Home/Index");
+
+                }
+            }
+            _notyf.Error("Error");
+            return View();
+        }
+        #endregion
         #region login
         [HttpGet, AllowAnonymous]
         public async Task<IActionResult> Login(string ReturnUrl)
@@ -248,7 +320,86 @@ namespace ShoeStore.Controllers
             }
 
         }
-        #endregion
+        #endregion                   
+
+        [HttpGet,Authorize(Roles = "Customer")]
+        public async Task<IActionResult> OrderHistory(int id , int? page , string? searchtext, int? status, DateTime? startdate , DateTime? enddate )
+        {
+            ViewBag.searchtext = searchtext;
+            ViewBag.status = status;
+            ViewBag.startdate = startdate;
+            ViewBag.enddate = enddate;
+            var items = db.Orders.Where(o=>o.AccountId == id).OrderByDescending(x => x.CreateAt).ToList();
+            if (page == null)
+            {
+                page = 1;
+            }
+            if (startdate != null)
+            {
+                items = items.Where(o => o.CreateAt >= startdate).ToList();
+            }
+
+            if (enddate != null)
+            {
+                items = items.Where(o => o.CreateAt <= enddate).ToList();
+            }
+            if (startdate != null && enddate != null)
+            {
+                items = items.Where(o => o.CreateAt >= startdate && o.CreateAt <= enddate).ToList();
+            }
+            if (!searchtext.IsNullOrEmpty())
+            {
+                items = db.Orders.Where(o => o.Code.ToLower().Contains(searchtext.ToLower()) || o.CustomerName.ToLower().Contains(searchtext.ToLower())).ToList();
+            }
+            if (status != null)
+            {
+                items = db.Orders.Where(o => o.StatusOrder == status).ToList();
+            }
+            var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
+            var pageSize = 10;
+            ViewBag.PageSize = pageSize;
+            ViewBag.Page = page;
+            items = items.OrderByDescending(x => x.CreateAt).ToList();
+            return View(items.ToPagedList(pageIndex, pageSize));
+        }
+        public async Task<IActionResult> OrderHistoryDetail(int? orderid)
+        {
+            //var userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
+            var userid = int.Parse(((System.Security.Claims.ClaimsIdentity)User.Identity).FindFirst("Id").Value);
+            var userorders = db.Orders.Where(c => c.AccountId == userid && c.Id  == orderid).OrderByDescending(d => d.CreateAt).ToList();
+            ViewBag.vieworder = userorders;
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Redirect("~/account/login");
+            }
+            // Lấy thông tin về voucher
+            foreach (var userorder in userorders)
+            {
+                if (userorder.VoucherId.HasValue)
+                {
+                    userorder.Voucher = db.Vouchers.FirstOrDefault(v => v.Id == userorder.VoucherId);
+                }
+            }
+            ViewBag.vieworderct = db.OrderDetails.ToList();
+            ViewBag.viewprdct = db.ProductDetails.ToList();
+            ViewBag.viewprd = db.Products.ToList();
+            ViewBag.Voucher = db.Vouchers.ToList();
+            ViewBag.size = db.Sizes.ToList();
+            ViewBag.color = db.Colors.ToList();
+            ViewBag.image = db.ProductImages.ToList();
+            return View(userorders);
+        }
+        public async Task<IActionResult> Received(int id)
+        {
+            var userid = int.Parse(User.Claims.FirstOrDefault(u=>u.Type == "Id").Value);
+            var x = await db.Orders.FindAsync(id);
+            x.StatusOrder = 4;
+            x.UpdateAt = DateTime.Now;
+            x.TypePayment = "Đã nhận hàng và thanh toán";
+            await db.SaveChangesAsync();
+            return RedirectToAction("orderhistorydetail","account", new {orderid = id});
+        }
         public async Task<IActionResult> Logout()
 		{
 			HttpContext.Session.Clear();

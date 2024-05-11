@@ -250,7 +250,6 @@ D:\CNTT4\DATN\ShoeStore\ShoeStore\obj\Debug\net8.0\ShoeStore.MvcApplicationParts
 D:\CNTT4\DATN\ShoeStore\ShoeStore\obj\Debug\net8.0\ShoeStore.MvcApplicationPartsAssemblyInfo.cache
 D:\CNTT4\DATN\ShoeStore\ShoeStore\obj\Debug\net8.0\ShoeStore.RazorAssemblyInfo.cache
 D:\CNTT4\DATN\ShoeStore\ShoeStore\obj\Debug\net8.0\ShoeStore.RazorAssemblyInfo.cs
-D:\CNTT4\DATN\ShoeStore\ShoeStore\obj\Debug\net8.0\ShoeStore.sourcelink.json
 D:\CNTT4\DATN\ShoeStore\ShoeStore\obj\Debug\net8.0\staticwebassets.build.json
 D:\CNTT4\DATN\ShoeStore\ShoeStore\obj\Debug\net8.0\staticwebassets.development.json
 D:\CNTT4\DATN\ShoeStore\ShoeStore\obj\Debug\net8.0\staticwebassets\msbuild.ShoeStore.Microsoft.AspNetCore.StaticWebAssets.props
@@ -272,3 +271,5 @@ D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\MailKit.dll
 D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\MimeKit.dll
 D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Facebook.dll
 D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\AspNetCoreHero.ToastNotification.Views.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\AspNetCoreHero.ToastNotification.dll

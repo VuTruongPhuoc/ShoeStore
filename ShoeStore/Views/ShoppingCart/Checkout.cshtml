@@ -102,8 +102,8 @@
     <!-- Container -->
     <form asp-action="Checkout" asp-controller="ShoppingCart" id="myForm" method="post" enctype="multipart/form-data">
         <div class="row g-5">
-            <div class="col-md-5">
-                <h4 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;width:120%">THÔNG TIN GIAO HÀNG</h4>
+            <div class="col-md-4">
+                <h4 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;width:100%">THÔNG TIN GIAO HÀNG</h4>
                 @* <input type="checkbox" id="GiongKhachHang" class="form-check-input" name="Accounts" value="false" style="margin-left:0px"> *@
                @*  <label class="" for="Account-1" style="margin-left:20px">Giống thông tin khách hàng ?</label> *@
                 
@@ -124,45 +124,62 @@
                     <span asp-validation-for="Address" class="text-danger"></span>
                 </div>
                 <div class="form-item delivery-info">
-                    <select class="form-select form-select-sm " id="city" name="city"  aria-label=".form-select-sm">
+                    <input type="text" hidden class="form-control" name="City" asp-for="City" placeholder="Địa chỉ">
+                    <select class="form-select form-select-sm " id="city" name="City"  aria-label=".form-select-sm">
                         <option value="" asp-for="City" selected>Chọn tỉnh thành</option>
                     </select>
-                    <input type="text" hidden class="form-control" name="City" asp-for="City" placeholder="Địa chỉ">
+                    
                     <span asp-validation-for="City" class="text-danger"></span>
                 </div>
                 <div class="row delivery-info">
                     <div class="col">
-                        <select class="form-select form-select-sm" id="district" name="district"  aria-label=".form-select-sm">
-                            <option value="" asp-for="District" selected>Chọn quận huyện</option>
-                          
-                        </select>
                         <input type="text" hidden class="form-control" name="District" asp-for="District" placeholder="Địa chỉ">
+                        <select class="form-select form-select-sm" id="district" name="District" aria-label=".form-select-sm">
+                            <option value="" asp-for="District" selected>Chọn quận huyện</option>
+                        </select>
+                        
                         <span asp-validation-for="District" class="text-danger"></span>
                     </div>
                     <div class="col">
-                        <select class="form-select form-select-sm" id="ward" name="ward"  aria-label=".form-select-sm">
+                        <input type="text" hidden class="form-control" name="Ward" asp-for="Ward" placeholder="Địa chỉ">
+                        <select class="form-select form-select-sm" id="ward" name="Ward"  aria-label=".form-select-sm">
                             <option value="" asp-for="Ward" selected>Chọn phường xã</option>
                             <!-- Thêm các tùy chọn phường/xã ở đây -->
                         </select>
-                        <input type="text" hidden class="form-control" name="Ward" asp-for="Ward" placeholder="Địa chỉ">
+                        
                         <span asp-validation-for="Ward" class="text-danger"></span>
                     </div>
                 </div>
                  <div class="">
                     <textarea name="Note" class="form-control" spellcheck="false" placeholder="Ghi chú đơn hàng" style="margin-top:10px"></textarea>
                 </div>
-                <div class="form-group" delivery-info>
-                    <label>Hình thức thanh toán</label>
-                    <select class="form-control" name="TypePayment">
-                        <option value="1" asp-for="TypePayment" selected>COD</option>
-                        <option value="2">Chuyển khoản</option>
-                    </select>
-                </div>
               
             </div>
-            <div class="col-md-1">
+            <div class="col-md-4">
+                <h4 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;width:100%">Hình thức thanh toán</h4>
+                <div class="payment_item">
+                    <div class="radion_btn">
+                        <input type="radio" id="f-option5" name="selector" checked>
+                        <label for="f-option5">Thanh toán(COD)</label>
+                        <div class="check"></div>
+                    </div>
+                    <p>
+                        Thanh toán khi kiểm tra và nhận hàng
+                    </p>
+                </div>
+                <div class="payment_item active">
+                    <div class="radion_btn">
+                        <input type="radio" id="f-option6" name="selector">
+                        <label for="f-option6"> Thanh toán(VNPAY) </label>
+                        <img src="img/product/card.jpg" alt="">
+                        <div class="check"></div>
+                    </div>
+                    <p>
+                        Thanh toán bằng ví vnpay
+                    </p>
+                </div>
             </div >
-            <div class="col-md-5 order-info">
+            <div class="col-md-4 order-info">
                 <h4 style="border-bottom: 2px solid black; padding-bottom: 5px">THÔNG TIN ĐƠN HÀNG</h4>
                 @if (ViewBag.CheckCart != null)
                 {
@@ -231,7 +248,14 @@
             //     }
             // });
         })
-
+        var inputon = document.getElementById("f-option6");
+        var inputoff = document.getElementById("f-option5");
+        inputon.onclick = function () {
+            document.getElementById("pay").value = "Online"
+        }
+        inputoff.onclick = function () {
+            document.getElementById("pay").value = "shipCod"
+        }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script>
@@ -278,7 +302,7 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('form').addEventListener('submit', function (event) {
+            document.getElementById('myForm').addEventListener('submit', function (event) {
                 event.preventDefault(); // Ngăn chặn gửi form đi
 
                 var address = document.querySelector('input[name="Address"]').value;

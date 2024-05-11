@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Ocsp;
@@ -15,12 +16,14 @@ namespace ShoeStore.Controllers
 		private readonly ISendEmail _sendEmail;
 		private readonly IWebHostEnvironment _env;
 		private readonly IConfiguration _config;
+		private readonly INotyfService _notyf;
 		private ShoeStoreContext db = new ShoeStoreContext();
-		public ShoppingCartController(IWebHostEnvironment env, ISendEmail sendEmail, IConfiguration config)
+		public ShoppingCartController(IWebHostEnvironment env, ISendEmail sendEmail, IConfiguration config,INotyfService notyf)
 		{
 			_env = env;
 			_sendEmail = sendEmail;
 			_config = config;
+			_notyf = notyf;
 		}
 		public List<ShoppingCartItem> Cart => HttpContext.Session.Get<List<ShoppingCartItem>>(MySetting.CART_KEY) ?? new List<ShoppingCartItem>();
 		public IActionResult Index()
@@ -50,32 +53,34 @@ namespace ShoeStore.Controllers
 
 		public ActionResult Checkout()
 		{
-            var cart = Cart;
-            if (cart != null)
-            {
-                ViewBag.CheckCart = cart.ToList();
-            }
-            return View();
-        }
+			var cart = Cart;
+			if (cart != null)
+			{
+				ViewBag.CheckCart = cart.ToList();
+			}
+			return View();
+		}
 		[HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Checkout(OrderVM ordervm)
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> Checkout(OrderVM ordervm)
 		{
 			var code = new { success = false, code = -1 };
-            var cart = Cart;
-            if (cart != null)
-            {
-                ViewBag.CheckCart = cart.ToList();
-                if (ModelState.IsValid)
-                {
+			var cart = Cart;
+			if (cart != null)
+			{
+				ViewBag.CheckCart = cart.ToList();
+				if (ModelState.IsValid)
+				{
+					var userid = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "Id").Value);
 					Order order = new Order();
 					order.CustomerName = ordervm.CustomerName;
+					order.AccountId = userid;
 					order.Phone = ordervm.Phone;
-					order.Address = ordervm.Address + " " + ordervm.City + " " + ordervm.District + " " + ordervm.Ward;
+					order.Address = ordervm.Address + " , " + ordervm.City + " - " + ordervm.District + " - " + ordervm.Ward;
 					order.Email = ordervm.Email;
 					order.Note = ordervm.Note;
 					order.TotalAmount = cart.Sum(x => (x.Price * x.Quantity));
-					order.TypePayment = ordervm.TypePayment;
+					order.TypePayment = ordervm.TypePayment + " - Chưa thanh toán";
 					order.StatusOrder = 1;
 					order.ShipFee = 0;
 					Random rd = new Random();
@@ -85,22 +90,22 @@ namespace ShoeStore.Controllers
 					order.UpdateAt = DateTime.Now;
 
 					db.Orders.Add(order);
-					db.SaveChanges();
-                    var orderdetail = new List<OrderDetail>();
-                    foreach (var item in Cart)
-                    {
-                        orderdetail.Add(new OrderDetail
-                        {
-                            OrderId = order.Id,
-                            Quantity = item.Quantity,
-                            Price = item.Price,
-                            ProductDetailId = item.ProductId,
-                            Discount = 0
-                        });
-                    }
-                    db.OrderDetails.AddRange(orderdetail);
-                    db.SaveChanges();
-					var strSanPham = "";
+					await db.SaveChangesAsync();
+					var orderdetail = new List<OrderDetail>();
+					foreach (var item in Cart)
+					{
+						orderdetail.Add(new OrderDetail
+						{
+							OrderId = order.Id,
+							Quantity = item.Quantity,
+							Price = item.Price,
+							ProductDetailId = item.ProductId,
+							Discount = 0
+						});
+					}
+					db.OrderDetails.AddRange(orderdetail);
+                    await db.SaveChangesAsync();
+                    var strSanPham = "";
 					var thanhtien = decimal.Zero;
 					var TongTien = decimal.Zero;
 					foreach (var sp in cart.ToList())
@@ -128,7 +133,7 @@ namespace ShoeStore.Controllers
 						contentCustomer = contentCustomer.Replace("{{DiaChiNhanHang}}", order.Address);
 						contentCustomer = contentCustomer.Replace("{{ThanhTien}}", ShoeStore.Common.Common.FormatNumber(thanhtien, 0));
 						contentCustomer = contentCustomer.Replace("{{TongTien}}", ShoeStore.Common.Common.FormatNumber(TongTien, 0));
-						_sendEmail.SendEmailAsync(ordervm.Email,"Đơn hàng #" + order.Code , contentCustomer.ToString());
+						_sendEmail.SendEmailAsync(ordervm.Email, "Đơn hàng #" + order.Code, contentCustomer.ToString());
 					}
 					string filePath2 = Path.Combine(_env.WebRootPath, "assets", "templates", "adminsend.html");
 					if (System.IO.File.Exists(filePath2))
@@ -146,18 +151,18 @@ namespace ShoeStore.Controllers
 						_sendEmail.SendEmailAsync(_config.GetValue<string>("SendEmail:Email"), "Đơn hàng #" + order.Code, contentCustomer.ToString());
 					}
 					HttpContext.Session.Set<List<ShoppingCartItem>>(MySetting.CART_KEY, new List<ShoppingCartItem>());
+					
 					return RedirectToAction("Success", "ShoppingCart");
-                }
+				}
 
-            }
-			return Json(code);
+			}
+			return View(ordervm);
 		}
 		[HttpPost]
 		public async Task<ActionResult> AddToCart(int id, string size, int quantity = 1)
 		{
 			var code = new { success = false, msg = "", code = -1, count = 0 };
 			var db = new ShoeStoreContext();
-
 			var cart = Cart;
 			var item = cart.SingleOrDefault(p => p.ProductId == id && p.Size == size);
 			if (item == null)
@@ -186,35 +191,42 @@ namespace ShoeStore.Controllers
 				{
 					item.ProductImg = product.ProductDetail.Image;
 				}
+			
 				item.Price = product.ProductDetail.Price;
 				if (product.ProductDetail.PriceSale > 0)
 				{
 					item.Price = (decimal)product.ProductDetail.PriceSale;
 				}
 				item.TotalPrice = item.Quantity * item.Price;
+				if(quantity > product.ProductDetail.Quantity)
+				{
+                    return Json(new { success = true, msg = "Số lượng sản phẩm chỉ còn " + product.ProductDetail.Quantity, code = 1, count = cart.Count });
+                }
 				cart.Add(item);
 				code = new { success = true, msg = "Thêm sản phẩm vào giỏ hàng thành công!", code = 1, count = cart.Count };
 			}
 			else
 			{
-				item.Quantity += quantity;
-				code = new { success = true, msg = "Thêm sản phẩm vào giỏ hàng thành công!", code = 1, count = cart.Count };
-			}
-			HttpContext.Session.Set(MySetting.CART_KEY, cart);
+                var productdt = db.ProductDetails.SingleOrDefault(p => p.Id == id && p.Size.Name == size);
+                
+				if(quantity > productdt.Quantity)
+				{
+                    return Json(new { success = true, msg = "Số lượng sản phẩm chỉ còn " + productdt.Quantity, code = 1, count = cart.Count });
+                }
+				
+                item.Quantity += quantity;
+				if(item.Quantity > productdt.Quantity)
+				{
+					item.Quantity = productdt.Quantity;
+				}
+                item.TotalPrice = item.Quantity * item.Price;
+
+            }
+            code = new { success = true, msg = "Thêm sản phẩm vào giỏ hàng thành công!", code = 1, count = cart.Count };
+            HttpContext.Session.Set(MySetting.CART_KEY, cart);
 			return Json(code);
 		}
-        [HttpPost]
-        public ActionResult Update(int id, int quantity)
-        {
-			var cart = Cart;
-            if (cart != null)
-            {
-                
-                return Json(new { Success = true });
-            }
-            return Json(new { Success = false });
-        }
-        [HttpPost]
+		[HttpPost]
 		public ActionResult Delete(int id)
 		{
 			var code = new { success = false, msg = "", code = -1, count = 0 };
@@ -225,12 +237,61 @@ namespace ShoeStore.Controllers
 				if (item != null)
 				{
 					cart.Remove(item);
-                    HttpContext.Session.Set(MySetting.CART_KEY, cart);
-                    code = new { success = true, msg = "Xóa sản phẩm khỏi thành công", code = 1, count = cart.Count };
+					HttpContext.Session.Set(MySetting.CART_KEY, cart);
+					code = new { success = true, msg = "Xóa sản phẩm khỏi thành công", code = 1, count = cart.Count };
 				}
 			}
 			return Json(code);
 		}
+        public async Task<IActionResult> UpdateQuantity(int productid, int quantity)
+        {
+            var code = new { success = false,total =decimal.Zero, totalprice = decimal.Zero ,quantity = 0};
+            var cart = Cart; // Giả sử Cart là danh sách các sản phẩm trong giỏ hàng của bạn
+			var total = decimal.Zero;
+            if (cart != null)
+            {
+				var item = cart.FirstOrDefault(c => c.ProductId == productid);
+				if(item != null)
+				{
+                    item.Quantity = quantity;
+                    item.TotalPrice = item.Quantity * item.Price;
+                    total = item.TotalPrice;
+                }
+				
+                decimal totalPrice = cart.Sum(item => item.TotalPrice);
+                HttpContext.Session.Set(MySetting.CART_KEY, cart);
+
+				// Trả về kết quả
+				code = new { success = true,total = total, totalprice = totalPrice ,quantity = quantity};
+            }
+
+            return Json(code);
+        }
+		public async Task<IActionResult> CheckQuantity(int productid, int quantity)
+		{
+            var code = new { success = true ,quantity = 0};
+			var productdt = await db.ProductDetails.FindAsync(productid);
+			var slton = productdt.Quantity;
+			var cart = Cart;
+
+			if(quantity > slton)
+			{
+                var item = cart.SingleOrDefault(p => p.ProductId == productid);
+                if(item != null)
+				{
+					item.Quantity = slton;
+					ViewBag.quantity = slton;
+
+				}
+                HttpContext.Session.Set(MySetting.CART_KEY, cart);
+                return Json(new { success = false, quantity = item.Quantity });
+            }
+			if(quantity == 0)
+			{
+                return Json(new { success = false, quantity = quantity });
+            }
+			return Json(code);
+        }
 
     }
 }

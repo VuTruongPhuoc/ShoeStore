@@ -58,13 +58,20 @@
 										
 										@if (User.Identity.IsAuthenticated)
 										{
-											
+											@* var userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id")); *@
+											var userid = ((System.Security.Claims.ClaimsIdentity)User.Identity).FindFirst("Id");
+											string Id_userValue = userid?.Value;
 											<a href="#">
 												Chào mừng: @User.Identity.Name
 												<i class="fa fa-angle-down"></i>
 											</a>
 											<ul class="account_selection">
-												<li><a asp-controller="account" asp-action="profile"><i class="fa fa-user-plus" aria-hidden="true"></i>Thông tin</a></li>
+												<li><a asp-controller="account" asp-action="profile" asp-route-id="@Id_userValue"><i class="fa fa-user-plus" aria-hidden="true"></i>Thông tin</a></li>
+												<li><a asp-controller="account" asp-action="changepassword" asp-route-id="@Id_userValue"><i class="fa fa-user-plus" aria-hidden="true"></i>Đổi mật khẩu</a></li>
+												@if (User.IsInRole("Customer"))
+												{
+													<li><a asp-controller="account" asp-action="orderhistory" asp-route-id="@Id_userValue"><i class="fa fa-user-plus" aria-hidden="true"></i>Lịch sử đơn hàng</a></li>
+												}
 												<li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-in" aria-hidden="true"></i> Đăng xuất</a></li>
 											</ul>
 										}
@@ -119,7 +126,11 @@
 									<li class="checkout">
 										<a asp-controller="shoppingcart" asp-action="index">
 											<i class="fa fa-shopping-cart" aria-hidden="true"></i>
-											<span id="checkout_items" class="checkout_items">0</span>
+											@{
+												var procarrt = ShoeStore.Helpers.SessionExtensions.GetObjFromSession(Context.Session, ShoeStore.Helpers.MySetting.CART_KEY);
+													<span id="checkout_items" class="checkout_items">@((procarrt?.Count() ?? 0))</span>
+											}
+											
 										</a>
 									</li>
 								</ul>
@@ -262,6 +273,7 @@
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCIwF204lFZg1y4kPSIhKaHEXMLYxxuMhA"></script>
     <script src="~/assets/js/contact_custom.js"></script>  
 	<script src="~/js/jsShopping.js"></script>
+	@await Component.InvokeAsync("Notyf")
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
