@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Mvc;
 using ShoeStore.Data;
 using ShoeStore.Models;
 using X.PagedList;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
@@ -9,11 +11,18 @@ namespace ShoeStore.Areas.Admin.Controllers
     [Route("admin/productdetail")]
     [Route("admin/productdetail/{action}")]
     [Route("admin/productdetail/{action}/{id}")]
+    [Authorize(Roles = "Admin, Employee")]
     public class ProductDetailController : Controller
     {
-        ShoeStoreContext db = new ShoeStoreContext();
+        private ShoeStoreContext db = new ShoeStoreContext();
+        private readonly INotyfService _notyf;
+        public ProductDetailController(INotyfService notyf)
+        {
+            _notyf = notyf;
+        }
         public IActionResult GetList(string Searchtext, int? page)
         {
+            ViewBag.Searchtext = Searchtext;
             ViewBag.Product = db.Products.ToList().OrderBy(x=>x.Name);
             ViewBag.Size = db.Sizes.ToList().OrderBy(x => x.Name);
             ViewBag.Color = db.Colors.ToList().OrderBy(x => x.Name);
@@ -26,7 +35,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             IEnumerable<ProductDetail> items = db.ProductDetails.ToList();
             if (!string.IsNullOrEmpty(Searchtext))
             {
-                items = items.Where(x => x.ProductId.ToString().Contains(Searchtext) || x.ColorId.ToString().Contains(Searchtext));
+                items = items.Where(x => x.ProductId.ToString().Contains(Searchtext) || x.ColorId.ToString().Contains(Searchtext) && x.Status);
             }
             var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
             items = items.ToPagedList(pageIndex, pageSize);
@@ -39,6 +48,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             ViewBag.Size = db.Sizes.ToList().OrderBy(x => x.Name); ;
             ViewBag.Color = db.Colors.ToList().OrderBy(x => x.Name); 
             ViewBag.Product = db.Products.ToList().OrderBy(x => x.Name);
+            ViewBag.ProductId = id;
             var pageSize = 3;
             if (page == null)
             {
@@ -48,7 +58,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             IEnumerable<ProductDetail> items = db.ProductDetails.Where(x=>x.ProductId == id);
             if (!string.IsNullOrEmpty(Searchtext))
             {
-                items = items.Where(x => x.ProductId.ToString().Contains(Searchtext) || x.ColorId.ToString().Contains(Searchtext));
+                items = items.Where(x => x.ProductId.ToString().Contains(Searchtext) || x.ColorId.ToString().Contains(Searchtext) && x.Status);
             }
             var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
             items = items.ToPagedList(pageIndex, pageSize);
@@ -56,11 +66,12 @@ namespace ShoeStore.Areas.Admin.Controllers
             ViewBag.Page = page;
             return View(items);
         }
-        public IActionResult Add()
+        public IActionResult Add(int id)
         {
             ViewBag.Size = db.Sizes.ToList().OrderBy(x => x.Name); ;
             ViewBag.Color = db.Colors.ToList().OrderBy(x => x.Name); ;
             ViewBag.Product = db.Products.ToList().OrderBy(x => x.Name);
+            ViewBag.ProductId = id;
             return View();
         }
         [HttpPost]
@@ -100,28 +111,39 @@ namespace ShoeStore.Areas.Admin.Controllers
                             }
                         }
                     }
+                    if(model.ProductImages.Count == 0)
+                    {
+                        model.ProductImages.Add(new ProductImage
+                        {
+                            ProductDetailId = model.Id,
+                            Image = "files/images/product/maugiay.jpg",
+                            IsDefault = true
+                            
+                        });
+                    }
                     model.CreateAt = DateTime.Now;
                     model.UpdateAt = DateTime.Now;
                     var item = db.ProductDetails.FirstOrDefault(x => x.ProductId == model.ProductId && x.SizeId == model.SizeId && x.ColorId == model.ColorId);
                     if(item != null)
                     {
                         item.Quantity += model.Quantity;
-                        db.SaveChangesAsync();
+                        await db.SaveChangesAsync();
                         return RedirectToAction("Index", "Product", new { area = "Admin" });
                     }
                     db.ProductDetails.Add(model);
-                    db.SaveChangesAsync();
-                    return RedirectToAction("Index", "Product",new { area = "Admin" });
-                }
-                catch (Exception ex)
-                {
-                    // Xử lý ngoại lệ một cách thích hợp, có thể ghi log hoặc hiển thị thông báo lỗi
-                    ModelState.AddModelError("", "Đã xảy ra lỗi khi lưu dữ liệu.");
-                }
-            }
-            // Nếu ModelState không hợp lệ, quay lại view với dữ liệu và thông báo lỗi
-            return View(model);
-        }
+                    await db.SaveChangesAsync();
+					_notyf.Success("Thêm dữ liệu thành công");
+					return RedirectToAction("index", "product", new { area = "admin" });
+				}
+				catch (Exception ex)
+				{
+					_notyf.Error("Có lỗi khi thêm dữ liệu " + ex.Message);
+					return View(model);
+				}
+			}
+			_notyf.Error("Có lỗi khi thêm dữ liệu");
+			return View(model);
+		}
         public IActionResult Edit(int id)
         {
             ViewBag.Size = db.Sizes.ToList();
@@ -141,38 +163,39 @@ namespace ShoeStore.Areas.Admin.Controllers
 
             if (ModelState.IsValid && item is not null)
             {
-                //try
-                //{
-                var checkImg = item.ProductImages.Where(x => x.ProductDetailId == item.Id);
-                if (checkImg != null)
+                try
                 {
-                    foreach (var img in checkImg)
+                    var checkImg = item.ProductImages.Where(x => x.ProductDetailId == item.Id);
+                    if (checkImg != null)
                     {
-                        db.ProductImages.Remove(img);
-                        db.SaveChanges();
+                        foreach (var img in checkImg)
+                        {
+                            db.ProductImages.Remove(img);
+                            db.SaveChanges();
+                        }
                     }
+                    item.Price = model.Price;
+                    item.Quantity = model.Quantity;
+                    item.SizeId = model.SizeId;
+                    item.ColorId = model.ColorId;
+                    item.PriceSale = model.PriceSale;
+                    item.OriginalPrice = model.OriginalPrice;
+                    item.UpdateAt = DateTime.Now;
+                    item.Status = model.Status;
+                    await db.SaveChangesAsync();
+                    _notyf.Success("Cập nhật dữ liệu thành công");
+                    return RedirectToAction("index", "account", new { area = "admin" });
                 }
-                item.Price = model.Price;
-                item.Quantity = model.Quantity;
-                item.SizeId = model.SizeId;
-                item.ColorId = model.ColorId;
-                item.PriceSale = model.PriceSale;
-                item.OriginalPrice = model.OriginalPrice;
-                item.UpdateAt = DateTime.Now;
-                item.Status = model.Status;
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index", "ProductDetail", new { area = "Admin",id = item.ProductId });
-                //}
-                //catch (Exception ex)
-                //{
-                //    // Xử lý ngoại lệ một cách thích hợp, có thể ghi log hoặc hiển thị thông báo lỗi
-                //    ModelState.AddModelError("", "Đã xảy ra lỗi khi cập nhật dữ liệu.");
-                //}
+                catch (Exception ex)
+                {
+                    _notyf.Error("Có lỗi khi cập nhật dữ liệu " + ex.Message);
+                    return View(model);
+                }
             }
-            // Nếu ModelState không hợp lệ hoặc xảy ra ngoại lệ, quay lại view với dữ liệu và thông báo lỗi
+            _notyf.Error("Có lỗi khi cập nhật dữ liệu");
             return View(model);
         }
-        [HttpPost]
+			[HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
 
@@ -195,25 +218,6 @@ namespace ShoeStore.Areas.Admin.Controllers
             return Json(new { success = false });
 
         }
-        //[HttpPost]
-        //public async Task<IActionResult> DeleteAll(string idstr)
-        //{
-        //    if (!string.IsNullOrEmpty(idstr))
-        //    {
-        //        var items = idstr.Split(",");
-        //        if (items != null && items.Any())
-        //        {
-        //            foreach (var i in items)
-        //            {
-        //                var obj = await db.ProductDetails.FindAsync(Convert.ToInt32(i));
-        //                db.ProductDetails.Remove(obj);
-        //                await db.SaveChangesAsync();
-        //            }
-        //        }
-        //        return Json(new { success = true });
-        //    }
-        //    return Json(new { success = false });
-        //}
         [HttpPost]
         public async Task<IActionResult> IsActive(int id)
         {

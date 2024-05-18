@@ -1,4 +1,4 @@
-/* JS Document */
+﻿/* JS Document */
 
 /******************************
 
@@ -249,23 +249,51 @@ jQuery(document).ready(function($)
     			}
 
     			fav.on('click', function()
-    			{
+				{
+					var id = $(this).data('id');
     				if(active)
-    				{
+					{
     					fav.removeClass('active');
-    					active = false;
+						active = false;
+						DeleteWishlist(id);						
     				}
     				else
     				{
     					fav.addClass('active');
-    					active = true;
+						active = true;
+						AddWishlist(id);
     				}
     			});
     		});
-    	}
+		} 
     }
+	function AddWishlist(id) {
+		$.ajax({
+			url: '/wishlist/AddWishlist',
+			type: 'post',
+			data: { id : id },
+			success: function (rs) {
+				if (rs.success) {
+					if(rs.msg != null)
+						alert(rs.msg);
+				}
+			}
+		});
+	}
+	function DeleteWishlist(id) {
+		$.ajax({
+			url: '/wishlist/deletewishlist',
+			type: 'post',
+			data: { id : id },
+			success: function (rs) {
+				if (rs.success){
 
-    /* 
+				}
+			}
+		});
+	}
+
+	/*
 
 	6. Init Fix Product Border
 

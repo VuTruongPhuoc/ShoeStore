@@ -114,7 +114,7 @@ function UpdateCheckQuantity(productid, quantity) {
                     UpdateTotalAndCart(productid, rs.quantity);
 
                 }
-                if (rs.quantity == 0) {
+                if (rs.quantity <= 0) {
                     alert("Chỉ được nhập tối tiểu 1 sản phẩm vui lòng");
                     UpdateTotalAndCart(productid,1);
                 }

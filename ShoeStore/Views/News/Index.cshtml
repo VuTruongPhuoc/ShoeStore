@@ -1,29 +1,124 @@
-﻿
-@{
-    ViewData["Title"] = "Tin tức";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+﻿@model X.PagedList.IPagedList<ShoeStore.Models.News>
+@* @using X.PagedList
+@using X.PagedList.Mvc.Core *@
 <link rel="stylesheet" type="text/css" href="~/assets/styles/contact_styles.css">
 <link rel="stylesheet" type="text/css" href="~/assets/styles/contact_responsive.css">
 <link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
 <link rel="stylesheet" href="~/assets/plugins/themify-icons/themify-icons.css">
+<style>
 
+    .row-item-new {
+        margin-bottom: 20px;
+        border: 1px solid #ddd; /* Thêm viền cho từng tin tức */
+        padding: 15px;
+        border-radius: 5px; /* Bo tròn viền */
+    }
+
+    .title-news {
+        font-size: 24px;
+        border-bottom: 1px solid;
+        padding: 15px 0;
+        margin-bottom: 25px;
+    }
+
+    .img-box img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .content-box {
+        padding-left: 20px; /* Tạo khoảng cách giữa hình ảnh và nội dung */
+    }
+
+    .description-box {
+        margin-top: 10px; /* Tạo khoảng cách giữa tiêu đề và mô tả */
+    }
+
+    .breadcrumbs {
+        margin-bottom: 30px;
+    }
+
+        .breadcrumbs ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+            .breadcrumbs ul li {
+                display: inline-block;
+                font-size: 14px;
+            }
+
+                .breadcrumbs ul li.active {
+                    font-weight: bold;
+                }
+
+                    .breadcrumbs ul li.active a {
+                        color: #333; /* Màu chữ khi active */
+                    }
+</style>
 
 <div class="container contact_container">
-	<div class="row">
-		<div class="col">
-
-			<!-- Breadcrumbs -->
-
-			<div class="breadcrumbs d-flex flex-row align-items-center">
-				<ul>
-					<li><a asp-controller="Home" asp-action="index">Trang chủ</a></li>
-					<li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Tin tức</a></li>
-				</ul>
-			</div>
-
-		</div>
-	</div>
-	<!-- Container -->
-	Tin tức
+    <div class="row">
+        <div class="col">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs d-flex flex-row align-items-center">
+                <ul>
+                    <li><a asp-controller="Home" asp-action="index">Trang chủ</a></li>
+                    <li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Tin tức</a></li>
+                </ul>
+            </div>
+            <div class="">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <div class="row row-item-new">
+                            <div class="col-md-3">
+                                <div class="img-box">
+                                    <a href="" title="@item.Title"><img src="@item.Image" alt="@item.Title" style="width:220px;height:180px" /></a>
+                                </div>
+                            </div>
+                            <div class="col-md-9 content-box">
+                                <h3><a href="/news/detail/@item.Id" title="@item.Title">@item.Title</a></h3>
+                                <div class="description-box">
+                                    @item.Description
+                                </div>
+                                <div style="padding-top : 50px; color:red">
+                                    Đăng bởi : @item.Postedby
+                                    </div>
+                            </div>
+                        </div>
+                    }
+                }
+                <div class="blogs">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col text-center">
+                                <div class="section_title">
+                                    <h2>Tin tức mới nhất</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            @foreach (var item in Model)
+                            {
+                                <div class="col-lg-4 blog_item_col">
+                                    <div class="blog_item">
+                                        <div class="blog_background" style="background-image:url(@item.Image)"></div>
+                                        <div class="blog_content d-flex flex-column align-items-center justify-content-center text-center">
+                                            <h4 class="blog_title">@item.Title</h4>
+                                            <span class="blog_meta">bởi @item.Postedby | @item.CreateAt.Value.ToString("dd-MM-yyyy")</span>
+                                            <a class="blog_more" href="/news/detail/@item.Id">Đọc thêm</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Container -->
 </div>

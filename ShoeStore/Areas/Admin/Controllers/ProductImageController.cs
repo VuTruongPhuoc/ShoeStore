@@ -2,13 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using ShoeStore.Data;
 using ShoeStore.Models;
-
+using Microsoft.AspNetCore.Authorization;
 namespace ShoeStore.Areas.Admin.Controllers
 {
     [Area("admin")]
     [Route("admin/productimage")]
     [Route("admin/productimage/{action}")]
     [Route("admin/productimage/{action}/{id}")]
+    [Authorize(Roles = "Admin, Employee")]
     public class ProductImageController : Controller
     {
         private ShoeStoreContext db = new ShoeStoreContext();

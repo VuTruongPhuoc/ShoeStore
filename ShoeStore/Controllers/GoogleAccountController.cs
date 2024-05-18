@@ -71,16 +71,16 @@ namespace ShoeStore.Controllers
 
                     if (checkRoleAdmin == true)
                     {
-                        return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/Admin/HomeAdmin/Index");
+                        return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/admin/index");
 
                     }
                     else if (checkRoleEmpoloyee == true)
                     {
-                        return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/Admin/HomeAdmin/Index");
+                        return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/admin/index");
                     }
                     else
                     {
-                        return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/Home/Index");
+                        return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/home/index");
                     }
                 }
                 else

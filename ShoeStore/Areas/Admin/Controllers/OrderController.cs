@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using ShoeStore.Data;
 using ShoeStore.Models;
 using X.PagedList;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
@@ -11,7 +12,8 @@ namespace ShoeStore.Areas.Admin.Controllers
 	[Route("admin/order")]
 	[Route("admin/order/{action}")]
 	[Route("admin/order/{action}/{id}")]
-	public class OrderController : Controller
+    [Authorize(Roles = "Admin, Employee")]
+    public class OrderController : Controller
 	{
 		private readonly ShoeStoreContext db =new ShoeStoreContext();
         private readonly INotyfService _notyf;
@@ -74,6 +76,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                     prdct.Quantity = sl;
                     db.SaveChanges();
                     x.StatusOrder = 2;
+                    x.UpdateAt = DateTime.Now;
                     _notyf.Success("Đã xác nhận đơn hàng!");
                     db.SaveChanges();
                     return RedirectToAction("index");
@@ -88,13 +91,13 @@ namespace ShoeStore.Areas.Admin.Controllers
         {
             var x = await db.Orders.FindAsync(id);
             x.StatusOrder = 3;
+            x.UpdateAt = DateTime.Now;
             await db.SaveChangesAsync();
             _notyf.Success("Đã xác nhận giao hàng");
             return RedirectToAction("index");
         }
         public async Task<IActionResult> CancelOrder(int id)
         {
-
             var x = await db.Orders.FindAsync(id);
             var y = db.OrderDetails.Where(c => c.OrderId == id).ToList();
             if (x.StatusOrder == 5)
@@ -107,6 +110,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                 }
             }
             x.StatusOrder = 0;
+            x.UpdateAt = DateTime.Now;
             _notyf.Success("Đã xác nhận hủy đơn");
             return RedirectToAction("index");
         }

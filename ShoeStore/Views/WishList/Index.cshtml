@@ -1,0 +1,169 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@using System.Globalization
+@model X.PagedList.IPagedList<ShoeStore.Models.WishList>
+@{
+    ViewData["Title"] = "Sản phẩm yêu thích";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Product> products = ViewBag.product;
+    List<ProductDetail> productdts = ViewBag.productdetail;
+    List<Category> categories = ViewBag.category;
+    List<Size> sizes = ViewBag.size;
+}
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_styles.css">
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_responsive.css">
+<link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
+<link rel="stylesheet" href="~/assets/plugins/themify-icons/themify-icons.css">
+<style>
+
+    .news_section_container {
+        margin-top: 180px;
+    }
+
+    .row-item-new {
+        margin-bottom: 20px;
+    }
+
+    .title-news {
+        font-size: 24px;
+        border-bottom: 1px solid;
+        padding: 15px 0;
+        margin-bottom: 25px;
+    }
+
+    .img-box img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .vertical-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+</style>
+<div class="container contact_container">
+    <div class="row">
+        <div class="col ">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs d-flex flex-row align-items-center">
+                <ul>
+                    <li><a asp-controller="home" asp-action="index">Trang chủ</a></li>
+                    <li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Danh sách yêu thích</a></li>
+                </ul>
+            </div>
+            <div class="">
+                <div class="row">
+                    <div class="col-md-12">
+                       @*  <p>@Model.Count sản phẩm</p> *@
+                        <h4 class="title-news" style="text-align:center"> Sản phẩm yêu thích của bạn (@Model.Count)</h4>
+                        
+                    </div>
+                </div>
+                
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        var productdt = productdts.FirstOrDefault(p => p.Id == item.ProductDetailId);
+                        <div class="row row-item-new">
+                            <div class="col-md-2">
+                                <div class="img-box">
+                                    <a href="/shop/detail/@(item.ProductDetailId)" title=""><img src="@productdt.Image" alt="" style="width:180px; height:180px" /></a>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="content-box">
+                                    <h3><a href="/shop/detail/@(item.ProductDetailId)" title="@productdt.Product.Name"></a></h3>
+                                    <div class="description-box">
+                                        @{
+                                            var product = products.FirstOrDefault(x => x.Id == productdt.ProductId);
+                                                        <p style="color:#000;font-size:21px;font-family:NunitoSanExtraBold">@product.Name</p>
+                                        }
+                                    </div>
+                                    <div>
+                                        @{
+                                            var category = categories.FirstOrDefault(c => c.Id == product.CategoryId);
+                                                        <p style="font-size: 18px; color:black">@category.Name</p>
+                                        }
+                                    </div>
+                                    <div>
+                                        @if (productdt.PriceSale > 0)
+                                        {
+                                            <div class="product_price">Giá: @productdt.PriceSale.Value.ToString("C0", new CultureInfo("vi-VN"))<span>@productdt.Price.ToString("C0", new CultureInfo("vi-VN"))</span></div>
+
+                                            <div style="display:none;" class="in_product_price"> @productdt.PriceSale</div>
+                                        }
+                                        else
+                                        {
+                                            <div class="product_price">Giá: @productdt.Price.ToString("C0", new CultureInfo("vi-VN"))</div>
+                                            <div style="display:none;" class="in_product_price"> @productdt.Price</div>
+                                        }
+                                    </div>
+                                    <div>
+                                        @{
+                                            var size = sizes.FirstOrDefault(c => c.Id == productdt.SizeId);
+                                                        <p style="font-size: 18px ;color:black;padding-top:15px">Size : @size.Name</p>
+                                        }
+                                    </div>
+                                   
+
+                                </div>
+                            </div>
+                            <div class="col-md-1 vertical-center">
+                                <a href="#" data-id="@productdt.Id" class="btn btn-danger btnDeleteWishList">Xóa</a>
+                            </div>
+                        </div>
+                    }
+                }
+                @if (Model != null && Model.Any())
+                {
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-end" style="float:right">
+                            <a href="#">
+                                @Html.PagedListPager(Model, page => Url.Action("orderhistory", new { page = page, sort = ViewBag.sort, searchtext = ViewBag.searchtext, status = ViewBag.status, startdate = ViewBag.startdate, enddate = ViewBag.enddate }), new PagedListRenderOptions()
+                       {
+                           ActiveLiElementClass = "active",
+                           PageClasses = new[] { "page-link" },
+                           LiElementClasses = new[] { "page-item" },
+                           UlElementClasses = new[] { "pagination", "justify-content-center", "mt-3", "size" },
+                           LinkToNextPageFormat = "Tiếp",
+                           LinkToPreviousPageFormat = "Trước",
+                           MaximumPageNumbersToDisplay = 10,
+                           DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                           DisplayLinkToNextPage = PagedListDisplayMode.Always
+                       })
+                            </a>
+
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('.btnDeleteWishList').on('click', function () {
+                var id = $(this).data('id');
+                var conf = confirm('Bạn có muốn xóa bản ghi này hay không?');
+                if (conf == true) {
+                    $.ajax({
+                        url: '/wishlist/DeleteWishlist',
+                        type: 'post',
+                        data: { id: id },
+                        success: function (rs) {
+                            // Xử lý kết quả nếu cần
+                            btn.closest('.row-item-new').hide()
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
+}

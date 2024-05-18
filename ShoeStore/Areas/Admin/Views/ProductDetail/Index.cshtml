@@ -1,5 +1,6 @@
 ﻿@using X.PagedList;
 @using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
 @model X.PagedList.PagedList<ShoeStore.Models.ProductDetail>
 @{
     ViewData["Title"] = "Danh sách chi tiết sản phẩm";
@@ -46,7 +47,7 @@
             <h3 class="card-title">@ViewBag.Title</h3>
 
             <div class="card-tools">
-                <a href="/admin/productdetail/add" class="btn btn-primary">Thêm mới</a>
+                <a href="/admin/productdetail/add/@ViewBag.ProductId" class="btn btn-primary">Thêm mới</a>
                 <a href="#" class="btn btn-danger" id="BtnDeleteAll">Xóa</a>
             </div>
         </div>
@@ -54,7 +55,7 @@
             <div class="row">
                 <!-- Sắp xếp -->
                 <!-- Tìm kiếm -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <form id="searchForm" asp-controller="productdetail" asp-action="Index" method="get">
                         <div class="input-group input-group-sm">
                             <input id="searchText" type="text" name="Searchtext" class="form-control" value="@ViewBag.Searchtext" />
@@ -64,8 +65,11 @@
                         </div>
                     </form>
                 </div>
+                <div class="col-md-4">
+
+                </div>
                 <!-- Xuất ra excel -->
-                <div class="col-md-6" style="position: relative;">
+                <div class="col-md-4" style="position: relative;">
                     <form asp-controller="product" asp-action="ExportToExcel">
                         <div style="position: absolute; right: 0;">
                             <button type="submit" class="btn btn-outline-secondary">
@@ -75,90 +79,97 @@
                     </form>
                 </div>
             </div>
-            <table class="table table-hover" id="dataTable">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox" id="SelectAll" /></th>
-                        <th>STT</th>
-                        <th>Hình ảnh</th> 
-                        <th>Tên sản phẩm</th>
-                        <th>Số lượng</th>
-                        <th>Giá</th>
-                        <th>Kích cỡ</th>
-                        <th>Màu sắc</th>
-                        <th>Ngày tạo</th>
-                        <th>Trạng thái</th>
-
-                        <th style="width:150px">Chức năng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
-
-                        foreach (var item in Model)
-                        {
-                            var strCheck = item.Status ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>";
-                            <tr id="trow_@item.Id">
-                                <td><input type="checkbox" class="cbkItem" value="@item.Id" /></td>
-                                <td>@i</td>
-                                <td><img class="imgproduct" src="@item.Image" data-id="@item.Id" width="60" /></td>
-                                <td>@item.Product.Name</td>
-                                <td>@item.Quantity</td>
-                                <td>@item.Price.ToString("N2")</td>
-                                @foreach (var obj in ViewBag.Size)
-                                {
-                                    if (item.SizeId == obj.Id)
-                                    {
-                                        <p>
-                                            <td>@obj.Name</td>
-                                        </p>
-                                    }
-                                }
-                                @foreach (var obj in ViewBag.Color)
-                                {
-                                    if (item.ColorId == obj.Id)
-                                    {
-                                        <p>
-                                             <td>@obj.Name</td>
-                                        </p>
-                                    }
-                                }
-                                <td>@item.CreateAt.Value.ToString("dd/MM/yyyy")</td>
-                                <td class="">
-                                    <a href='#' data-id="@item.Id" class="btnActive">@Html.Raw(strCheck)</a>
-                                </td>
-                                <td>
-                                    
-                                    <a href="~/admin/productdetail/edit/@item.Id" class="btn btn-sm btn-primary">Sửa</a>
-                                    <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
-                                     
-                                </td>
+            <div class="" style="padding-top:10px">
+                    <table class="table table-hover table-bordered" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Giá</th>
+                                <th>Kích cỡ</th>
+                                <th>Màu sắc</th>
+                                <th>Sử dụng</th>
+                                <th>Ngày tạo</th>
+                                <th style="width:150px">Chức năng</th>
                             </tr>
-                            i = i + 1;
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="4">Không có bản ghi nào!</td>
-                        </tr>
-                    }
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
 
-                </tbody>
-            </table>
+                                foreach (var item in Model)
+                                {
+                                    var strCheck = item.Status ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>";
+                                    <tr id="trow_@item.Id">
+                                        <td>@i</td>
+                                        <td><img class="imgproduct" src="@item.Image" data-id="@item.Id" width="60" /></td>
+                                        <td>@item.Product.Name</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@item.Price.ToString("N2")</td>
+                                        @foreach (var obj in ViewBag.Size)
+                                        {
+                                            if (item.SizeId == obj.Id)
+                                            {
+                                                <p>
+                                                <td>@obj.Name</td>
+                                                </p>
+                                            }
+                                        }
+                                        @foreach (var obj in ViewBag.Color)
+                                        {
+                                            if (item.ColorId == obj.Id)
+                                            {
+                                                <p>
+                                                <td>@obj.Name</td>
+                                                </p>
+                                            }
+                                        }
+                                    <td class="">
+                                        <a href='#' data-id="@item.Id" class="btnActive">@Html.Raw(strCheck)</a>
+                                    </td>   
+                                        <td>@item.CreateAt.Value.ToString("dd/MM/yyyy")</td>
+                                        
+                                        <td>
+
+                                            <a href="~/admin/productdetail/edit/@item.Id" class="btn btn-sm btn-primary">Sửa</a>
+                                            <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
+
+                                        </td>
+                                    </tr>
+                                    i = i + 1;
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4">Không có bản ghi nào!</td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            
             @if (Model != null && Model.Any())
             {
                 <div class="row">
-                    <div class="col-6 d-flex justify-content-end">
+                    <div class="col-12 d-flex justify-content-end" style="float:right">
                         <a href="#">
-                            @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page = page }),
-                                     new X.PagedList.Web.Common.PagedListRenderOptions
-                        {
-                            LiElementClasses = new string[] { "page-item" },
-                            PageClasses = new string[] { "page-link" }
-                        })
+                                @Html.PagedListPager(Model, page => Url.Action("index", new { page = page, sort = ViewBag.sort, Searchtext = ViewBag.Searchtext }), new PagedListRenderOptions()
+                       {
+                           ActiveLiElementClass = "active",
+                           PageClasses = new[] { "page-link" },
+                           LiElementClasses = new[] { "page-item" },
+                           UlElementClasses = new[] { "pagination", "justify-content-center", "mt-3", "size" },
+                           LinkToNextPageFormat = "Tiếp",
+                           LinkToPreviousPageFormat = "Trước",
+                           MaximumPageNumbersToDisplay = 10,
+                           DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                           DisplayLinkToNextPage = PagedListDisplayMode.Always
+                       })
                         </a>
 
                     </div>

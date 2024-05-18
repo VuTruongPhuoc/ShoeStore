@@ -1,4 +1,5 @@
 ﻿@model ShoeStore.ViewModels.OrderVM
+@using System.Globalization
 @{
     ViewData["Title"] = "Thanh toán";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -12,33 +13,31 @@
     .error {
         color: red;
     }
-    .form-item{
+
+    .form-item {
         margin-bottom: 15px;
     }
     /* Form select */
     .form-select {
-        width: 100%; 
-        border: 1px solid #ccc; 
+        width: 100%;
+        border: 1px solid #ccc;
         padding: 8px;
-        border-radius: 4px;
         box-sizing: border-box;
     }
     /* Button */
     .btn-success {
         background-color: #28a745;
-        color: #fff; 
+        color: #fff;
         padding: 8px;
-        border-radius: 4px; 
-        font-weight: bold; 
+        font-weight: bold;
     }
 
-    .btn-success:hover {
-        background-color: #218838; 
-    }
+        .btn-success:hover {
+            background-color: #218838;
+        }
     /* Đơn hàng */
     .order-info {
-      /*   background-color: #f0f0f0; /* Màu nền */ */
-        padding: 10px; /* Khoảng cách giữa nội dung và viền */
+        /*   background-color: #f0f0f0; /* Màu nền */ */ padding: 10px; /* Khoảng cách giữa nội dung và viền */
         border-radius: 5px; /* Độ cong của góc */
         width: 120%; /* Chiều rộng */
         font-size: 16px;
@@ -53,36 +52,27 @@
             padding: 8px; /* Khoảng cách giữa nội dung và viền */
         }
 
-        tr {
-            text-align: left; /* Căn lề trái cho tiêu đề */
-            padding: 10px;
-        }
+    tr {
+        text-align: left; /* Căn lề trái cho tiêu đề */
+        padding: 10px;
+    }
 
-        .order-table td {
-            vertical-align: top; /* Hiệu chỉnh căn giữa */
-            
-        }
+    .order-table td {
+        vertical-align: top; /* Hiệu chỉnh căn giữa */
+    }
 
     .order-total {
         font-weight: bold; /* In đậm */
     }
 
-    #coupon {
-        border-radius: 3px;
-        border: 1px solid #d1d1d1;
-        padding: 4px;
-        margin-bottom: 5px;
-        width: 67%;
-        margin-right: 5px;
+    .modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - 1rem);
     }
 
-    #getCoupon {
-        border-radius: 0;
-        padding: 4px 15px;
-        vertical-align: top;
-        background: #abdbe3;
-        float: right;
-        border-radius: 5px;
+    .modal-content {
+        margin: auto;
     }
 
 </style>
@@ -100,35 +90,35 @@
         </div>
     </div>
     <!-- Container -->
-    <form asp-action="Checkout" asp-controller="ShoppingCart" id="myForm" method="post" enctype="multipart/form-data">
+    <form asp-action="Checkout" asp-controller="ShoppingCart" id="myForm" method="post" novalidate="novalidate" onsubmit="return validateForm()">
         <div class="row g-5">
             <div class="col-md-4">
-                <h4 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;width:100%">THÔNG TIN GIAO HÀNG</h4>
+                <h4 style="background-color: #f0f0f0; padding: 10px; width:100%">THÔNG TIN GIAO HÀNG</h4>
                 @* <input type="checkbox" id="GiongKhachHang" class="form-check-input" name="Accounts" value="false" style="margin-left:0px"> *@
-               @*  <label class="" for="Account-1" style="margin-left:20px">Giống thông tin khách hàng ?</label> *@
-                
+                @*  <label class="" for="Account-1" style="margin-left:20px">Giống thông tin khách hàng ?</label> *@
+
                 <div class="form-item delivery-info">
-                    <input type="text" class="form-control" name="CustomerName" asp-for="CustomerName" placeholder="Họ Tên">
+                    <input id="customername" type="text" class="form-control" name="CustomerName" asp-for="CustomerName" placeholder="Họ Tên">
                     <span asp-validation-for="CustomerName" class="text-danger"></span>
                 </div>
                 <div class="form-item delivery-info">
-                    <input type="text" class="form-control" name="Phone" asp-for="Phone" placeholder="Số điện thoại">
-                    <span asp-validation-for="Phone" class="text-danger"></span>
+                    <input id="phone" type="text" class="form-control" name="Phone" asp-for="Phone" placeholder="Số điện thoại">
+                    <span asp-validation-for="Phone" class="text-danger" id="phoneError"></span>
                 </div>
                 <div class="form-item delivery-info">
-                    <input type="text" class="form-control" name="Email" asp-for="Email" placeholder="Email">
-                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <input id="email" type="text" class="form-control" name="Email" asp-for="Email" placeholder="Email">
+                    <span asp-validation-for="Email" class="text-danger" id="emailError"></span>
                 </div>
                 <div class="form-item delivery-info">
-                    <input type="text" class="form-control" name="Address" asp-for="Address" placeholder="Địa chỉ">
+                    <input id="address" type="text" class="form-control" name="Address" asp-for="Address" placeholder="Địa chỉ">
                     <span asp-validation-for="Address" class="text-danger"></span>
                 </div>
                 <div class="form-item delivery-info">
-                    <input type="text" hidden class="form-control" name="City" asp-for="City" placeholder="Địa chỉ">
-                    <select class="form-select form-select-sm " id="city" name="City"  aria-label=".form-select-sm">
+                    <input type="text" hidden class="form-control" name="City" asp-for="City">
+                    <select class="form-select form-select-sm " id="city" name="City" aria-label=".form-select-sm">
                         <option value="" asp-for="City" selected>Chọn tỉnh thành</option>
                     </select>
-                    
+
                     <span asp-validation-for="City" class="text-danger"></span>
                 </div>
                 <div class="row delivery-info">
@@ -137,29 +127,29 @@
                         <select class="form-select form-select-sm" id="district" name="District" aria-label=".form-select-sm">
                             <option value="" asp-for="District" selected>Chọn quận huyện</option>
                         </select>
-                        
+
                         <span asp-validation-for="District" class="text-danger"></span>
                     </div>
                     <div class="col">
                         <input type="text" hidden class="form-control" name="Ward" asp-for="Ward" placeholder="Địa chỉ">
-                        <select class="form-select form-select-sm" id="ward" name="Ward"  aria-label=".form-select-sm">
+                        <select class="form-select form-select-sm" id="ward" name="Ward" aria-label=".form-select-sm">
                             <option value="" asp-for="Ward" selected>Chọn phường xã</option>
                             <!-- Thêm các tùy chọn phường/xã ở đây -->
                         </select>
-                        
+
                         <span asp-validation-for="Ward" class="text-danger"></span>
                     </div>
                 </div>
-                 <div class="">
+                <div class="">
                     <textarea name="Note" class="form-control" spellcheck="false" placeholder="Ghi chú đơn hàng" style="margin-top:10px"></textarea>
                 </div>
-              
+
             </div>
             <div class="col-md-4">
-                <h4 style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;width:100%">Hình thức thanh toán</h4>
+                <h4 style="background-color: #f0f0f0; padding: 10px;width:100%">Hình thức thanh toán</h4>
                 <div class="payment_item">
                     <div class="radion_btn">
-                        <input type="radio" id="f-option5" name="selector" checked>
+                        <input type="radio" id="f-option5" name="selector" checked style="cursor:pointer">
                         <label for="f-option5">Thanh toán(COD)</label>
                         <div class="check"></div>
                     </div>
@@ -169,16 +159,47 @@
                 </div>
                 <div class="payment_item active">
                     <div class="radion_btn">
-                        <input type="radio" id="f-option6" name="selector">
+                        <input type="radio" id="f-option6" name="selector" style="cursor:pointer">
                         <label for="f-option6"> Thanh toán(VNPAY) </label>
-                        <img src="img/product/card.jpg" alt="">
+                        <img src="~/files/images/product/card.jpg" alt="">
                         <div class="check"></div>
                     </div>
                     <p>
                         Thanh toán bằng ví vnpay
                     </p>
+                    <input hidden id="pay" name="TypePayment" value="shipCod" />
                 </div>
-            </div >
+
+                <h5 style="background-color: #f0f0f0; padding: 10px;width:100%">Phương thức vận chuyển</h5>
+                <div class="delivery_item">
+                    <div class="radio_btn">
+                        <input type="radio" id="d-option7" name="selectordelivery" value="25000" style="cursor:pointer" checked>
+                        <label for="d-option7"> Giao hàng nhanh - 25.000 đ </label>
+                    </div>
+                    <div class="radio_btn">
+                        <input type="radio" id="d-option8" name="selectordelivery" value="15000" style="cursor:pointer">
+                        <label for="d-option8"> Giao hàng tiết kiệm - 15.000 đ </label>
+                    </div>
+                    <div class="radio_btn">
+                        <input type="radio" id="d-option9" name="selectordelivery" value="45000" style="cursor:pointer">
+                        <label for="d-option9"> Hỏa tốc - 45.000 đ </label>
+                    </div>
+                </div>
+                <h5 style="background-color: #f0f0f0; padding: 10px;width:100%">PShop Voucher</h5>
+                <div class="coupon_item" style="font-size: 15px">
+                    <td>
+                        <a href="#" id="getCoupon" style="margin: 0; cursor:pointer" class="btn tp_button" data-toggle="modal" data-target="#couponModal">
+                            Chọn hoặc nhập mã
+                        </a>
+                    </td>
+                    <td style="font-size:16px">
+                        <span id="showname"></span>
+                        <span class="badge badge-success" id="showcodevoucher" name="VoucherCode"></span>
+                        <input type="hidden" name="VoucherCode" value="" />
+                    </td>
+                </div>
+                @* @if() *@
+            </div>
             <div class="col-md-4 order-info">
                 <h4 style="border-bottom: 2px solid black; padding-bottom: 5px">THÔNG TIN ĐƠN HÀNG</h4>
                 @if (ViewBag.CheckCart != null)
@@ -192,7 +213,7 @@
                                 <tr>
                                     <td>@item.ProductName</td>
                                     <td></td>
-                                    <td>@ShoeStore.Common.Common.FormatNumber(item.Price, 0) VND</td>
+                                    <td>@Html.Raw(@item.Price.ToString("C0", new CultureInfo("vi-VN")).Replace(" ", "&nbsp;"))</td>
                                 </tr>
                                 <tr>
                                     <td>Size: @item.Size</td>
@@ -200,64 +221,117 @@
                                     <td>x @item.Quantity</td>
                                 </tr>
                             }
-                            <tr style="border-top: 2px dashed #2596be ">
-                                <td colspan="2">Đơn hàng:</td>
-                                <td>@ShoeStore.Common.Common.FormatNumber(tongtien, 0)</td>
+                            <tr>
+                                <td colspan="2" style="border-top: 1px solid #000;box-shadow: 0 0 0.3px #000;">Đơn hàng:</td>
+                                <td id="orderTotal" style="border-top: 1px solid #000;box-shadow: 0 0 0.3px #000;">@Html.Raw(tongtien.ToString("C0", new CultureInfo("vi-VN")).Replace(" ", "&nbsp;"))</td>
                             </tr>
                             <tr>
                                 <td colspan="2">Giảm giá:</td>
-                                <td>- @decimal.Zero VND</td>
+                                @* @if(ViewBag.discountvalue != null)
+                            {
+                            <td id="discountValue" name="discountValue" value="@ViewBag.discountvalue">@ViewBag.discountvalue.ToString("C0", new CultureInfo("vi-VN"))</td>
+                            }else{
+
+                            } *@
+                                <td id="discountValue">@decimal.Zero.ToString("C0", new CultureInfo("vi-VN"))</td>
+                                <input hidden value="" name="discountValue"/>
                             </tr>
-                            <tr style="border-bottom: 2px dashed #2596be">
-                                <td colspan="2">Phí vận chuyển:</td>
-                                <td>@decimal.Zero VND</td>
+                            <tr>
+                                <td colspan="2" style="border-bottom: 1px solid #000;box-shadow: 0 0 0.3px #000;">Phí vận chuyển:</td>
+                                <td id="shippingFee" style="border-bottom: 1px solid #000;box-shadow: 0 0 0.3px #000;">@decimal.Zero.ToString("C0", new CultureInfo("vi-VN"))</td>
+                                <input hidden name="ShipFee"/>
                             </tr>
                             <tr class="order-total">
                                 <td colspan="2" style="">Tổng cộng:</td>
-                                <td>@ShoeStore.Common.Common.FormatNumber(tongtien, 0) VND</td>
+                                <td colspan="1" id="totalAmount" >@tongtien.ToString("C0", new CultureInfo("vi-VN"))</td>
+                                 <input hidden name ="totalAmount"/> 
+                                <input hidden value="@tongtien" id="tongtien"/>
                             </tr>
-                            <tr class="couponBlock">
-                                <td><input placeholder="Nhập vào nếu có" id="coupon" type="text" name="couponCode" /></td>
-                                <td></td>
-                                <td><button type="button" id="getCoupon" style="margin: 0" class="btn tp_button">Áp dụng</button></td>
-                            </tr>
+
                         </table>
                     </div>
                     <div class="form-group " style="margin-top:20px">
-                        <button type="submit" class="btn btn-block" style="padding: 20px;background-color: #f15e2c;font-size: 30px ; color:#fff" >Đặt hàng</button>
+                        <button type="submit" class="btn btn-block" style="padding: 10px;background-color: #f15e2c;font-size: 20px ; color:#fff; cursor:pointer">Đặt hàng</button>
                     </div>
                 }
-               
+
             </div>
         </div>
-
     </form>
-
 </div>
-@section Scripts{
+<div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="couponModalLabel" style="text-align:center">Phiếu khuyến mãi</h5>
+                <a class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </a>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="padding-bottom:5px;padding-left:30px">
+                    <input type="text" id="searchCoupon" class="form-control col-md-8 " placeholder="Nhập mã giảm giá">
+                    <button id="applyButton" class="btn btn-sm btn-primary col-md-3" style="pointer-events: none; opacity: 0.5;">Áp dụng</button>
+                </div>
+                <div id="couponList">
+                    @foreach (var voucher in Model.VoucherForAccs)
+                    {
+                        @*  <form asp-controller="shoppingcart" asp-action="applydiscount" method="post" enctype="multipart/form-data"> *@
+                        <div class="col-sm-12">
+                            <div class="coupon bg-white rounded mb-3 d-flex justify-content-between">
+                                <div class="tengah py-3 d-flex w-100 justify-content-start p-3"
+                                     style="background: #f2f2f2; border-radius: 5px">
+                                    <div>
+                                        <span class="badge badge-success">@voucher.Code</span>
+                                        <h4 class="text-muted mb-0">@voucher.Name</h4>
+                                        <p class="text-muted mb-0">Giảm: @voucher.Value%</p>
+                                        <p class="text-muted mb-0">Tối đa: @voucher.DiscountAmount.ToString("C0", new CultureInfo("vi-VN"))</p>
+                                    </div>
+                                </div>
+
+                                <div class="kanan" style="background: #f2f2f2; border-radius: 5px">
+                                    <div class="info m-3 d-flex align-items-center">
+                                        <div class="w-100">
+                                            <div class="block">
+                                                <span class="time font-weight-light">
+                                                    <p style="color: red; font-size: 12px">
+                                                        HSD: @voucher.EndDate.ToString("dd-MM-yyyy HH:mm")
+                                                    </p>
+                                                </span>
+                                            </div>
+                                            <input type="hidden" name="selectedVoucher" value="@voucher.Code" />
+                                           
+                                            <input type="button" value="Sử dụng" class="btn btn-sm btn-outline-danger btn-block apply-btn" data-code="@voucher.Code" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*  </form> *@
+
+                    }
+                </div>
+                <div>
+                    @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+                    {
+                        <div class="alert alert-warning alert-dismissible" role="alert" style="font-size: 14px">
+                            @ViewData["ErrorMessage"]
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.5/sweetalert2.min.css">
+}
+@section Scripts {
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // $("#GiongKhachHang").change(function () {
-            //     if ($(this).prop("checked")) {
-            //         $(this).val(true)
-            //         $(".delivery-info").addClass("d-none");
-            //     } else {
-            //         $(this).val(false);
-            //         $(".delivery-info").removeClass("d-none");
-            //     }
-            // });
-        })
-        var inputon = document.getElementById("f-option6");
-        var inputoff = document.getElementById("f-option5");
-        inputon.onclick = function () {
-            document.getElementById("pay").value = "Online"
-        }
-        inputoff.onclick = function () {
-            document.getElementById("pay").value = "shipCod"
-        }
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <!--tỉnh thành-->
     <script>
         var citis = document.getElementById("city");
         var districts = document.getElementById("district");
@@ -300,30 +374,234 @@
             };
         }
     </script>
-    <script>
+    @* <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('myForm').addEventListener('submit', function (event) {
                 event.preventDefault(); // Ngăn chặn gửi form đi
 
-                var address = document.querySelector('input[name="Address"]').value;
-                var city = document.getElementById('city');
-                var district = document.getElementById('district');
-                var ward = document.getElementById('ward');
-
-                var cityName = city.options[city.selectedIndex].text;
-                var districtName = district.options[district.selectedIndex].text;
-                var wardName = ward.options[ward.selectedIndex].text;
-
-                // var fullAddress = address + ' ' + wardName + ' ' + districtName + ' ' + cityName;
-
-                document.querySelector('input[name="City"]').value = cityName;
-                document.querySelector('input[name="District"]').value = districtName;
-                document.querySelector('input[name="Ward"]').value = wardName;
+               
                 // Tiếp tục gửi form
-                event.target.submit();
             });
         });
 
+    </script> *@
+    <!--các chức năng cơ bản-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // hàm update tổng tiền
+            function updateTotal() {
+                var checkedOption = document.querySelector('input[name="selectordelivery"]:checked');
+                if (checkedOption) {
+                    var shippingFee = parseFloat(checkedOption.value);
+                    var discountValue = parseFloat(document.getElementById("discountValue").value) || 0;
+                    var orderTotal = parseFloat(document.getElementById("tongtien").value);
+
+                    var totalAmount = orderTotal - discountValue + shippingFee;
+
+                    document.getElementById("shippingFee").textContent = shippingFee.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                    document.getElementById("totalAmount").textContent = totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                    document.getElementById("shippingFee").value = shippingFee;
+                    document.getElementById("totalAmount").value = totalAmount;
+                    document.querySelector('input[name="ShipFee"]').value = shippingFee;
+                    document.querySelector('input[name="totalAmount"]').value = totalAmount;
+                }
+            }
+
+            // update lại tổng tiền khi tải trang
+            updateTotal();
+
+            // update tổng tiền khi thay đổi phương thưucs vận chuyển
+            document.querySelectorAll('input[name="selectordelivery"]').forEach((e) => {
+                e.addEventListener("change", updateTotal);
+            });
+
+            // sự kiện ghi trên input
+            document.getElementById('searchCoupon').addEventListener('input', function () {
+                var searchInput = document.getElementById('searchCoupon');
+                var inputValue = searchInput.value;
+                if (this.value.trim() !== '') {
+                    applyButton.removeAttribute('style');
+                   
+                } else {
+                    applyButton.style.pointerEvents = 'none';
+                    applyButton.style.opacity = '0.5';
+                }
+            });
+            //sự kiện click để chạy hàm update voucher
+            $(document).on('click', '#applyButton', function () {
+                var inputValue = $('#searchCoupon').val(); // Sử dụng jQuery để lấy giá trị của trường văn bản
+                applyvoucher(inputValue);
+            });
+            // update giảm giá khi sử dụng voucher từ kho voucher của bạn
+            var selectedVoucher = '@(ViewBag.selectedvoucher)';
+            if (selectedVoucher !== '') {
+                applyvoucher(selectedVoucher);
+            }
+            // update giảm giá khi chọn ô sử dụng
+            $(document).on('click', '.apply-btn', function () {
+                var selectedVoucher = $(this).data('code');
+                applyvoucher(selectedVoucher)
+            });
+            //hàn update voucher
+            function applyvoucher(selectedVoucher) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("ApplyDiscount", "ShoppingCart")',
+                    data: { selectedVoucher: selectedVoucher },
+                    success: function (rs) {
+                        if (rs.success) {
+                            document.getElementById("discountValue").textContent = rs.discountValue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                            document.getElementById("discountValue").value = rs.discountValue;
+                            $('#showname').html("Mã giảm : ");
+                            $('#showcodevoucher').html(selectedVoucher);
+                            document.querySelector('input[name="VoucherCode"]').value = selectedVoucher;
+                            document.querySelector('input[name="discountValue"]').value = rs.discountValue;
+                            $('#couponModal').modal('hide');
+                        } else {
+                            alert(rs.message);
+                        }
+
+                        updateTotal();
+                    }
+                });
+            }
+
+        });
+        $(document).ready(function () {
+            // $("#GiongKhachHang").change(function () {
+            //     if ($(this).prop("checked")) {
+            //         $(this).val(true)
+            //         $(".delivery-info").addClass("d-none");
+            //     } else {
+            //         $(this).val(false);
+            //         $(".delivery-info").removeClass("d-none");
+            //     }
+            // });
+        })
+        // phương thức thanh toán
+        var inputon = document.getElementById("f-option6");
+        var inputoff = document.getElementById("f-option5");
+        inputon.onclick = function () {
+            document.getElementById("pay").value = "Online"
+        }
+        inputoff.onclick = function () {
+            document.getElementById("pay").value = "shipCod"
+        }
+
+        // validate phonenumber and email
+        document.addEventListener('DOMContentLoaded', function () {
+            //phone
+            var phoneNumberInput = document.getElementById('phone');
+            var phoneErrorSpan = document.getElementById('phoneError');
+
+
+            phoneNumberInput.addEventListener('input', function () {
+                var inputValue = phoneNumberInput.value;
+                var cleanedValue = inputValue.replace(/[^0-9+]/g, '');
+                cleanedValue = cleanedValue.slice(0, 10);
+                phoneNumberInput.value = cleanedValue;
+            });
+
+            phoneNumberInput.addEventListener('blur', function () {
+                validatePhoneNumber(phoneNumberInput.value);
+            });
+
+            function validatePhoneNumber(phoneNumber) {
+                var phoneRegex = /^\+?[0-9]{1,4}-?[0-9]{3,4}-?[0-9]{4,}$/;
+
+                if (phoneRegex.test(phoneNumber) && phoneNumber.startsWith('0')) {
+                    // Nếu số điện thoại hợp lệ, ẩn thông báo và hiển thị nền trắng cho ô nhập
+                    phoneErrorSpan.textContent = '';
+                    phoneNumberInput.style.backgroundColor = 'white';
+                } else {
+                    if (phoneNumber.length < 10) {
+                        // Hiển thị thông báo trong thẻ span khi số điện thoại có ít hơn 10 kí tự
+                        phoneErrorSpan.textContent = 'Số điện thoại phải có ít nhất 10 kí tự.';
+                    } else if (!phoneNumber.startsWith('0')) {
+                        // Hiển thị thông báo trong thẻ span khi số điện thoại không bắt đầu bằng số 0
+                        phoneErrorSpan.textContent = 'Số điện thoại phải bắt đầu bằng số 0.';
+                    } else {
+                        // Hiển thị thông báo trong thẻ span khi số điện thoại không hợp lệ
+                        phoneErrorSpan.textContent = 'Số điện thoại không hợp lệ.';
+                    }
+
+
+                }
+            }
+            //email
+            var emailInput = document.getElementById('email');
+            var emailErrorSpan = document.getElementById('emailError');
+
+            emailInput.addEventListener('blur', function () {
+                validateEmail(emailInput.value);
+            });
+
+            function validateEmail(email) {
+                var emailRegex = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+
+                if (emailRegex.test(email)) {
+                    // Nếu địa chỉ email hợp lệ, ẩn thông báo và hiển thị nền trắng cho ô nhập
+                    emailErrorSpan.textContent = '';
+                    emailInput.style.backgroundColor = 'white';
+                } else {
+                    // Hiển thị thông báo trong thẻ span khi địa chỉ email không hợp lệ
+                    emailErrorSpan.textContent = 'Địa chỉ email không hợp lệ.';
+                }
+            }
+
+        });
+        //validate các trường
+        function validateForm() {
+            var fullName = document.getElementById('customername').value;
+            var phoneNumber = document.getElementById('phone').value;
+            var Address = document.getElementById('address').value;
+            var Email = document.getElementById('email').value;
+           
+
+            // var address = document.querySelector('input[name="Address"]').value;
+            var city = document.getElementById('city');
+            var district = document.getElementById('district');
+            var ward = document.getElementById('ward');
+
+            var cityName = city.options[city.selectedIndex].text;
+            var districtName = district.options[district.selectedIndex].text;
+            var wardName = ward.options[ward.selectedIndex].text;
+
+            // var fullAddress = address + ' ' + wardName + ' ' + districtName + ' ' + cityName;
+            // var city = document.querySelector('[name="City"]').value;
+            // var district = document.querySelector('[name="District"]').value;
+            // var ward = document.querySelector('[name="Ward"]').value;
+
+            document.querySelector('input[name="City"]').value = cityName;
+            document.querySelector('input[name="District"]').value = districtName;
+            document.querySelector('input[name="Ward"]').value = wardName;
+
+            var city = document.querySelector('[name="City"]').value;
+            var district = document.querySelector('[name="District"]').value;
+            var ward = document.querySelector('[name="Ward"]').value;
+            // Kiểm tra xem các trường có rỗng hay không
+            if (fullName.trim() === '' || phoneNumber.trim() === '' || Address.trim() === '' || city.trim() === 'Chọn tỉnh thành' || district.trim() === 'Chọn quận huyện' || ward.trim() === 'Chọn phường xã') {
+                Swal.fire({
+                    title: "Hãy điền đầy đủ thông tin",
+                    icon: "warning",
+                    confirmButtonText: "Ok",
+                    position: 'center',
+                })
+                return false; // Ngăn chặn form submit
+            }
+
+            // Thêm gán value cho tỉnh thành
+            // ...
+            Swal.fire({
+                title: "Đặt hàng thành công",
+                icon: "success",
+                confirmButtonText: "Ok",
+                position: 'center',
+                timer: 2000, // Time in milliseconds (2000ms = 2s)
+                showConfirmButton: false // Hide the confirm button
+            });
+            return true; // Cho phép form submit
+        }
     </script>
 
 

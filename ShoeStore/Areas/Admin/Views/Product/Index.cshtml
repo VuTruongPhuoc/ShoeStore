@@ -1,11 +1,11 @@
 ﻿@using X.PagedList;
 @using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
 @model X.PagedList.PagedList<ShoeStore.Models.Product>
 @{
     ViewData["Title"] = "Danh sách sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-
 @section naviheader {
     <!-- Left navbar links -->
     <ul class="navbar-nav">
@@ -54,18 +54,21 @@
             <div class="row">
                 <!-- Sắp xếp -->
                 <!-- Tìm kiếm -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <form id="searchForm" asp-controller="product" asp-action="Index" method="get">
                         <div class="input-group input-group-sm">
-                            <input id="searchText" type="text" name="Searchtext" class="form-control" value="@ViewBag.Searchtext" />
+                            <input id="searchText" type="text" name="searchtext" class="form-control" value="@ViewBag.searchtext" />
                             <span class="input-group-append">
                                 <button type="submit" class="btn btn-info btn-flat">Tìm kiếm</button>
                             </span>
                         </div>
                     </form>
                 </div>
+                <div class="col-md-4">
+
+                </div>
                 <!-- Xuất ra excel -->
-                <div class="col-md-6" style="position: relative;">
+                <div class="col-md-4" style="position: relative;">
                     <form asp-controller="product" asp-action="ExportToExcel">
                         <div style="position: absolute; right: 0;">
                             <button type="submit" class="btn btn-outline-secondary">
@@ -77,92 +80,99 @@
 
 
             </div>
-
-            <table class="table table-hover" id="dataTable">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox" id="SelectAll" /></th>
-                        <th>STT</th>
-                              
-                        <th>Tên sản phẩm</th>
-                        <th>Loại sản phẩm</th>
-                        <th>Nhà cung cấp</th>
-                        <th>Mô tả</th>
-                        <th>Ngày tạo</th>
-                        <th>Trạng thái</th>
-
-                        <th style="width:200px">Chức năng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
-
-                        foreach (var item in Model)
-                        {
-                            var strCheck = item.Status ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>";
-                            <tr id="trow_@item.Id">
-                                <td><input type="checkbox" class="cbkItem" value="@item.Id" /></td>
-                                <td>@i</td>
-                                @* <td><img src="@item.ProductImage.Image" width="50" /></td> *@
-                                <td>@item.Name</td>
-                                @foreach (var obj in ViewBag.Category)
-                                {
-                                    if (item.CategoryId == obj.Id)
-                                    {
-                                        <p>
-                                        <td>@obj.Name</td>
-                                        </p>
-                                    }
-                                }
-                                @foreach (var obj in ViewBag.Supplier)
-                                {
-                                    if (item.SupplierId == obj.Id)
-                                    {
-                                        <p>
-                                            <td>@obj.Name</td>
-                                        </p>
-                                    }
-                                }
-                               
-                                <td>@item.Description</td>
-                                <td>@item.CreateAt.Value.ToString("dd/MM/yyyy")</td>
-                                <td class="">
-                                    <a href='#' data-id="@item.Id" class="btnActive">@Html.Raw(strCheck)</a>
-                                </td>
-                                <td>
-                                    <a href="~/admin/productdetail/index/@item.Id" class="btn btn-sm btn-view" style="background-color:green;color:white">Xem</a>
-                                    <a href="~/admin/product/edit/@item.Id" class="btn btn-sm btn-primary">Sửa</a>
-                                    <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
-                                </td>
-                            </tr>
-                            i = i + 1;
-                        }
-                    }
-                    else
-                    {
+            <div style="">
+                <table class="table table-hover table-bordered" id="dataTable">
+                    <thead>
                         <tr>
-                            <td colspan="4">Không có bản ghi nào!</td>
+                            <th>STT</th>
+
+                            <th>Tên sản phẩm</th>
+                            <th>Loại sản phẩm</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Mô tả</th>
+                            <th>Ngày tạo</th>
+                            <th>Sử dụng</th>
+
+                            <th style="width:200px">Chức năng</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-             @if (Model != null && Model.Any())
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
+
+                            foreach (var item in Model)
+                            {
+                                var strCheck = item.Status ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>";
+                                <tr id="trow_@item.Id">
+                                    <td>@i</td>
+                                    @* <td><img src="@item.ProductImage.Image" width="50" /></td> *@
+                                    <td>@item.Name</td>
+                                    @foreach (var obj in ViewBag.Category)
+                                    {
+                                        if (item.CategoryId == obj.Id)
+                                        {
+                                            <p>
+                                            <td>@obj.Name</td>
+                                            </p>
+                                        }
+                                    }
+                                    @foreach (var obj in ViewBag.Supplier)
+                                    {
+                                        if (item.SupplierId == obj.Id)
+                                        {
+                                            <p>
+                                            <td>@obj.Name</td>
+                                            </p>
+                                        }
+                                    }
+
+                                    <td>@item.Description</td>
+                                    <td>@item.CreateAt.Value.ToString("dd/MM/yyyy")</td>
+                                    <td class="">
+                                        <a href='#' data-id="@item.Id" class="btnActive">@Html.Raw(strCheck)</a>
+                                    </td> 
+                                    <td>
+                                        <a href="~/admin/productdetail/index/@item.Id" class="btn btn-sm btn-info">Xem</a>
+                                        <a href="~/admin/product/edit/@item.Id" class="btn btn-sm btn-primary">Sửa</a>
+                                        <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
+                                    </td>
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">Không có bản ghi nào!</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+           
+
+            @if (Model != null && Model.Any())
             {
                 <div class="row">
-                    <div class="col-6 d-flex justify-content-end">
-                    <a href="#">
-                        @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page = page }),
-                                 new X.PagedList.Web.Common.PagedListRenderOptions
-                        {
-                            LiElementClasses = new string[] { "page-item" },
-                            PageClasses = new string[] { "page-link" }
-                        })
-                    </a>
+                    <div class="col-12 d-flex justify-content-end" style="float:right">
+                        <a href="#">
+                            @Html.PagedListPager(Model, page => Url.Action("index", new { page = page, sort = ViewBag.sort, Searchtext = ViewBag.Searchtext }), new PagedListRenderOptions()
+                   {
+                       ActiveLiElementClass = "active",
+                       PageClasses = new[] { "page-link" },
+                       LiElementClasses = new[] { "page-item" },
+                       UlElementClasses = new[] { "pagination", "justify-content-center", "mt-3", "size" },
+                       LinkToNextPageFormat = "Tiếp",
+                       LinkToPreviousPageFormat = "Trước",
+                       MaximumPageNumbersToDisplay = 10,
+                       DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                       DisplayLinkToNextPage = PagedListDisplayMode.Always
+                   })
+                        </a>
 
+                    </div>
                 </div>
-            </div>
             }
 
         </div>
@@ -177,73 +187,23 @@
 <!-- /.content -->
 @section Scripts {
     <script>
-        $('#searchText').on('keyup', function (e) {
-            var text = $("#searchText").val();
-            $("#dataTable tbody tr").each(function (index, row) {
-                $(row).children("td").each(function () {
-                    var ten = $(this).text().toLowerCase()
-                    if (ten.includes(text.toLowerCase())) {
-                        $(this).parent().show();
-                        return false;
-                    } else {
-                        $(this).parent().hide();
-                    }
-                })
+        // $('#searchText').on('keyup', function (e) {
+        //     var text = $("#searchText").val();
+        //     $("#dataTable tbody tr").each(function (index, row) {
+        //         $(row).children("td").each(function () {
+        //             var ten = $(this).text().toLowerCase()
+        //             if (ten.includes(text.toLowerCase())) {
+        //                 $(this).parent().show();
+        //                 return false;
+        //             } else {
+        //                 $(this).parent().hide();
+        //             }
+        //         })
 
 
-            })
-        })
-        $(document).ready(function () {
-            $('body').on('click', '#BtnDeleteAll', function (e) {
-                e.preventDefault();
-                var str = "";
-                var checkbox = $(this).parents('.card').find('tr td input:checkbox');
-                var i = 0;
-                checkbox.each(function () {
-                    if (this.checked) {
-                        var _id = $(this).val();
-                        if (i === 0) {
-                            str += _id;
-                        } else {
-                            str += "," + _id;
-                        }
-                        i++;
-                    } else {
-                        checkbox.attr('selected', '');
-                    }
-                });
-                if (str.length > 0) {
-                    var conf = confirm('Bạn có muốn xóa các bản ghi này hay không?');
-                    if (conf === true) {
-                        $.ajax({
-                            url: '/admin/product/deleteAll',
-                            type: 'POST',
-                            data: { idstr: str },
-                            success: function (rs) {
-                                if (rs.success) {
-                                    var idArray = str.split(',');
-                                    idArray.forEach(function (item) {
-                                        $('#trow_' + item).remove();
-                                    });
-                                }
-                            }
-                        });
-                    }
-                }
-
-            });
-            $('body').on('change', '#SelectAll', function () {
-                var checkStatus = this.checked;
-                var checkbox = $(this).parents('.card-body').find('tr td input:checkbox');
-                checkbox.each(function () {
-                    this.checked = checkStatus;
-                    if (this.checked) {
-                        checkbox.attr('selected', 'checked');
-                    } else {
-                        checkbox.attr('selected', '');
-                    }
-                });
-            });
+        //     })
+        // })
+        $(document).ready(function () {           
             $('body').on('click', '.btnDelete', function () {
                 var id = $(this).data("id");
                 var conf = confirm('Bạn có muốn xóa bản ghi này không?');
@@ -280,6 +240,7 @@
                     }
                 });
             });
+          
         });
     </script>
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ShoeStore.Data;
 using ShoeStore.Models;
 using X.PagedList;
@@ -9,12 +11,19 @@ namespace ShoeStore.Areas.Admin.Controllers
     [Route("admin/supplier")]
     [Route("admin/supplier/{action}")]
     [Route("admin/supplier/{action}/{id}")]
+    [Authorize(Roles = "Admin, Employee")]
     public class SupplierController : Controller
     {
         private ShoeStoreContext db = new ShoeStoreContext();
+        private readonly INotyfService _notyf;
+
+        public SupplierController(INotyfService notyf)
+        {
+            _notyf = notyf;
+        }
         public async Task<IActionResult> Index(string Searchtext, int? page)
         {
-            var pageSize = 3;
+            var pageSize = 5;
             if (page == null)
             {
                 page = 1;
@@ -44,18 +53,19 @@ namespace ShoeStore.Areas.Admin.Controllers
                 try
                 {
                     db.Suppliers.Add(model);
-                    db.SaveChangesAsync();
-                    return RedirectToAction("Index", "Supplier", new { area = "Admin" });
-                }
-                catch (Exception ex)
-                {
-                    // Xử lý ngoại lệ một cách thích hợp, có thể ghi log hoặc hiển thị thông báo lỗi
-                    ModelState.AddModelError("", "Đã xảy ra lỗi khi lưu dữ liệu.");
-                }
-            }
-            // Nếu ModelState không hợp lệ, quay lại view với dữ liệu và thông báo lỗi
-            return View(model);
-        }
+                    await db.SaveChangesAsync();
+					_notyf.Success("Thêm dữ liệu thành công");
+					return RedirectToAction("index", "supplier", new { area = "admin" });
+				}
+				catch (Exception ex)
+				{
+					_notyf.Error("Có lỗi khi thêm dữ liệu " + ex.Message);
+					return View(model);
+				}
+			}
+			_notyf.Error("Có lỗi khi thêm dữ liệu");
+			return View(model);
+		}
         public IActionResult Edit(int id)
         {
             var item = db.Suppliers.Find(id);
@@ -69,23 +79,24 @@ namespace ShoeStore.Areas.Admin.Controllers
 
             if (ModelState.IsValid && item is not null)
             {
-                //try
-                //{
-                item.Name = model.Name;
-                item.PhoneNumber = model.PhoneNumber;
-                item.Address = model.Address;
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index", "Supplier", new { area = "Admin" });
-                //}
-                //catch (Exception ex)
-                //{
-                //    // Xử lý ngoại lệ một cách thích hợp, có thể ghi log hoặc hiển thị thông báo lỗi
-                //    ModelState.AddModelError("", "Đã xảy ra lỗi khi cập nhật dữ liệu.");
-                //}
-            }
-            // Nếu ModelState không hợp lệ hoặc xảy ra ngoại lệ, quay lại view với dữ liệu và thông báo lỗi
-            return View(model);
-        }
+                try
+                {
+                    item.Name = model.Name;
+                    item.PhoneNumber = model.PhoneNumber;
+                    item.Address = model.Address;
+                    await db.SaveChangesAsync();
+					_notyf.Success("Cập nhật dữ liệu thành công");
+					return RedirectToAction("index", "supplier", new { area = "admin" });
+				}
+				catch (Exception ex)
+				{
+					_notyf.Error("Có lỗi khi cập nhật dữ liệu " + ex.Message);
+					return View(model);
+				}
+			}
+			_notyf.Error("Có lỗi khi cập nhật dữ liệu");
+			return View(model);
+		}
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
@@ -99,25 +110,6 @@ namespace ShoeStore.Areas.Admin.Controllers
             }
             return Json(new { success = false });
 
-        }
-        [HttpPost]
-        public async Task<IActionResult> DeleteAll(string idstr)
-        {
-            if (!string.IsNullOrEmpty(idstr))
-            {
-                var items = idstr.Split(",");
-                if (items != null && items.Any())
-                {
-                    foreach (var i in items)
-                    {
-                        var obj = await db.Suppliers.FindAsync(Convert.ToInt32(i));
-                        db.Suppliers.Remove(obj);
-                        await db.SaveChangesAsync();
-                    }
-                }
-                return Json(new { success = true });
-            }
-            return Json(new { success = false });
         }
     }
 }

@@ -30,12 +30,11 @@ namespace ShoeStore.Models
         public string? TypePayment { get; set; }
         public string? Note { get; set; }
         public DateTime? CreateAt { get; set; }
-
         public DateTime? UpdateAt { get; set; }
-
+        public DateTime? PaymentDate { get; set; }
         public virtual Account? Account { get; set; }
 
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public virtual Voucher? Voucher { get; set; }
+        public virtual Vouchers? Voucher { get; set; }
     }
 }

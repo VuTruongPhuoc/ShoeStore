@@ -1,0 +1,119 @@
+﻿@model ShoeStore.Models.Vouchers
+@{
+    ViewData["Title"] = "Thêm voucher";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@section naviheader {
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="~/admin/voucher/index" class="nav-link">Voucher</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="#" class="nav-link">Thêm mới</a>
+        </li>
+    </ul>
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Thêm mới voucher</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Voucher</a></li>
+                    <li class="breadcrumb-item active">Thêm mới</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Thông tin thêm mới voucher</h3>
+        </div>
+        <div class="card-body">
+            <div class="bs-stepper-content">
+                <form asp-controller="voucher" asp-action="Add" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
+                        <div class="form-group">
+                            <label name="Name" class="control-label">Tên voucher</label>
+                            <input name="Name" class="form-control"  placeholder="Nhập tên voucher"/>
+                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label name="Value" class="control-label">Nhập %</label>
+                            <input name="Value" type="number" class="form-control" placeholder="Nhập giá trị là số nguyên"/>
+                            @Html.ValidationMessageFor(model => model.Value, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label name="Code" class="control-label">Nhập mã</label>
+                            <input name="Code" class="form-control" placeholder="Nhập mã voucher"/>
+                            @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label name="DiscountAmount" class="control-label">Giảm tối đa</label>
+                            <input type="text" class="form-control" name="DiscountAmount" placeholder="Nhập giảm tối đa"/>
+                            @Html.ValidationMessageFor(model => model.DiscountAmount, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label name="Quantity" class="control-label">Số lượng</label>
+                            <input type="number" class="form-control" name="Quantity" placeholder="Nhập số lượng" />
+                            @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label name="StartDate" class="control-label">Ngày bắt đầu</label>
+                            <input type="date" class="form-control" name="StartDate" placeholder="Nhập ngày bắt đầu" />
+                            @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label name="EndDate" class="control-label">Ngày kết thúc</label>
+                            <input type="date" class="form-control" name="EndDate" placeholder="Nhập ngày kết thúc"  />
+                            @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Status" class="control-label">Hiển thị</label>
+                            @Html.CheckBoxFor(x => x.Status,new { @checked = "@checked" })
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                            <a href="/admin/voucher/index" class="btn btn-danger">Quay lại</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+</section>
+<!-- /.content -->
+@section Styles {
+    <link rel="stylesheet" href="~/lib/jqueryui/themes/base/theme.css" />
+    <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.css" />
+}
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

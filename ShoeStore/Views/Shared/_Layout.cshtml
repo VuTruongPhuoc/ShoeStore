@@ -4,7 +4,7 @@
 	<title>@ViewData["title"]</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="description" content="Colo Shop Template">
+	<meta name="description" content="PShop Template">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="~/assets/styles/bootstrap4/bootstrap.min.css">
 	<link href="~/assets/plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -15,9 +15,24 @@
 	<link rel="stylesheet" type="text/css" href="~/assets/styles/responsive.css">
 	<link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
 	<link rel="icon" type="image/png" href="~/icon/icon3.png" sizes="32x32">
+	<style>
+		body {
+			padding-right: 0 !important;
+		}
+
+		.modal-open {
+			overflow: auto;
+			padding-right: 0 !important;
+		}
+
+		.swal2-shown .swal2-height-auto{
+			overflow: auto;
+			padding-right: 0 !important;
+		}
+	</style>
 	@RenderSection("Styles", required : false)
 </head>
-<body>
+<body >
 	<div class="super_container">
 		<!-- Header -->
 		<header class="header trans_300">
@@ -26,25 +41,11 @@
 				<div class="container">
 					<div class="row">
 						<div class="col-md-6">
-							<div class="top_nav_left">free shipping on all u.s orders over $50</div>
+							<div class="top_nav_left">phuoc</div>
 						</div>
 						<div class="col-md-6 text-right">
 							<div class="top_nav_right">
 								<ul class="top_nav_menu">
-
-									<!-- Currency / Language / My Account -->
-									@* <li class="currency">
-									<a href="#">
-									usd
-									<i class="fa fa-angle-down"></i>
-									</a>
-									<ul class="currency_selection">
-									<li><a href="#">cad</a></li>
-									<li><a href="#">aud</a></li>
-									<li><a href="#">eur</a></li>
-									<li><a href="#">gbp</a></li>
-									</ul>
-									</li> *@
 									<li class="language">
 										<a href="#">
 											English
@@ -66,16 +67,16 @@
 												<i class="fa fa-angle-down"></i>
 											</a>
 											<ul class="account_selection">
-												<li><a asp-controller="account" asp-action="profile" asp-route-id="@Id_userValue"><i class="fa fa-user-plus" aria-hidden="true"></i>Thông tin</a></li>
+												<li><a asp-controller="account" asp-action="profile" asp-route-id="@Id_userValue"><i class="fa fa-user-circle" aria-hidden="true"></i>Thông tin</a></li>
 												<li><a asp-controller="account" asp-action="changepassword" asp-route-id="@Id_userValue"><i class="fa fa-user-plus" aria-hidden="true"></i>Đổi mật khẩu</a></li>
 												@if (User.IsInRole("Customer"))
 												{
-													<li><a asp-controller="account" asp-action="orderhistory" asp-route-id="@Id_userValue"><i class="fa fa-user-plus" aria-hidden="true"></i>Lịch sử đơn hàng</a></li>
+													<li><a asp-controller="account" asp-action="orderhistory" asp-route-id="@Id_userValue"><i class="fa fa-history" aria-hidden="true"></i>Lịch sử đơn hàng</a></li>
+													<li><a asp-controller="voucher" asp-action="yourvouchers"><i class="fa fa-vimeo" aria-hidden="true"></i>Voucher của bạn</a></li>
 												}
 												<li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-in" aria-hidden="true"></i> Đăng xuất</a></li>
 											</ul>
-										}
-										
+										}										
 										else
 										{
 											<a href="#">
@@ -113,22 +114,32 @@
 							</div>
 							<nav class="navbar">
 								<ul class="navbar_menu">
-									<li><a asp-controller="Home" asp-action="index">Trang chủ</a></li>
-									<li><a asp-controller="Shop" asp-action="index">Cửa hàng</a></li>
-									<li><a asp-controller="Introduce" asp-action="index">Giới thiệu</a></li>
-									<li><a asp-controller="News" asp-action="index">Tin tức</a></li>
-									<li><a href="#">Khuyến mãi</a></li>
-									<li><a asp-controller="Contact" asp-action="index">Liên hệ</a></li>
+									<li><a asp-controller="home" asp-action="index">Trang chủ</a></li>
+									<li><a asp-controller="shop" asp-action="index">Cửa hàng</a></li>
+									<li><a asp-controller="introduce" asp-action="index">Giới thiệu</a></li>
+									<li><a asp-controller="news" asp-action="index">Tin tức</a></li>
+									<li><a asp-controller="voucher" asp-action="index">Khuyến mãi</a></li>
+									<li><a asp-controller="contact" asp-action="index">Liên hệ</a></li>
 								</ul>
 								<ul class="navbar_user">
-									<li><a href="#"><i class="fa fa-search" aria-hidden="true"></i></a></li>
-									<li><a href="#"><i class="fa fa-user" aria-hidden="true"></i></a></li>
+									<li>
+										<!-- Biểu tượng tìm kiếm -->
+										<a href="#" data-toggle="modal" id="myModal" data-target="#searchModal">
+											<i class="fa fa-search" aria-hidden="true"></i>
+										</a>
+									</li>
+
+									<!-- modal -->
+									
+								
+
+									<li><a asp-controller="wishlist" asp-action="index"><i class="fa fa-heart" aria-hidden="true"></i></a></li>
 									<li class="checkout">
 										<a asp-controller="shoppingcart" asp-action="index">
 											<i class="fa fa-shopping-cart" aria-hidden="true"></i>
 											@{
-												var procarrt = ShoeStore.Helpers.SessionExtensions.GetObjFromSession(Context.Session, ShoeStore.Helpers.MySetting.CART_KEY);
-													<span id="checkout_items" class="checkout_items">@((procarrt?.Count() ?? 0))</span>
+												var procart = ShoeStore.Helpers.SessionExtensions.GetObjFromSession(Context.Session, ShoeStore.Helpers.MySetting.CART_KEY);
+													<span id="checkout_items" class="checkout_items">@((procart?.Count() ?? 0))</span>
 											}
 											
 										</a>
@@ -145,6 +156,39 @@
 		</header>
 		@* @await Html.PartialAsync("_HeaderPartial.cshtml"); *@
 		@RenderBody()
+
+		<!-- Modal -->
+		<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="searchModalLabel">Tìm kiếm sản phẩm</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<!-- Thanh tìm kiếm -->
+						<form asp-controller="shop" asp-action="index" method="post">
+							<div class="row">
+								<div class="col-md-10">
+									<div class="form-group">
+										<input type="text" class="form-control" id="searchInput" name="searchtext" placeholder="Nhập từ khóa">
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group">
+										<button type="submit" class="btn btn-search btn-default" style="width:50px;cursor:pointer"><i class="fa fa-search" aria-hidden="true"></i></button>
+									</div>
+								</div>
+							</div>
+
+							
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
 		<!-- Benefit -->
 
 		<div class="benefit">
@@ -190,52 +234,8 @@
 			</div>
 		</div>
 
-		<!-- Blogs -->
-
-		<div class="blogs">
-			<div class="container">
-				<div class="row">
-					<div class="col text-center">
-						<div class="section_title">
-							<h2>Latest Blogs</h2>
-						</div>
-					</div>
-				</div>
-				<div class="row blogs_container">
-					<div class="col-lg-4 blog_item_col">
-						<div class="blog_item">
-							<div class="blog_background" style="background-image:url(/assets/images/blog_1.jpg)"></div>
-							<div class="blog_content d-flex flex-column align-items-center justify-content-center text-center">
-								<h4 class="blog_title">Here are the trends I see coming this fall</h4>
-								<span class="blog_meta">by admin | dec 01, 2017</span>
-								<a class="blog_more" href="#">Read more</a>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-4 blog_item_col">
-						<div class="blog_item">
-							<div class="blog_background" style="background-image:url(/assets/images/blog_2.jpg)"></div>
-							<div class="blog_content d-flex flex-column align-items-center justify-content-center text-center">
-								<h4 class="blog_title">Here are the trends I see coming this fall</h4>
-								<span class="blog_meta">by admin | dec 01, 2017</span>
-								<a class="blog_more" href="#">Read more</a>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-4 blog_item_col">
-						<div class="blog_item">
-							<div class="blog_background" style="background-image:url(/assets/images/blog_3.jpg)"></div>
-							<div class="blog_content d-flex flex-column align-items-center justify-content-center text-center">
-								<h4 class="blog_title">Here are the trends I see coming this fall</h4>
-								<span class="blog_meta">by admin | dec 01, 2017</span>
-								<a class="blog_more" href="#">Read more</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
+		@await Html.PartialAsync("_NewsPartial.cshtml")
+		
 		<!-- Newsletter -->
 
 		<div class="newsletter">
@@ -259,9 +259,9 @@
 			</div>
 		</div>
 		<!-- Footer -->
-		@await Html.PartialAsync("_FooterPartial.cshtml");
+		@await Html.PartialAsync("_FooterPartial.cshtml")
 	</div>
-
+	
 	<script src="~/assets/js/jquery-3.2.1.min.js"></script>
 	<script src="~/assets/styles/bootstrap4/popper.js"></script>
 	<script src="~/assets/styles/bootstrap4/bootstrap.min.js"></script>
@@ -270,11 +270,19 @@
 	<script src="~/assets/plugins/easing/easing.js"></script>
 	<script src="~/assets/js/custom.js"></script>
 	<script src="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCIwF204lFZg1y4kPSIhKaHEXMLYxxuMhA"></script>
+	@* <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCIwF204lFZg1y4kPSIhKaHEXMLYxxuMhA"></script> *@
     <script src="~/assets/js/contact_custom.js"></script>  
 	<script src="~/js/jsShopping.js"></script>
+	<script>
+		const myModal = document.getElementById('myModal')
+		const searchModal = document.getElementById('searchModal')
+		myModal.addEventListener('shown.bs.modal', () => {
+			searchModal.focus()
+		})
+	</script>
 	@await Component.InvokeAsync("Notyf")
 	@await RenderSectionAsync("Scripts", required: false)
+	
 </body>
 </html>
 

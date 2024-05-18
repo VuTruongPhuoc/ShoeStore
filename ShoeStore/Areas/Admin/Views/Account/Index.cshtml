@@ -1,5 +1,6 @@
 ﻿@using X.PagedList;
 @using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
 @model X.PagedList.PagedList<ShoeStore.Models.Account>
 @{
     ViewData["Title"] = "Danh sách tài khoản";
@@ -46,42 +47,82 @@
             <h3 class="card-title">Danh sách tài khoản</h3>
 
             <div class="card-tools">
-                <a href="/admin/account/add" class="btn btn-success">Thêm mới</a>
+                <a href="/admin/account/add" class="btn btn-primary">Thêm mới</a>
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Tài khoản</th>
-                        <th>Họ tên</th>
-                        <th>Email</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        var i = 1;
-                        foreach (var item in Model)
-                        {
-                            <tr id="trow_@item.Id">
-                                <td>@i</td>
-                                <td>@item.Username</td>
-                                <td>@item.FullName</td>
-                                <td>@item.Email</td>
-                                <td>
-                                    <a href="/admin/account/edit/@item.Id" class="btn btn-sm btn-primary">Sửa</a>
-                                    <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
-                                </td>
-                            </tr>
-                            i++;
-                        }
+            <div class="row">
+                <div class="col-4">
+                    <!-- Tìm kiếm  -->
+                    <form id="searchForm" asp-controller="account" asp-action="index" method="get">
+                        <div class="input-group input-group-sm">
+                            <input id="searchText" type="text" name="searchtext" class="form-control" value="@ViewBag.searchtext"/>
+                            <span class="input-group-append">
+                                <button type="submit" class="btn btn-info btn-flat">Tìm kiếm</button>
+                            </span>
+                        </div>
+                    </form>
 
-                    }
-                </tbody>
-            </table>
+                </div>
+            </div>
+            <div style="padding-top:10px">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tài khoản</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Quyền</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            var i = 1;
+                            foreach (var item in Model)
+                            {
+                                <tr id="trow_@item.Id">
+                                    <td>@i</td>
+                                    <td>@item.Username</td>
+                                    <td>@item.FullName</td>
+                                    <td>@item.Email</td>
+                                    <td>@item.Role.Name</td>
+                                    <td>
+                                        <a href="/admin/account/edit/@item.Id" class="btn btn-sm btn-primary">Sửa</a>
+                                        <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Model != null && Model.Any())
+            {
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-end" style="float:right">
+                        <a href="#">
+                            @Html.PagedListPager(Model, page => Url.Action("index", new { page = page, sort = ViewBag.sort, searchtext = ViewBag.searchtext }), new PagedListRenderOptions()
+                   {
+                       ActiveLiElementClass = "active",
+                       PageClasses = new[] { "page-link" },
+                       LiElementClasses = new[] { "page-item" },
+                       UlElementClasses = new[] { "pagination", "justify-content-center", "mt-3", "size" },
+                       LinkToNextPageFormat = "Tiếp",
+                       LinkToPreviousPageFormat = "Trước",
+                       MaximumPageNumbersToDisplay = 10,
+                       DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                       DisplayLinkToNextPage = PagedListDisplayMode.Always
+                   })
+                        </a>
+
+                    </div>
+                </div>
+            }
         </div>
         <!-- /.card-body -->
         <div class="card-footer">
@@ -94,22 +135,6 @@
 <!-- /.content -->
 @section Scripts {
     <script>
-        $('#searchText').on('keyup', function (e) {
-            var text = $("#searchText").val();
-            $("#dataTable tbody tr").each(function (index, row) {
-                $(row).children("td").each(function () {
-                    var ten = $(this).text().toLowerCase()
-                    if (ten.includes(text.toLowerCase())) {
-                        $(this).parent().show();
-                        return false;
-                    } else {
-                        $(this).parent().hide();
-                    }
-                })
-
-
-            })
-        })
         $(document).ready(function () {
             $('body').on('click', '.btnDelete', function () {
                 var id = $(this).data("id");

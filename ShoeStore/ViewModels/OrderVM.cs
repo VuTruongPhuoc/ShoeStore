@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using ShoeStore.Models;
 namespace ShoeStore.ViewModels
 {
     public class OrderVM
@@ -20,7 +21,14 @@ namespace ShoeStore.ViewModels
         [Required(ErrorMessage = "Xã không để trống")]
         public string Ward { get; set; }
        
-        public int TypePayment { get; set; }
+        public string? TypePayment { get; set; }
         public string? Note { get; set; }
+
+        public decimal ? ShipFee { get; set; }
+        public decimal ? discountValue { get; set; }
+        public string ? VoucherCode { get; set; }
+        public decimal ? totalAmount { get; set; }
+
+        public List<VoucherForAcc>? VoucherForAccs { get; set; } = new List<VoucherForAcc>();   
     }
 }

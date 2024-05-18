@@ -16,8 +16,14 @@ namespace ShoeStore.Controllers
 
         public IActionResult Index()
         {
-            ViewBag.Product = db.Products.Where(x=>x.Status).ToList();
-            var items = db.ProductDetails.Where(x=>x.Status).Take(10).ToList();
+			ViewBag.wishlist = db.WishLists.ToList();
+			ViewBag.Product = db.Products.Where(x=>x.Status).ToList();
+			//ViewBag.searchtext = searchtext;
+			IEnumerable<ProductDetail> items = db.ProductDetails.Where(x=>x.Status).Take(10).ToList();         
+            //if(!string.IsNullOrEmpty(searchtext))
+            //{
+            //    items = items.Where(p=>p.Product.Name.ToLower().Contains(searchtext.ToLower()));
+            //}
             return View(items);
         }
         public ActionResult Introduce()

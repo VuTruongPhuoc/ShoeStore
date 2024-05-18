@@ -170,6 +170,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcU3VwcGxpZXJcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/CNTT4/DATN/ShoeStore/ShoeStore/Areas/Admin/Views/Voucher/Add.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcVm91Y2hlclxBZGQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CNTT4/DATN/ShoeStore/ShoeStore/Areas/Admin/Views/Voucher/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcVm91Y2hlclxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/CNTT4/DATN/ShoeStore/ShoeStore/Areas/Admin/Views/Voucher/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcVm91Y2hlclxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -226,6 +234,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW50cm9kdWNlXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/CNTT4/DATN/ShoeStore/ShoeStore/Views/News/Detail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTmV3c1xEZXRhaWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/CNTT4/DATN/ShoeStore/ShoeStore/Views/News/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTmV3c1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -240,6 +252,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/CNTT4/DATN/ShoeStore/ShoeStore/Views/Shared/_HeaderPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9IZWFkZXJQYXJ0aWFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CNTT4/DATN/ShoeStore/ShoeStore/Views/Shared/_NewsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9OZXdzUGFydGlhbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/CNTT4/DATN/ShoeStore/ShoeStore/Views/Shared/_ValidationScriptsPartial.cshtml]
@@ -264,6 +280,18 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/CNTT4/DATN/ShoeStore/ShoeStore/Views/Shop/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hvcFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CNTT4/DATN/ShoeStore/ShoeStore/Views/Voucher/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVm91Y2hlclxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CNTT4/DATN/ShoeStore/ShoeStore/Views/Voucher/YourVouchers.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVm91Y2hlclxZb3VyVm91Y2hlcnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CNTT4/DATN/ShoeStore/ShoeStore/Views/WishList/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2lzaExpc3RcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/CNTT4/DATN/ShoeStore/ShoeStore/Views/_ViewImports.cshtml]

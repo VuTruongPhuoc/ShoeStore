@@ -146,9 +146,6 @@ namespace ShoeStore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Alias")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime");
 
@@ -162,6 +159,9 @@ namespace ShoeStore.Migrations
 
                     b.Property<string>("Image")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Postedby")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Status")
@@ -211,6 +211,9 @@ namespace ShoeStore.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("PaymentDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -224,11 +227,14 @@ namespace ShoeStore.Migrations
                     b.Property<decimal?>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("TypePayment")
-                        .HasColumnType("int");
+                    b.Property<string>("TypePayment")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("VoucherForAccId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("VoucherId")
                         .HasColumnType("int");
@@ -236,6 +242,8 @@ namespace ShoeStore.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
+
+                    b.HasIndex("VoucherForAccId");
 
                     b.HasIndex("VoucherId");
 
@@ -262,13 +270,12 @@ namespace ShoeStore.Migrations
                     b.Property<int>("ProductDetailId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Quantity")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId")
-                        .IsUnique();
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("ProductDetailId");
 
@@ -419,12 +426,16 @@ namespace ShoeStore.Migrations
                     b.Property<int?>("AccountId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Commnet")
+                    b.Property<string>("Content")
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ProductId")
                         .HasColumnType("int");
@@ -434,6 +445,10 @@ namespace ShoeStore.Migrations
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -512,7 +527,7 @@ namespace ShoeStore.Migrations
                     b.ToTable("Supplier", (string)null);
                 });
 
-            modelBuilder.Entity("ShoeStore.Models.Voucher", b =>
+            modelBuilder.Entity("ShoeStore.Models.VoucherForAcc", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -520,29 +535,84 @@ namespace ShoeStore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AccountId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Code")
-                        .HasMaxLength(50)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(50)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime");
+                    b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("Quantity")
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdAccount")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("StartDate")
-                        .HasColumnType("datetime");
+                    b.Property<int>("IdVoucher")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("Value")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Value")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("IdAccount");
+
+                    b.HasIndex("IdVoucher");
+
+                    b.ToTable("VoucherForAccs");
+                });
+
+            modelBuilder.Entity("ShoeStore.Models.Vouchers", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Voucher", (string)null);
                 });
@@ -561,14 +631,14 @@ namespace ShoeStore.Migrations
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int?>("ProductDetailId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductDetailId");
 
                     b.ToTable("WishLists");
                 });
@@ -590,7 +660,11 @@ namespace ShoeStore.Migrations
                         .WithMany("Orders")
                         .HasForeignKey("AccountId");
 
-                    b.HasOne("ShoeStore.Models.Voucher", "Voucher")
+                    b.HasOne("ShoeStore.Models.VoucherForAcc", null)
+                        .WithMany("Order")
+                        .HasForeignKey("VoucherForAccId");
+
+                    b.HasOne("ShoeStore.Models.Vouchers", "Voucher")
                         .WithMany("Orders")
                         .HasForeignKey("VoucherId");
 
@@ -602,8 +676,8 @@ namespace ShoeStore.Migrations
             modelBuilder.Entity("ShoeStore.Models.OrderDetail", b =>
                 {
                     b.HasOne("ShoeStore.Models.Order", "Order")
-                        .WithOne("IdNavigation")
-                        .HasForeignKey("ShoeStore.Models.OrderDetail", "OrderId")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -677,29 +751,35 @@ namespace ShoeStore.Migrations
 
             modelBuilder.Entity("ShoeStore.Models.Review", b =>
                 {
-                    b.HasOne("ShoeStore.Models.Account", "Account")
+                    b.HasOne("ShoeStore.Models.Account", null)
                         .WithMany("Reviews")
-                        .HasForeignKey("AccountId")
-                        .HasConstraintName("FK_Reviews_Account");
+                        .HasForeignKey("AccountId");
 
                     b.HasOne("ShoeStore.Models.Product", "Product")
                         .WithMany("Reviews")
                         .HasForeignKey("ProductId")
                         .HasConstraintName("FK_Reviews_Product");
 
-                    b.Navigation("Account");
-
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ShoeStore.Models.Voucher", b =>
+            modelBuilder.Entity("ShoeStore.Models.VoucherForAcc", b =>
                 {
                     b.HasOne("ShoeStore.Models.Account", "Account")
-                        .WithMany("Vouchers")
-                        .HasForeignKey("AccountId")
-                        .HasConstraintName("FK_Voucher_Account");
+                        .WithMany()
+                        .HasForeignKey("IdAccount")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShoeStore.Models.Vouchers", "Voucher")
+                        .WithMany()
+                        .HasForeignKey("IdVoucher")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Account");
+
+                    b.Navigation("Voucher");
                 });
 
             modelBuilder.Entity("ShoeStore.Models.WishList", b =>
@@ -709,14 +789,13 @@ namespace ShoeStore.Migrations
                         .HasForeignKey("AccountId")
                         .HasConstraintName("FK_WishLists_Account");
 
-                    b.HasOne("ShoeStore.Models.Product", "Product")
+                    b.HasOne("ShoeStore.Models.ProductDetail", "Productdetail")
                         .WithMany("WishLists")
-                        .HasForeignKey("ProductId")
-                        .HasConstraintName("FK_WishLists_Product");
+                        .HasForeignKey("ProductDetailId");
 
                     b.Navigation("Account");
 
-                    b.Navigation("Product");
+                    b.Navigation("Productdetail");
                 });
 
             modelBuilder.Entity("ShoeStore.Models.Account", b =>
@@ -724,8 +803,6 @@ namespace ShoeStore.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("Vouchers");
 
                     b.Navigation("WishLists");
                 });
@@ -742,8 +819,7 @@ namespace ShoeStore.Migrations
 
             modelBuilder.Entity("ShoeStore.Models.Order", b =>
                 {
-                    b.Navigation("IdNavigation")
-                        .IsRequired();
+                    b.Navigation("OrderDetails");
                 });
 
             modelBuilder.Entity("ShoeStore.Models.Product", b =>
@@ -751,8 +827,6 @@ namespace ShoeStore.Migrations
                     b.Navigation("ProductDetails");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("WishLists");
                 });
 
             modelBuilder.Entity("ShoeStore.Models.ProductDetail", b =>
@@ -760,6 +834,8 @@ namespace ShoeStore.Migrations
                     b.Navigation("OrderDetails");
 
                     b.Navigation("ProductImages");
+
+                    b.Navigation("WishLists");
                 });
 
             modelBuilder.Entity("ShoeStore.Models.ProductImage", b =>
@@ -782,7 +858,12 @@ namespace ShoeStore.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("ShoeStore.Models.Voucher", b =>
+            modelBuilder.Entity("ShoeStore.Models.VoucherForAcc", b =>
+                {
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("ShoeStore.Models.Vouchers", b =>
                 {
                     b.Navigation("Orders");
                 });

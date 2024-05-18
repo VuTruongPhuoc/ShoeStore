@@ -1,0 +1,99 @@
+﻿@model ShoeStore.Models.News
+@{
+    ViewData["Title"] = "Tin tức";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_styles.css">
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_responsive.css">
+<link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
+<link rel="stylesheet" href="~/assets/plugins/themify-icons/themify-icons.css">
+<style>
+
+    .row-item-new {
+        margin-bottom: 20px;
+        border: 1px solid #ddd; /* Thêm viền cho từng tin tức */
+        padding: 15px;
+        border-radius: 5px; /* Bo tròn viền */
+    }
+
+    .title-news {
+        font-size: 24px;
+        border-bottom: 1px solid;
+        padding: 15px 0;
+        margin-bottom: 25px;
+    }
+
+    .img-box img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .content-box {
+        padding-left: 20px; /* Tạo khoảng cách giữa hình ảnh và nội dung */
+    }
+
+    .description-box {
+        margin-top: 10px; /* Tạo khoảng cách giữa tiêu đề và mô tả */
+    }
+
+    .breadcrumbs {
+        margin-bottom: 30px;
+    }
+
+        .breadcrumbs ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+            .breadcrumbs ul li {
+                display: inline-block;
+                font-size: 14px;
+            }
+
+                .breadcrumbs ul li.active {
+                    font-weight: bold;
+                }
+
+                    .breadcrumbs ul li.active a {
+                        color: #333; /* Màu chữ khi active */
+                    }
+</style>
+
+<div class="container contact_container">
+    <div class="row">
+        <div class="col">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs d-flex flex-row align-items-center">
+                <ul>
+                    <li><a asp-controller="Home" asp-action="index">Trang chủ</a></li>
+                    <li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Tin tức</a></li>
+                </ul>
+            </div>
+            <div>
+                @if (Model != null)
+                {
+                   
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="title-news"> @Model.Title</h1>
+                        </div>
+                        <div class="col-md-12" style="font-family: Bold, sans-serif;">
+                            <p>Đăng bởi: @Model.Postedby | Ngày đăng: @Model.CreateAt.Value.ToString("dd-MM-yyyy HH:mm:ss")</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p>@Model.Description</p>
+                        </div>
+                        <div class="col-md-12" style="font-family: Arial, sans-serif; font-size: 18px">
+                            @Html.Raw(Model.Detail)
+                        </div>
+                       
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

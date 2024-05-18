@@ -50,7 +50,7 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-6">
+                <div class="col-4">
                     <!-- Tìm kiếm  -->
                     <form id="searchForm" asp-controller="role" asp-action="Index" method="get">
                         <div class="input-group input-group-sm">
@@ -63,41 +63,44 @@
 
                 </div>
             </div>
-            <table class="table table-hover" id="dataTable">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Tên quyền</th>
-                        <th style="width:150px">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        var i = 1;
-
-                        foreach (var item in Model)
-                        {
-                            <tr id="trow_@item.Id">
-                                <td>@i</td>
-                                <td>@item.Name</td>
-                                <td>
-                                    <a href="~/admin/role/edit/@item.Id" class="btn btn-sm btn-primary">Sửa</a>
-                                    <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
-                                </td>
-                            </tr>
-                            i = i + 1;
-                        }
-                    }
-                    else
-                    {
+            <div style="padding-top:10px">
+                <table class="table table-hover table-bordered" id="dataTable">
+                    <thead>
                         <tr>
-                            <td colspan="4">Không có bản ghi nào!</td>
+                            <th>STT</th>
+                            <th>Tên quyền</th>
+                            <th style="width:150px">Hành động</th>
                         </tr>
-                    }
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            var i = 1;
 
-                </tbody>
-            </table>
+                            foreach (var item in Model)
+                            {
+                                <tr id="trow_@item.Id">
+                                    <td>@i</td>
+                                    <td>@item.Name</td>
+                                    <td>
+                                        <a href="~/admin/role/edit/@item.Id" class="btn btn-sm btn-primary">Sửa</a>
+                                        <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
+                                    </td>
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">Không có bản ghi nào!</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+           
         </div>
         <!-- /.card-body -->
         <div class="card-footer">

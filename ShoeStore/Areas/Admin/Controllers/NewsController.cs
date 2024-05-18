@@ -1,19 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ShoeStore.Data;
 using ShoeStore.Models;
 using X.PagedList;
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Route("Admin/News")]
-    [Route("Admin/News/{action}")]
-    [Route("Admin/News/{action}/{id}")]
+    [Area("admin")]
+    [Route("admin/news")]
+    [Route("admin/news/{action}")]
+    [Route("admin/news/{action}/{id}")]
+    [Authorize(Roles = "Admin, Employee")]
     public class NewsController : Controller
     {
         #region news
-        private ShoeStoreContext db = new ShoeStoreContext();
+        private INotyfService _notyf;
 
+        private ShoeStoreContext db = new ShoeStoreContext();
+        public NewsController(INotyfService notyf)
+        {
+            _notyf= notyf;
+        }
         public IActionResult Index(string Searchtext, int? page)
         {
             var pageSize = 3;
@@ -24,20 +32,20 @@ namespace ShoeStore.Areas.Admin.Controllers
             IEnumerable<News> items = db.News.OrderByDescending(x => x.Id);
             if (!string.IsNullOrEmpty(Searchtext))
             {
-                items = items.Where(x => x.Alias.Contains(Searchtext) || x.Title.Contains(Searchtext));
+                items = items.Where(x=>x.Title.Contains(Searchtext));
             }
-            var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
+            var pageIndex = page.HasValue && page > 0 ? Convert.ToInt32(page) : 1;
             items = items.ToPagedList(pageIndex, pageSize);
             ViewBag.PageSize = pageSize;
             ViewBag.Page = page;
             return View(items); 
         }
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "Admin")]
         public IActionResult Add()
         {
             return View();
         }
-        [HttpPost]
+        [HttpPost,Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(News model)
         {
@@ -45,18 +53,22 @@ namespace ShoeStore.Areas.Admin.Controllers
             {
                 try
                 {
+                    string username = ((System.Security.Claims.ClaimsIdentity)User.Identity).Name.ToString();
+                    model.Postedby = username;
                     model.CreateAt = DateTime.Now;
                     model.UpdateAt = DateTime.Now;
-                    model.Alias = ShoeStore.Models.Common.Filter.FilterChar(model.Title);
                     db.News.Add(model);
-                    db.SaveChangesAsync();
+                    await db.SaveChangesAsync();
+                    _notyf.Success("Thêm dữ liệu thành công");
                     return RedirectToAction("Index", "News", new { area = "Admin" });
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Đã xảy ra lỗi khi lưu dữ liệu.");
+                    _notyf.Error("Có lỗi khi thêm dữ liệu " + ex.Message);
+                    return View(model);
                 }
             }
+            _notyf.Error("Có lỗi khi thêm dữ liệu ");
             return View(model);
         }
         public IActionResult Edit(int id)
@@ -72,27 +84,27 @@ namespace ShoeStore.Areas.Admin.Controllers
             
             if (ModelState.IsValid && item is not null)
             {
-                //try
-                //{
+                try
+                {
                     item.UpdateAt = DateTime.Now;
-                    item.Alias = ShoeStore.Models.Common.Filter.FilterChar(model.Title);
                     item.Title = model.Title;
                     item.Description = model.Description;
                     item.Status = model.Status;
                     item.Detail = model.Detail;
                     item.Image = model.Image;
                     await db.SaveChangesAsync();
-                    return RedirectToAction("Index", "News", new { area = "Admin" });
-                //}
-                //catch (Exception ex)
-                //{
-                //    // Xử lý ngoại lệ một cách thích hợp, có thể ghi log hoặc hiển thị thông báo lỗi
-                //    ModelState.AddModelError("", "Đã xảy ra lỗi khi cập nhật dữ liệu.");
-                //}
-            }
-            // Nếu ModelState không hợp lệ hoặc xảy ra ngoại lệ, quay lại view với dữ liệu và thông báo lỗi
-            return View(model);
-        }
+					_notyf.Success("Cập nhật dữ liệu thành công");
+					return RedirectToAction("index", "news", new { area = "admin" });
+				}
+				catch (Exception ex)
+				{
+					_notyf.Error("Có lỗi khi cập nhật dữ liệu " + ex.Message);
+					return View(model);
+				}
+			}
+			_notyf.Error("Có lỗi khi cập nhật dữ liệu");
+			return View(model);
+		}
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
@@ -119,26 +131,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             }
             return Json(new { success = false });
         }
-        [HttpPost]
-        public async Task<IActionResult> DeleteAll(string idstr)
-        {
-            if (!string.IsNullOrEmpty(idstr))
-            {
-                var items = idstr.Split(",");
-                if (items != null && items.Any())
-                {
-                    foreach( var i in items)
-                    {
-                        var obj = await db.News.FindAsync(Convert.ToInt32(i));
-                        db.News.Remove(obj);
-                        await db.SaveChangesAsync();
-                    }    
-                }
-                return Json(new { success = true });
-            }
-            return Json(new { success = false });
 
-        }
         #endregion
     }
 }

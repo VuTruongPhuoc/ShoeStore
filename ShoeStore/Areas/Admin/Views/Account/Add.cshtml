@@ -3,7 +3,6 @@
     ViewData["Title"] = "Thêm mới tài khoản";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-
 @section naviheader {
     <!-- Left navbar links -->
     <ul class="navbar-nav">
@@ -21,7 +20,6 @@
         </li>
     </ul>
 }
-
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <div class="container-fluid">
@@ -32,7 +30,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">tài khoản</a></li>
-                    <li class="breadcrumb-item active">Thêm mới</li>
+                    <li class="breadcrumb-item active ">Thêm mới</li>
                 </ol>
             </div>
         </div>
@@ -55,22 +53,22 @@
                         <div class="form-group">
                             <label name="Username" class="Username">Tên tài khoản</label>
                             <input name="Username" class="form-control" />
-                            <span asp-validation-for="Username" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label name="FullName" class="FullName">Tên đầy đủ</label>
                             <input name="FullName" class="form-control" />
-                            <span asp-validation-for="Fullname" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label name="Email" class="control-label">Email</label>
                             <input name="Email" class="form-control" type="text"/>
-                            <span asp-validation-for="Email" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label name="PhoneNumber" class="control-label">Số điện thoại</label>
                             <input name="PhoneNumber" class="form-control" type="number"></input>
-                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label for="Password" class="control-label">Mật khẩu</label>
@@ -82,7 +80,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <span asp-validation-for="Password" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
                         </div>
 
                         <div class="form-group">
@@ -96,7 +94,7 @@
                                     }
                                 }
                             </select>
-                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.RoleId, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Lưu</button>
@@ -118,9 +116,6 @@
 @section Styles {
     <link rel="stylesheet" href="~/lib/jqueryui/themes/base/theme.css" />
     <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.css" />
-    <link rel="stylesheet" href="~/admin/content/elfinder/css/elfinder.full.css" />
-    <link rel="stylesheet" href="~/admin/content/elfinder/css/theme.min.css" />
-    <link rel="stylesheet" href="~/admin/content/elfinder-material-theme/Material/css/theme-gray.css" />
 }
 @section Scripts {
     @{

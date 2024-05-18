@@ -1,0 +1,114 @@
+﻿@model IEnumerable<ShoeStore.Models.Vouchers>
+@using System.Globalization
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_styles.css">
+<link rel="stylesheet" type="text/css" href="~/assets/styles/contact_responsive.css">
+<link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
+<link rel="stylesheet" href="~/assets/plugins/themify-icons/themify-icons.css">
+<style>
+    .coupon .kanan {
+        border-left: 1px dashed #000000;
+        width: 40% !important;
+        position: relative;
+    }
+
+        .coupon .kanan .info::after,
+        .coupon .kanan .info::before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            border-radius: 100%;
+        }
+
+        .coupon .kanan .info::before {
+            top: -10px;
+            left: -10px;
+        }
+
+        .coupon .kanan .info::after {
+            bottom: -10px;
+            left: -10px;
+        }
+
+    .coupon .time {
+        font-size: 1.6rem;
+    }
+
+    .actionShop {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #dc3545;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .actionShop:hover {
+            background-color: #c82333;
+        }
+</style>
+<div class="container contact_container">
+    <div class="row">
+        <div class="col ">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs d-flex flex-row align-items-center">
+                <ul>
+                    <li><a asp-controller="home" asp-action="index">Trang chủ</a></li>
+                    <li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>Kho voucher</a></li>
+                </ul>
+            </div>
+            <div class=" my-5">
+                @if (Model == null || !Model.Any())
+                {
+                    <h4 style="text-align: center;">Hiện tại không có voucher nào </h4>
+                }
+                else
+                {                 
+                    @foreach (var voucher in Model)
+                    {
+                       
+                    <form id="voucherForm" class="row" method="post" asp-action="SaveVoucherForUser">
+                        <div class="col-md-3"></div>
+                        <div class="col-sm-6">
+                            <div class="coupon bg-white rounded mb-3 d-flex justify-content-between">
+                                <div class="tengah py-3 d-flex w-100 justify-content-start p-3"
+                                        style="background: #f2f2f2; border-radius: 5px">
+                                    <div>
+                                        <span class="badge badge-success">@voucher.Code</span>
+                                        <h4 class="text-muted mb-0">@voucher.Name</h4>
+                                        <p class="text-muted mb-0">Giảm: @voucher.Value%</p>
+                                        <p class="text-muted mb-0">Tối đa: @voucher.DiscountAmount.ToString("C0", new CultureInfo("vi-VN"))</p>
+                                    </div>
+                                </div>
+                                   
+                                <div class="kanan" style="background: #f2f2f2; border-radius: 5px">
+                                    <div class="info m-3 d-flex align-items-center">
+                                        <div class="w-100">
+                                            <div class="block">
+                                                <span class="time font-weight-light">
+                                                    <p style="color: red; font-size: 12px">
+                                                        HSD: @voucher.EndDate.ToString("dd-MM-yyyy HH:mm")
+                                                    </p>
+                                                </span>
+                                            </div>
+                                            <input type="hidden" name="voucherid" value="@voucher.Id" />
+                                            <input type="submit" value="Lưu" class="btn btn-sm btn-outline-danger btn-block apply-btn" data-code="@voucher.Code" />
+                                               
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    }
+                }
+            </div>
+        </div>
+</div>
+</div>

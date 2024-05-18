@@ -273,3 +273,8 @@ D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\Microsoft.AspNetCore.Authenti
 D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll
 D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\AspNetCoreHero.ToastNotification.Views.dll
 D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\AspNetCoreHero.ToastNotification.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\Microsoft.Extensions.Caching.Redis.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\Microsoft.Extensions.Caching.StackExchangeRedis.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\Pipelines.Sockets.Unofficial.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\StackExchange.Redis.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\StackExchange.Redis.StrongName.dll

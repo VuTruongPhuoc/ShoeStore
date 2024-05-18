@@ -55,7 +55,7 @@
                         <div class="form-group">
                             <label name="Title" class="control-label">Tiêu đề</label>
                             <input name="Title" class="form-control" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label name="Image" class="control-label">Ảnh đại diện</label>
@@ -63,25 +63,23 @@
                             <div>
                                 <img src="" id="ImageView" width="100" />
                             </div>
-                            <button type="button" id="btnBrowse">Chọn ảnh</button>
-                            <span asp-validation-for="Image" class="text-danger"></span>
+                            <button type="button" id="btnBrowse" class="btn btn-sm btn-primary">Chọn ảnh</button>
+                            @Html.ValidationMessageFor(model => model.Image, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label name="Description" class="control-label">Mô tả</label>
                             <textarea name="Description" class="form-control"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label name="Detail" class="control-label">Chi tiết</label>
                             <textarea name="Detail" class="form-control" id="txtDetail"></textarea>
-                            <span asp-validation-for="Detail" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.Detail, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <label asp-for="Status" class="control-label">Hiển thị</label>
                             @Html.CheckBoxFor(x=>x.Status , new {@checked = "@checked"})
                         </div>
-
-
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Lưu</button>
                             <a href="/admin/news/index" class="btn btn-danger">Quay lại</a>
@@ -204,6 +202,7 @@
                 ['style', ['style']],
                 ['font', ['bold', 'underline', 'clear']],
                 ['fontname', ['fontname']],
+                ['fontsize', ['fontsize']],
                 ['color', ['color']],
                 ['para', ['ul', 'ol', 'paragraph']],
                 ['table', ['table']],

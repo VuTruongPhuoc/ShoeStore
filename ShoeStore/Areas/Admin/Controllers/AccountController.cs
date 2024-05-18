@@ -11,6 +11,7 @@ using X.PagedList;
 using ShoeStore.ViewModels;
 using System.IdentityModel.Tokens.Jwt;
 using NuGet.Common;
+using AspNetCoreHero.ToastNotification.Abstractions;
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
@@ -18,12 +19,18 @@ namespace ShoeStore.Areas.Admin.Controllers
     [Route("admin/account")]
     [Route("admin/account/{action}")]
     [Route("admin/account/{action}/{id}")]
+    [Authorize(Roles = "Admin,Employee")]
     public class AccountController : Controller
     {
-        private ShoeStoreContext db = new ShoeStoreContext();
-
+        private readonly ShoeStoreContext db;
+        private readonly INotyfService _notyf;
+        public AccountController(INotyfService notyf, ShoeStoreContext db)
+        {
+            this.db = db;
+            _notyf = notyf;
+        }
         [AllowAnonymous]
-        public IActionResult Index(string Searchtext, int? page)
+        public IActionResult Index(string searchtext, int? page)
         {
             ViewBag.Role = db.Roles.ToList();
             var pageSize = 5;
@@ -31,13 +38,13 @@ namespace ShoeStore.Areas.Admin.Controllers
             {
                 page = 1;
             }
-            ViewBag.Searchtext = Searchtext;
+            ViewBag.searchtext = searchtext;
             IEnumerable<Account> items = db.Accounts.OrderByDescending(x => x.Id);
-            if (!string.IsNullOrEmpty(Searchtext))
+            if (!string.IsNullOrEmpty(searchtext))
             {
-                items = items.Where(x => x.FullName.Contains(Searchtext) || x.Username.Contains(Searchtext));
+                items = items.Where(x => x.FullName.Contains(searchtext) || x.Username.Contains(searchtext));
             }
-            var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
+            var pageIndex = page.HasValue && page > 0 ? Convert.ToInt32(page) : 1;
             items = items.ToPagedList(pageIndex, pageSize);
             ViewBag.PageSize = pageSize;
             ViewBag.Page = page;
@@ -76,20 +83,22 @@ namespace ShoeStore.Areas.Admin.Controllers
                      };
                     db.Accounts.Add(acc);
                     await db.SaveChangesAsync();
+                    _notyf.Success("Thêm dữ liệu thành công");
                     return RedirectToAction("index", "account", new { area = "admin" });
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Đã xảy ra lỗi khi lưu dữ liệu.");
+                    _notyf.Error("Có lỗi khi thêm dữ liệu " + ex.Message);
+                    return View(model);
                 }
             }
-            // Nếu ModelState không hợp lệ, quay lại view với dữ liệu và thông báo lỗi
+            _notyf.Error("Có lỗi khi thêm dữ liệu");
             return View(model);
         }
         [HttpGet]
         public IActionResult Edit(int id)
         {
-           
+            ViewBag.Role = db.Roles.ToList();
             var item = db.Accounts.Find(id);
             return View(item);
         }
@@ -102,25 +111,25 @@ namespace ShoeStore.Areas.Admin.Controllers
 
             if (ModelState.IsValid && item is not null)
             {
-                //try
-                //{
-                item.Username = model.Username;
-                item.Password = model.Password.ToMd5Hash(item.RandomKey);
-                item.FullName = model.FullName;
-                item.Email = model.Email;
-                item.PhoneNumber = model.PhoneNumber;
-                item.Address = model.Address;
-                item.UpdateAt = DateTime.Now;
-                item.Status = model.Status;
-                await db.SaveChangesAsync();
-                return RedirectToAction("index", "account", new { area = "admin" });
-                //}
-                //catch (Exception ex)
-                //{
-                //    // Xử lý ngoại lệ một cách thích hợp, có thể ghi log hoặc hiển thị thông báo lỗi
-                //    ModelState.AddModelError("", "Đã xảy ra lỗi khi cập nhật dữ liệu.");
-                //}
+                try
+                {
+                    item.Username = model.Username;
+                    item.RoleId = model.RoleId;
+                    item.FullName = model.FullName;
+                    item.Email = model.Email;
+                    item.PhoneNumber = model.PhoneNumber;
+                    item.UpdateAt = DateTime.Now;
+                    await db.SaveChangesAsync();
+                    _notyf.Success("Cập nhật dữ liệu thành công");
+                    return RedirectToAction("index", "account", new { area = "admin" });
+                }
+                catch (Exception ex)
+                {
+                    _notyf.Error("Có lỗi khi cập nhật dữ liệu " + ex.Message);
+                    return View(model);
+                }
             }
+            _notyf.Error("Có lỗi khi cập nhật dữ liệu");
             return View(model);
         }
         [HttpPost]
@@ -155,14 +164,13 @@ namespace ShoeStore.Areas.Admin.Controllers
 						var role = db.Roles.SingleOrDefault(p => p.Id == result.RoleId);
 						var claims = new List<Claim>()
 						{
-							new Claim(ClaimTypes.NameIdentifier, result.Username)
-						};
-						claims.Add(new Claim(ClaimTypes.Role, role.Name));
-						claims.Add(new Claim("Id", result.Id.ToString()));
-						claims.Add(new Claim("Username", result.Username));
-                        claims.Add(new Claim(ClaimTypes.Name, result.Username));
-                        claims.Add(new Claim(ClaimTypes.Email, result.Email));
-
+                            new Claim(ClaimTypes.NameIdentifier, result.Username),
+                            new Claim(ClaimTypes.Role, role.Name),
+                            new Claim("Id", result.Id.ToString()),
+                            new Claim("Username", result.Username),
+                            new Claim(ClaimTypes.Name, result.Username),
+                            new Claim(ClaimTypes.Email, result.Email)
+                        };
 						var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 						var principal = new ClaimsPrincipal(identity);
 

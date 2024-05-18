@@ -53,7 +53,7 @@
                                 </td>
                                 <td>@item.CategoryName</td>
                                 <td>@item.Size</td>
-                                <td class="txt-price">@item.Price.ToString("C0", new CultureInfo("vi-Vn"))</td>
+                                <td class="txt-price">@Html.Raw(@item.Price.ToString("C0", new CultureInfo("vi-Vn")).Replace(" ", "&nbsp;"))</td>
                                 <td><input type="number" data-code="@item.ProductId" class="form-control txt-quantity-cart" id="Quantity_@item.ProductId" value="@item.Quantity" min="1" max=@ViewBag.quantity/></td>
                                 <th class="txt-total" data-productid="@item.ProductId">@item.TotalPrice.ToString("C0", new CultureInfo("vi-Vn"))</th>
                                 <td>
@@ -71,7 +71,8 @@
                     else
                     {
                         <tr>
-                            <th colspan="7">Không có sản phẩm trong giỏ hàng !</th>
+                            <th colspan="6">Không có sản phẩm trong giỏ hàng ! vui lòng quay lại <a href="/shop/index">cửa hàng</a> để mua</th>
+                           @*  <th colspan="8"><a href="/shop/index">Đi đến cửa hàng</a></th> *@
                         </tr>
                     }
                 </table>
@@ -84,7 +85,7 @@
                     }
                     else
                     {
-                        <a href="#" class="btn btn-success" aria-disabled="true" style="pointer-events: none; opacity: 0.5;">Thanh toán</a>
+                        <a href="#" class="btn btn-success" aria-disabled="true" style="pointer-events: none; opacity: 0.5;" hidden>Thanh toán</a>
                     }
                     </div>
                 </div>

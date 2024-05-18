@@ -1,4 +1,6 @@
-﻿@model ShoeStore.Models.ProductDetail 
+﻿@using System.Net
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model ShoeStore.ViewModels.ProductDetailandReviewVM 
 @{
 	ViewData["Title"] = "Chi tiết sản phẩm";
 	Layout = "~/Views/Shared/_Layout.cshtml";
@@ -128,13 +130,17 @@
 									<div class="original_price">@ShoeStore.Common.Common.FormatNumber(Model.Price, 0) đ</div>
 									<div class="product_price">@ShoeStore.Common.Common.FormatNumber(Model.Price, 0) đ</div>
 								}
-							<ul class="star_rating">
-								<li><i class="fa fa-star" aria-hidden="true"></i></li>
-								<li><i class="fa fa-star" aria-hidden="true"></i></li>
-								<li><i class="fa fa-star" aria-hidden="true"></i></li>
-								<li><i class="fa fa-star" aria-hidden="true"></i></li>
-								<li><i class="fa fa-star-o" aria-hidden="true"></i></li>
-							</ul>
+								int totaRating = 0;
+								foreach (var rev in Model.Reviews)
+								{
+									totaRating += rev.Rate ?? 0;
+
+								}
+								var y = ViewBag.count == 0 ? 1 : ViewBag.count;
+								totaRating = totaRating / y;
+								<ul class="star_rating">
+									@Html.Raw((ShoeStore.Common.Common.HtmlRate(totaRating)) )
+									</ul>
 							<div class="product_size">
 								<span>Chọn size:</span>
 								<ul>
@@ -152,8 +158,8 @@
 									<span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
 								</div>
 
-									<div class="red_button add_to_cart_button1"><a class="btnAddToCart" data-id="@Model.Id">Thêm vào giỏ hàng</a></div>
-								<div class="product_favorite d-flex flex-column align-items-center justify-content-center"></div>
+									<div class="red_button add_to_cart_button1" style="cursor:pointer"><a class="btnAddToCart" data-id="@Model.Id" style="cursor:pointer">Thêm vào giỏ hàng</a></div>
+								@* <div class="product_favorite d-flex flex-column align-items-center justify-content-center"></div> *@
 							</div>
 							}
 						}
@@ -170,9 +176,9 @@
 			<div class="col">
 				<div class="tabs_container">
 					<ul class="tabs d-flex flex-sm-row flex-column align-items-left align-items-md-center justify-content-center">
-						<li class="tab active" data-active-tab="tab_1"><span>Description</span></li>
-						<li class="tab" data-active-tab="tab_2"><span>Additional Information</span></li>
-						<li class="tab" data-active-tab="tab_3"><span>Reviews (2)</span></li>
+						<li class="tab active" data-active-tab="tab_1"><span>Mô tả</span></li>
+						<li class="tab" data-active-tab="tab_2"><span>Thông tin thêm</span></li>
+							<li class="tab" data-active-tab="tab_3"><span>Đánh giá (@ViewBag.count)</span></li>
 					</ul>
 				</div>
 			</div>
@@ -181,37 +187,10 @@
 			<div class="col">
 
 				<!-- Tab Description -->
-
-				@* <div id="tab_1" class="tab_container active">
+					
+				<div id="tab_1" class="tab_container active">
 					<div class="row">
-						<div class="col-lg-5 desc_col">
-							<div class="tab_title">
-								<h4>Description</h4>
-							</div>
-							<div class="tab_text_block">
-								<h2>Pocket cotton sweatshirt</h2>
-								<p>Nam tempus turpis at metus scelerisque placerat nulla deumantos solicitud felis. Pellentesque diam dolor, elementum etos lobortis des mollis ut...</p>
-							</div>
-							<div class="tab_image">
-								<img src="~/assets/images/desc_1.jpg" alt="">
-							</div>
-							<div class="tab_text_block">
-								<h2>Pocket cotton sweatshirt</h2>
-								<p>Nam tempus turpis at metus scelerisque placerat nulla deumantos solicitud felis. Pellentesque diam dolor, elementum etos lobortis des mollis ut...</p>
-							</div>
-						</div>
-						<div class="col-lg-5 offset-lg-2 desc_col">
-							<div class="tab_image">
-								<img src="~/assets/images/desc_2.jpg" alt="">
-							</div>
-							<div class="tab_text_block">
-								<h2>Pocket cotton sweatshirt</h2>
-								<p>Nam tempus turpis at metus scelerisque placerat nulla deumantos solicitud felis. Pellentesque diam dolor, elementum etos lobortis des mollis ut...</p>
-							</div>
-							<div class="tab_image desc_last">
-								<img src="~/assets/images/desc_3.jpg" alt="">
-							</div>
-						</div>
+							@Html.Raw(@WebUtility.HtmlDecode(Model.Product.Detail))
 					</div>
 				</div>
 
@@ -238,30 +217,41 @@
 
 						<div class="col-lg-6 reviews_col">
 							<div class="tab_title reviews_title">
-								<h4>Reviews (2)</h4>
+								<h4>Đánh giá (@ViewBag.count)</h4>
 							</div>
 
 							<!-- User Review -->
+								@foreach (var rev in Model.Reviews)
+								{
+									var i = 0;
+									
+									<div class="user_review_container d-flex flex-column flex-sm-row " id="trow_@i">
+										<div class="user">
+											<div class="user_pic"></div>
+											<div class="user_rating">
+												<ul class="star_rating">
+													@Html.Raw(ShoeStore.Common.Common.HtmlRate(rev.Rate ?? 0))
+												</ul>
+											</div>
+										</div>
+										<div class="review">
+											<div class="review_date">@rev.CreateAt.Value.ToString("dd/MM/yyyy HH:mm:ss")</div>
+											<div class="user_name">@rev.Username</div>
+											<p>@rev.Content</p>
+										</div>
+										@if(User.IsInRole("Admin") || User.IsInRole("Employee"))
+										{
+											<div>
 
-							<div class="user_review_container d-flex flex-column flex-sm-row">
-								<div class="user">
-									<div class="user_pic"></div>
-									<div class="user_rating">
-										<ul class="star_rating">
-											<li><i class="fa fa-star" aria-hidden="true"></i></li>
-											<li><i class="fa fa-star" aria-hidden="true"></i></li>
-											<li><i class="fa fa-star" aria-hidden="true"></i></li>
-											<li><i class="fa fa-star" aria-hidden="true"></i></li>
-											<li><i class="fa fa-star-o" aria-hidden="true"></i></li>
-										</ul>
+												<button class="btnDeleteReview btn btn-sm btn-cancel" data-id="@rev.Id" width="100px" style="height: 30px;margin-left: 30px">Xóa</button>
+											</div>
+										}
+										
 									</div>
-								</div>
-								<div class="review">
-									<div class="review_date">27 Aug 2016</div>
-									<div class="user_name">Brandon William</div>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-								</div>
-							</div>
+									i++;
+								}
+								
+							
 						</div>
 
 						<!-- Add Review -->
@@ -269,14 +259,15 @@
 						<div class="col-lg-6 add_review_col">
 
 							<div class="add_review">
-								<form id="review_form" action="post">
+									<form id="review_form" asp-action="PostReview" asp-controller="shop" method="post" enctype="multipart/form-data">
 									<div>
-										<h1>Add Review</h1>
-										<input id="review_name" class="form_input input_name" type="text" name="name" placeholder="Name*" required="required" data-error="Name is required.">
-										<input id="review_email" class="form_input input_email" type="email" name="email" placeholder="Email*" required="required" data-error="Valid email is required.">
+										<h1>Thêm đánh giá</h1>
+											<input id="review_name" class="form_input input_name" type="text" name="Username" placeholder="Username*" required="required" data-error="Name is required.">
+											<input id="review_email" class="form_input input_email" type="email" name="Email" placeholder="Email*" required="required" data-error="Valid email is required.">
+											<input type="text" id="txtRate" name="Rate" value="4" style="visibility:hidden;" />
 									</div>
 									<div>
-										<h1>Your Rating:</h1>
+										<h1>Đánh giá của bạn:</h1>
 										<ul class="user_star_rating">
 											<li><i class="fa fa-star" aria-hidden="true"></i></li>
 											<li><i class="fa fa-star" aria-hidden="true"></i></li>
@@ -284,10 +275,12 @@
 											<li><i class="fa fa-star" aria-hidden="true"></i></li>
 											<li><i class="fa fa-star-o" aria-hidden="true"></i></li>
 										</ul>
-										<textarea id="review_message" class="input_review" name="message" placeholder="Your Review" rows="4" required data-error="Please, leave us a review."></textarea>
+											<input type="hidden" id="ProductDetaiId" asp-for="ProductDetailId" value="@ViewBag.productdetailid" />
+											<input type="hidden" id="ProdcutId" asp-for="ProductId" value="@ViewBag.productid" />
+										<textarea id="review_message" class="input_review" name="Content" placeholder="Đánh giá" rows="4" required data-error="Please, leave us a review."></textarea>
 									</div>
 									<div class="text-left text-sm-right">
-										<button id="review_submit" type="submit" class="red_button review_submit_btn trans_300" value="Submit">submit</button>
+										<button id="review_submit" type="submit" class="red_button review_submit_btn trans_300" value="submit">submit</button>
 									</div>
 								</form>
 							</div>
@@ -295,7 +288,7 @@
 						</div>
 
 					</div>
-				</div> *@
+				</div>
 
 			</div>
 		</div>
@@ -311,6 +304,22 @@
 			$('.product_size li').removeClass('active'); // Loại bỏ lớp active từ tất cả các size
 			$(this).addClass('active'); // Thêm lớp active cho size được click
 		});
-
+		$('body').on('click', '.btnDeleteReview', function () {
+			var id = $(this).data("id");
+			var conf = confirm('Bạn có muốn xóa bỉnh luận này không?');
+			if (conf === true) {
+				$.ajax({
+					url: '/shop/DeleteReview',
+					type: 'POST',
+					data: { id: id },
+					success: function (rs) {
+						if (rs.success) {
+							$('#trow_' + id).remove();
+							location.reload();
+						}
+					}
+				});
+			}
+		});
 	</script>
 }

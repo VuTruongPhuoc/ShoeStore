@@ -59,7 +59,7 @@
                             <div class="form-group">
                                 <label name="Name" class="control-label">Tên sản phẩm</label>
                                 <input name="Name" class="form-control" value="@Model.Name" />
-                                <span asp-validation-for="Name" class="text-danger"></span>
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
                             </div>
                             <div class="form-group">
                                 <label name="CategoryId" class="control-label">Loại sản phẩm</label>
@@ -72,7 +72,7 @@
                                         }
                                     }
                                 </select>
-                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
                             </div>
                             <div class="form-group">
                                 <label name="SupplierId" class="control-label">Nhà cung cấp</label>
@@ -85,21 +85,23 @@
                                         }
                                     }
                                 </select>
-                                <span asp-validation-for="SupplierId" class="text-danger"></span>
+                                @Html.ValidationMessageFor(model => model.SupplierId, "", new { @class = "text-danger" })
                             </div>
                             <div class="form-group">
-                                <label name="Code" class="control-label">Mã Code</label>
-                                <input name="Code" class="form-control" value="@Model.Code" readonly/>
-                                <span asp-validation-for="Code" class="text-danger"></span>
+                                <div>
+                                    <label name="Code" class="control-label">Mã Code</label>
+                                    <input name="Code" class="form-control" value="@Model.Code" readonly/>
+                                    @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+                                </div>
                                 <div class="form-group">
                                     <label name="Description" class="control-label">Mô tả</label>
                                     <textarea name="Description" class="form-control">@Model.Description</textarea>
-                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="form-group">
                                     <label name="Detail" class="control-label">Chi tiết</label>
                                     <textarea name="Detail" class="form-control" id="txtDetail">@Model.Detail</textarea>
-                                    <span asp-validation-for="Detail" class="text-danger"></span>
+                                    @Html.ValidationMessageFor(model => model.Detail, "", new { @class = "text-danger" })
                                 </div>
 
                             <div class="form-group">

@@ -9,7 +9,7 @@
     List<Size> size = ViewBag.size;
     List<Color> color = ViewBag.color;
     List<ProductImage> image = ViewBag.image;
-    List<Voucher> voucher = ViewBag.Voucher;
+    List<Vouchers> voucher = ViewBag.Voucher;
 }
 
 <link rel="stylesheet" type="text/css" href="~/assets/styles/contact_styles.css">
@@ -17,29 +17,6 @@
 <link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
 <link rel="stylesheet" href="~/assets/plugins/themify-icons/themify-icons.css">
 <style>
-
-    .breadcrumbs {
-        margin-bottom: 30px;
-    }
-
-        .breadcrumbs ul {
-            padding: 0;
-            margin: 0;
-            list-style: none;
-        }
-
-            .breadcrumbs ul li {
-                display: inline-block;
-                font-size: 14px;
-            }
-
-                .breadcrumbs ul li.active {
-                    font-weight: bold;
-                }
-
-                    .breadcrumbs ul li.active a {
-                        color: #333; /* Màu chữ khi active */
-                    }
 
     /* Order Details Table */
     .order_details h2 {
@@ -181,7 +158,7 @@
                                         <p><h5>@colo.Name</h5></p>
                                     </td>
                                     <td>
-                                        <h5>@ord.Price.Value.ToString("C0", new CultureInfo("vi-VN"))</h5>
+                                        <p><h5>@ord.Price.Value.ToString("C0", new CultureInfo("vi-VN"))</h5></p>
                                     </td>
 
                                 </tr>
@@ -297,7 +274,7 @@
                                     }
                                     else
                                     {
-                                        <p>@itemorder.TotalAmount.Value.ToString("C0", new CultureInfo("vi-VN"))</p>
+                                        <p><h5>@itemorder.TotalAmount.Value.ToString("C0", new CultureInfo("vi-VN"))</h5></p>
                                     }
                                 </td>
                             </tr>

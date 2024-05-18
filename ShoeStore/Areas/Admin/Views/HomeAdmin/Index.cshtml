@@ -3,17 +3,18 @@
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-
+<!-- Material Design Icons -->
+<link href="https://cdn.jsdelivr.net/npm/@@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Dashboard</h1>
+                <h1 class="m-0">Thống kê</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Dashboard v1</li>
+                    <li class="breadcrumb-item active">Thống kê</li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -30,13 +31,12 @@
                 <div class="small-box bg-info">
                     <div class="inner">
                         <h3>150</h3>
-
-                        <p>New Orders</p>
+                        <p>Đơn hàng mới</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-bag"></i>
                     </div>
-                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -44,14 +44,14 @@
                 <!-- small box -->
                 <div class="small-box bg-success">
                     <div class="inner">
-                        <h3>53<sup style="font-size: 20px">%</sup></h3>
+                        <h3>53@* <sup style="font-size: 20px"></sup> *@</h3>
 
-                        <p>Bounce Rate</p>
+                        <p>Đánh giá</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-stats-bars"></i>
                     </div>
-                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -60,13 +60,12 @@
                 <div class="small-box bg-warning">
                     <div class="inner">
                         <h3>44</h3>
-
-                        <p>User Registrations</p>
+                        <p>Người dùng đăng ký</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-person-add"></i>
                     </div>
-                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -76,520 +75,876 @@
                     <div class="inner">
                         <h3>65</h3>
 
-                        <p>Unique Visitors</p>
+                        <p>Số lượng khách truy cập</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-pie-graph"></i>
                     </div>
-                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
         </div>
         <!-- /.row -->
         <!-- Main row -->
-        <div class="row">
-            <!-- Left col -->
-            <section class="col-lg-7 connectedSortable">
-                <!-- Custom tabs (Charts with tabs)-->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-chart-pie mr-1"></i>
-                            Sales
-                        </h3>
-                        <div class="card-tools">
-                            <ul class="nav nav-pills ml-auto">
-                                <li class="nav-item">
-                                    <a class="nav-link active" href="#revenue-chart" data-toggle="tab">Area</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#sales-chart" data-toggle="tab">Donut</a>
-                                </li>
-                            </ul>
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="row gy-4">
+                <!-- Chart -->
+                <div class="col-lg-12">
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h5 class="card-title m-0 me-2">Tổng quan</h5>
+                                <div class="dropdown">
+                                    <button class="btn p-0"
+                                            type="button"
+                                            id="transactionID"
+                                            data-bs-toggle="dropdown"
+                                            aria-haspopup="true"
+                                            aria-expanded="false"
+                                            style="visibility:hidden">
+                                        <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID">
+                                        <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
+                                        <a class="dropdown-item" href="javascript:void(0);">Share</a>
+                                        <a class="dropdown-item" href="javascript:void(0);">Update</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="mt-3">
+                                <span class="fw-medium">Doanh thu </span>
+                                <span id="growth" style="font-weight: bold"></span> so với tháng trước!
+                            </p>
                         </div>
-                    </div><!-- /.card-header -->
-                    <div class="card-body">
-                        <div class="tab-content p-0">
-                            <!-- Morris chart - Sales -->
-                            <div class="chart tab-pane active" id="revenue-chart"
-                                 style="position: relative; height: 300px;">
-                                <canvas id="revenue-chart-canvas" height="300" style="height: 300px;"></canvas>
-                            </div>
-                            <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
-                                <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-3 col-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar">
+                                            <div class="avatar-initial bg-primary rounded shadow">
+                                                <i class="mdi mdi-trending-up mdi-24px"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <div class="small mb-1">Tổng hoá đơn đã thanh toán</div>
+                                            <h5 class="mb-0" id="orderCount">Loading...</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar">
+                                            <div class="avatar-initial bg-success rounded shadow">
+                                                <i class="mdi mdi-account-outline mdi-24px"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <div class="small mb-1">Tổng số khách hàng</div>
+                                            <h5 class="mb-0" id="customerCount">Loading...</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar">
+                                            <div class="avatar-initial bg-warning rounded shadow">
+                                                <i class="mdi mdi-cellphone-link mdi-24px"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <div class="small mb-1">Tổng sản phẩm đã bán</div>
+                                            <h5 class="mb-0" id="products">Loading...</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar">
+                                            <div class="avatar-initial bg-info rounded shadow">
+                                                <i class="mdi mdi-currency-usd mdi-24px"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <div class="small mb-1">Tổng doanh thu</div>
+                                            <h5 class="mb-0" id="revenues">Loading...</h5>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div><!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-                <!-- DIRECT CHAT -->
-                <div class="card direct-chat direct-chat-primary">
-                    <div class="card-header">
-                        <h3 class="card-title">Direct Chat</h3>
-
-                        <div class="card-tools">
-                            <span title="3 New Messages" class="badge badge-primary">3</span>
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                            <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
-                                <i class="fas fa-comments"></i>
-                            </button>
-                            <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- /.card-header -->
-                    <div class="card-body">
-                        <!-- Conversations are loaded here -->
-                        <div class="direct-chat-messages">
-                            <!-- Message. Default to the left -->
-                            <div class="direct-chat-msg">
-                                <div class="direct-chat-infos clearfix">
-                                    <span class="direct-chat-name float-left">Alexander Pierce</span>
-                                    <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
-                                </div>
-                                <!-- /.direct-chat-infos -->
-                                <img class="direct-chat-img" src="~/admin/assests/dist/img/user1-128x128.jpg" alt="message user image">
-                                <!-- /.direct-chat-img -->
-                                <div class="direct-chat-text">
-                                    Is this template really for free? That's unbelievable!
-                                </div>
-                                <!-- /.direct-chat-text -->
-                            </div>
-                            <!-- /.direct-chat-msg -->
-                            <!-- Message to the right -->
-                            <div class="direct-chat-msg right">
-                                <div class="direct-chat-infos clearfix">
-                                    <span class="direct-chat-name float-right">Sarah Bullock</span>
-                                    <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
-                                </div>
-                                <!-- /.direct-chat-infos -->
-                                <img class="direct-chat-img" src="~/admin/assests/dist/img/user3-128x128.jpg" alt="message user image">
-                                <!-- /.direct-chat-img -->
-                                <div class="direct-chat-text">
-                                    You better believe it!
-                                </div>
-                                <!-- /.direct-chat-text -->
-                            </div>
-                            <!-- /.direct-chat-msg -->
-                            <!-- Message. Default to the left -->
-                            <div class="direct-chat-msg">
-                                <div class="direct-chat-infos clearfix">
-                                    <span class="direct-chat-name float-left">Alexander Pierce</span>
-                                    <span class="direct-chat-timestamp float-right">23 Jan 5:37 pm</span>
-                                </div>
-                                <!-- /.direct-chat-infos -->
-                                <img class="direct-chat-img" src="~/admin/assests/dist/img/user1-128x128.jpg" alt="message user image">
-                                <!-- /.direct-chat-img -->
-                                <div class="direct-chat-text">
-                                    Working with AdminLTE on a great new app! Wanna join?
-                                </div>
-                                <!-- /.direct-chat-text -->
-                            </div>
-                            <!-- /.direct-chat-msg -->
-                            <!-- Message to the right -->
-                            <div class="direct-chat-msg right">
-                                <div class="direct-chat-infos clearfix">
-                                    <span class="direct-chat-name float-right">Sarah Bullock</span>
-                                    <span class="direct-chat-timestamp float-left">23 Jan 6:10 pm</span>
-                                </div>
-                                <!-- /.direct-chat-infos -->
-                                <img class="direct-chat-img" src="~/admin/assests/dist/img/user3-128x128.jpg" alt="message user image">
-                                <!-- /.direct-chat-img -->
-                                <div class="direct-chat-text">
-                                    I would love to.
-                                </div>
-                                <!-- /.direct-chat-text -->
-                            </div>
-                            <!-- /.direct-chat-msg -->
-
-                        </div>
-                        <!--/.direct-chat-messages-->
-                        <!-- Contacts are loaded here -->
-                        <div class="direct-chat-contacts">
-                            <ul class="contacts-list">
-                                <li>
-                                    <a href="#">
-                                        <img class="contacts-list-img" src="~/admin/assests/dist/img/user1-128x128.jpg" alt="User Avatar">
-
-                                        <div class="contacts-list-info">
-                                            <span class="contacts-list-name">
-                                                Count Dracula
-                                                <small class="contacts-list-date float-right">2/28/2015</small>
-                                            </span>
-                                            <span class="contacts-list-msg">How have you been? I was...</span>
-                                        </div>
-                                        <!-- /.contacts-list-info -->
-                                    </a>
-                                </li>
-                                <!-- End Contact Item -->
-                                <li>
-                                    <a href="#">
-                                        <img class="contacts-list-img" src="~/admin/assests/dist/img/user7-128x128.jpg" alt="User Avatar">
-
-                                        <div class="contacts-list-info">
-                                            <span class="contacts-list-name">
-                                                Sarah Doe
-                                                <small class="contacts-list-date float-right">2/23/2015</small>
-                                            </span>
-                                            <span class="contacts-list-msg">I will be waiting for...</span>
-                                        </div>
-                                        <!-- /.contacts-list-info -->
-                                    </a>
-                                </li>
-                                <!-- End Contact Item -->
-                                <li>
-                                    <a href="#">
-                                        <img class="contacts-list-img" src="~/admin/assests/dist/img/user3-128x128.jpg" alt="User Avatar">
-
-                                        <div class="contacts-list-info">
-                                            <span class="contacts-list-name">
-                                                Nadia Jolie
-                                                <small class="contacts-list-date float-right">2/20/2015</small>
-                                            </span>
-                                            <span class="contacts-list-msg">I'll call you back at...</span>
-                                        </div>
-                                        <!-- /.contacts-list-info -->
-                                    </a>
-                                </li>
-                                <!-- End Contact Item -->
-                                <li>
-                                    <a href="#">
-                                        <img class="contacts-list-img" src="~/admin/assests/dist/img/user5-128x128.jpg" alt="User Avatar">
-
-                                        <div class="contacts-list-info">
-                                            <span class="contacts-list-name">
-                                                Nora S. Vans
-                                                <small class="contacts-list-date float-right">2/10/2015</small>
-                                            </span>
-                                            <span class="contacts-list-msg">Where is your new...</span>
-                                        </div>
-                                        <!-- /.contacts-list-info -->
-                                    </a>
-                                </li>
-                                <!-- End Contact Item -->
-                                <li>
-                                    <a href="#">
-                                        <img class="contacts-list-img" src="~/admin/assests/dist/img/user6-128x128.jpg" alt="User Avatar">
-
-                                        <div class="contacts-list-info">
-                                            <span class="contacts-list-name">
-                                                John K.
-                                                <small class="contacts-list-date float-right">1/27/2015</small>
-                                            </span>
-                                            <span class="contacts-list-msg">Can I take a look at...</span>
-                                        </div>
-                                        <!-- /.contacts-list-info -->
-                                    </a>
-                                </li>
-                                <!-- End Contact Item -->
-                                <li>
-                                    <a href="#">
-                                        <img class="contacts-list-img" src="~/admin/assests/dist/img/user8-128x128.jpg" alt="User Avatar">
-
-                                        <div class="contacts-list-info">
-                                            <span class="contacts-list-name">
-                                                Kenneth M.
-                                                <small class="contacts-list-date float-right">1/4/2015</small>
-                                            </span>
-                                            <span class="contacts-list-msg">Never mind I found...</span>
-                                        </div>
-                                        <!-- /.contacts-list-info -->
-                                    </a>
-                                </li>
-                                <!-- End Contact Item -->
-                            </ul>
-                            <!-- /.contacts-list -->
-                        </div>
-                        <!-- /.direct-chat-pane -->
-                    </div>
-                    <!-- /.card-body -->
-                    <div class="card-footer">
-                        <form action="#" method="post">
-                            <div class="input-group">
-                                <input type="text" name="message" placeholder="Type Message ..." class="form-control">
-                                <span class="input-group-append">
-                                    <button type="button" class="btn btn-primary">Send</button>
-                                </span>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- /.card-footer-->
-                </div>
-                <!--/.direct-chat -->
-                <!-- TO DO List -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="ion ion-clipboard mr-1"></i>
-                            To Do List
-                        </h3>
-
-                        <div class="card-tools">
-                            <ul class="pagination pagination-sm">
-                                <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
-                                <li class="page-item"><a href="#" class="page-link">1</a></li>
-                                <li class="page-item"><a href="#" class="page-link">2</a></li>
-                                <li class="page-item"><a href="#" class="page-link">3</a></li>
-                                <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- /.card-header -->
-                    <div class="card-body">
-                        <ul class="todo-list" data-widget="todo-list">
-                            <li>
-                                <!-- drag handle -->
-                                <span class="handle">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </span>
-                                <!-- checkbox -->
-                                <div class="icheck-primary d-inline ml-2">
-                                    <input type="checkbox" value="" name="todo1" id="todoCheck1">
-                                    <label for="todoCheck1"></label>
-                                </div>
-                                <!-- todo text -->
-                                <span class="text">Design a nice theme</span>
-                                <!-- Emphasis label -->
-                                <small class="badge badge-danger"><i class="far fa-clock"></i> 2 mins</small>
-                                <!-- General tools such as edit or delete-->
-                                <div class="tools">
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash-o"></i>
-                                </div>
-                            </li>
-                            <li>
-                                <span class="handle">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </span>
-                                <div class="icheck-primary d-inline ml-2">
-                                    <input type="checkbox" value="" name="todo2" id="todoCheck2" checked>
-                                    <label for="todoCheck2"></label>
-                                </div>
-                                <span class="text">Make the theme responsive</span>
-                                <small class="badge badge-info"><i class="far fa-clock"></i> 4 hours</small>
-                                <div class="tools">
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash-o"></i>
-                                </div>
-                            </li>
-                            <li>
-                                <span class="handle">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </span>
-                                <div class="icheck-primary d-inline ml-2">
-                                    <input type="checkbox" value="" name="todo3" id="todoCheck3">
-                                    <label for="todoCheck3"></label>
-                                </div>
-                                <span class="text">Let theme shine like a star</span>
-                                <small class="badge badge-warning"><i class="far fa-clock"></i> 1 day</small>
-                                <div class="tools">
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash-o"></i>
-                                </div>
-                            </li>
-                            <li>
-                                <span class="handle">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </span>
-                                <div class="icheck-primary d-inline ml-2">
-                                    <input type="checkbox" value="" name="todo4" id="todoCheck4">
-                                    <label for="todoCheck4"></label>
-                                </div>
-                                <span class="text">Let theme shine like a star</span>
-                                <small class="badge badge-success"><i class="far fa-clock"></i> 3 days</small>
-                                <div class="tools">
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash-o"></i>
-                                </div>
-                            </li>
-                            <li>
-                                <span class="handle">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </span>
-                                <div class="icheck-primary d-inline ml-2">
-                                    <input type="checkbox" value="" name="todo5" id="todoCheck5">
-                                    <label for="todoCheck5"></label>
-                                </div>
-                                <span class="text">Check your messages and notifications</span>
-                                <small class="badge badge-primary"><i class="far fa-clock"></i> 1 week</small>
-                                <div class="tools">
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash-o"></i>
-                                </div>
-                            </li>
-                            <li>
-                                <span class="handle">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </span>
-                                <div class="icheck-primary d-inline ml-2">
-                                    <input type="checkbox" value="" name="todo6" id="todoCheck6">
-                                    <label for="todoCheck6"></label>
-                                </div>
-                                <span class="text">Let theme shine like a star</span>
-                                <small class="badge badge-secondary"><i class="far fa-clock"></i> 1 month</small>
-                                <div class="tools">
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash-o"></i>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <!-- /.card-body -->
-                    <div class="card-footer clearfix">
-                        <button type="button" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add item</button>
                     </div>
                 </div>
-                <!-- /.card -->
-            </section>
-            <!-- /.Left col -->
-            <!-- right col (We are only adding the ID to make the widgets sortable)-->
-            <section class="col-lg-5 connectedSortable">
+                <div class="col-xl-12 col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h3 class="mb-1">Doanh thu</h3>
+                                <div class="d-flex align-items-center">
+                                    <span class="mr-2">Chọn tháng: </span>
+                                    <!-- Dropdown for selecting the past 15 years -->
+                                    <div class="dropdown" style="margin-right: 10px;">
+                                        <select id="monthDropdown" class="form-control" style="width: 100%">
+                                            <option value="0">Không</option>
+                                            @for (int month = 1; month <= 12; month++)
+                                            {
+                                                <option value="@month">@month</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <span class="mr-2">Chọn năm: </span>
+                                    <!-- Dropdown for selecting the past 15 years -->
+                                    <div class="dropdown" style="margin-right: 10px;">
+                                        <select id="yearDropdown" class="form-control" style="width: 100%">
+                                            @for (int year = DateTime.Now.Year; year >= DateTime.Now.Year - 15; year--)
+                                            {
+                                                <option value="@year">@year</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <span class="mr-2">Kiểu biểu đồ: </span>
+                                    <!-- Dropdown for selecting chart type -->
+                                    <div class="dropdown">
+                                        <select id="chartTypeDropdown" class="form-control" style="width: 100%">
+                                            <option value="yearly">1 năm</option>
+                                            <option value="monthly">1 tháng</option>
+                                            <option value="weekly">7 ngày qua</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center" style="margin-top: 10px">
+                                <!-- Thêm ô input cho startdate -->
+                                <div class="form-group">
+                                    <label for="startDate">Ngày bắt đầu:</label>
+                                   
+                                </div>
+                                <div class="form-group">
+                                    <input type="date" class="form-control" id="startDate" placeholder="dd/mm/yyyy">
+                                </div>
+                                <!-- Thêm ô input cho endDate -->
+                                <div>
+                                    <label for="endDate">Ngày kết thúc:</label>                  
+                                </div>
+                                <div class="form-group">
+                                    <input type="date" class="form-control" id="endDate" placeholder="dd/mm/yyyy">
+                                </div>
 
-                <!-- Map card -->
-                <div class="card bg-gradient-primary">
-                    <div class="card-header border-0">
-                        <h3 class="card-title">
-                            <i class="fas fa-map-marker-alt mr-1"></i>
-                            Visitors
-                        </h3>
-                        <!-- card tools -->
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-primary btn-sm daterange" title="Date range">
-                                <i class="far fa-calendar-alt"></i>
-                            </button>
-                            <button type="button" class="btn btn-primary btn-sm" data-card-widget="collapse" title="Collapse">
-                                <i class="fas fa-minus"></i>
-                            </button>
+
+                                <!-- Nút xác nhận -->
+                                <button class="btn btn-primary" value="datepicker" onclick="validateAndFetch()">Xác nhận</button>
+
+                                <!-- Button to export data to Excel -->
+                                <button id="exportBtn" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất ra file Excel</button>
+                            </div>
                         </div>
-                        <!-- /.card-tools -->
-                    </div>
-                    <div class="card-body">
-                        <div id="world-map" style="height: 250px; width: 100%;"></div>
-                    </div>
-                    <!-- /.card-body-->
-                    <div class="card-footer bg-transparent">
-                        <div class="row">
-                            <div class="col-4 text-center">
-                                <div id="sparkline-1"></div>
-                                <div class="text-white">Visitors</div>
+                        <div class="card-body">
+                            <div id="container">
+                                <!-- Canvas for the selected chart type -->
+                                <canvas id="selectedChart" height="90"></canvas>
                             </div>
-                            <!-- ./col -->
-                            <div class="col-4 text-center">
-                                <div id="sparkline-2"></div>
-                                <div class="text-white">Online</div>
-                            </div>
-                            <!-- ./col -->
-                            <div class="col-4 text-center">
-                                <div id="sparkline-3"></div>
-                                <div class="text-white">Sales</div>
-                            </div>
-                            <!-- ./col -->
                         </div>
-                        <!-- /.row -->
                     </div>
                 </div>
-                <!-- /.card -->
-                <!-- solid sales graph -->
-                <div class="card bg-gradient-info">
-                    <div class="card-header border-0">
-                        <h3 class="card-title">
-                            <i class="fas fa-th mr-1"></i>
-                            Sales Graph
-                        </h3>
-
-                        <div class="card-tools">
-                            <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                            <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <canvas class="chart" id="line-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                    </div>
-                    <!-- /.card-body -->
-                    <div class="card-footer bg-transparent">
-                        <div class="row">
-                            <div class="col-4 text-center">
-                                <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60"
-                                       data-fgColor="#39CCCC">
-
-                                <div class="text-white">Mail-Orders</div>
-                            </div>
-                            <!-- ./col -->
-                            <div class="col-4 text-center">
-                                <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60"
-                                       data-fgColor="#39CCCC">
-
-                                <div class="text-white">Online</div>
-                            </div>
-                            <!-- ./col -->
-                            <div class="col-4 text-center">
-                                <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60"
-                                       data-fgColor="#39CCCC">
-
-                                <div class="text-white">In-Store</div>
-                            </div>
-                            <!-- ./col -->
-                        </div>
-                        <!-- /.row -->
-                    </div>
-                    <!-- /.card-footer -->
-                </div>
-                <!-- /.card -->
-                <!-- Calendar -->
-                <div class="card bg-gradient-success">
-                    <div class="card-header border-0">
-
-                        <h3 class="card-title">
-                            <i class="far fa-calendar-alt"></i>
-                            Calendar
-                        </h3>
-                        <!-- tools card -->
-                        <div class="card-tools">
-                            <!-- button with a dropdown -->
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" data-offset="-52">
-                                    <i class="fas fa-bars"></i>
+                <!--/ Chart -->
+                <!-- Top 5 danh sách sản phẩm -->
+                <!-- Thêm ID để dễ dàng truy cập thông qua JavaScript -->
+                <div class="col-xl-12 col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title m-0 me-2">Top 5 sản phẩm bán chạy</h5>
+                            <div class="dropdown" style="margin-right: 10px;">
+                                <button class="btn p-0" type="button" id="saleStatus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="mdi mdi-dots-vertical mdi-24px"></i>
                                 </button>
-                                <div class="dropdown-menu" role="menu">
-                                    <a href="#" class="dropdown-item">Add new event</a>
-                                    <a href="#" class="dropdown-item">Clear events</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a href="#" class="dropdown-item">View calendar</a>
+                                <div class="dropdown-menu" aria-labelledby="saleStatus">
+                                    <a class="dropdown-item" onclick="sortBy('quantity')" style="cursor:pointer">Theo số lượng</a>
+                                    <a class="dropdown-item" onclick="sortBy('earnings')" style="cursor:pointer">Theo tổng tiền</a>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-success btn-sm" data-card-widget="collapse">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                            <button type="button" class="btn btn-success btn-sm" data-card-widget="remove">
-                                <i class="fas fa-times"></i>
-                            </button>
                         </div>
-                        <!-- /. tools -->
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                                <!-- HTML cho hiển thị dữ liệu -->
+                                <table class="table" id="productTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Ảnh</th>
+                                            <th>Tên sản phẩm</th>
+                                            <th>Đã bán(đôi)</th>
+                                            <th>Doanh thu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                    <!-- /.card-header -->
-                    <div class="card-body pt-0">
-                        <!--The calendar -->
-                        <div id="calendar" style="width: 100%"></div>
-                    </div>
-                    <!-- /.card-body -->
                 </div>
-                <!-- /.card -->
-            </section>
-            <!-- right col -->
+                <!--/ Top 5 danh sách sản phẩm -->
+                <!--/Script xử lí -->
+                <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <!-- Thư viện Bootstrap -->
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.vi.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+                <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+
+                <script>
+                    let yearlyChart;
+                    let monthlyChart;
+                    var weeklyChart;
+                    var trendingProductsChart;
+                    var currentChart = "yearly";
+                    var PickDateChart;
+                    // Danh sách sản phẩm
+                    $(document).ready(
+                        sortBy('quantity'));
+
+                    function updateDateInputs() {
+                        // var selectedYear = document.getElementById("monthDropdown").value;
+                        var selectedYear = document.getElementById("yearDropdown").value;
+                        var startDateInput = document.getElementById("startDate");
+                        var endDateInput = document.getElementById("endDate");
+
+                        // Lấy giá trị tháng và ngày hiện tại của ô input
+                        var currentMonth = startDateInput.value.substring(5, 7);
+                        var currentDay = startDateInput.value.substring(8, 10);
+
+                        // Set the minimum and maximum values for the date inputs based on the selected year
+                        startDateInput.setAttribute("min", selectedYear + "-01-01T00:00");
+                        startDateInput.setAttribute("max", selectedYear + "-12-31T23:59");
+
+                        endDateInput.setAttribute("min", selectedYear + "-01-01T00:00");
+                        endDateInput.setAttribute("max", selectedYear + "-12-31T23:59");
+
+                        // Kiểm tra và cập nhật giá trị ngày tối thiểu nếu người dùng đã chọn ngày trong tháng khác
+                        var newMinDate = currentDay + "-" + currentMonth + "-" + selectedYear + "T00:00";
+                        if (startDateInput.value < newMinDate) {
+                            startDateInput.setAttribute("min", startDateInput.value);
+                        }
+
+                        // Kiểm tra và cập nhật giá trị ngày tối đa nếu người dùng đã chọn ngày trong tháng khác
+                        var newMaxDate = currentDay + "-" + currentMonth + "-" + selectedYear + "T23:59";
+                        if (endDateInput.value > newMaxDate) {
+                            endDateInput.setAttribute("max", endDateInput.value);
+                        }
+                    }
+
+                    function sortBy(option) {
+                        // Gọi API với tùy chọn sắp xếp tương ứng
+                        var apiUrl = 'https://localhost:7162/api/Chart/SoldProductsByMonth?sortBy=' + option;
+
+                        $.ajax({
+                            url: apiUrl,
+                            method: 'GET',
+                            success: function (data) {
+                                // Kiểm tra dữ liệu trong console log
+                                // console.log(data);
+
+                                // Xử lý dữ liệu và cập nhật HTML
+                                var tableBody = $('#productTable tbody');
+                                tableBody.empty();
+
+                                // Kiểm tra cấu trúc dữ liệu để xác định tên thuộc tính
+                                var productNameKey = 'ProductName';
+                                var quantitySoldKey = 'QuantitySold';
+                                var totalEarningsKey = 'TotalEarnings';
+                                var imageProductKey = 'ProductImage';
+
+                                // Sử dụng $.each để lặp qua mảng dữ liệu
+                                $.each(data.labels, function (index, productName) {
+                                    var quantitySold = data.quantities[index];
+                                    var totalEarnings = data.earnings[index];
+                                    var imageProduct = data.images[index];
+
+                                    // Hiển thị thông tin sản phẩm trong bảng
+                                    var row = '<tr>' +
+                                        '<td style="width: 150px; height: 150px; overflow: hidden;">' +
+                                        '<img src="' + imageProduct.trim() + '" style="width: 100%; height: auto;  object-position: 0 0;" alt="Product Image">' +
+                                        '</td>' +
+                                        '<td>' + productName + '</td>' +
+                                        '<td>' + quantitySold + '</td>' +
+                                        '<td>' + parseFloat(totalEarnings).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) + '</td>' +
+                                        '</tr>';
+                                    tableBody.append(row);
+                                });
+                            },
+                            error: function (error) {
+                                // Xử lý lỗi nếu có
+                                console.error('Error fetching data:', error);
+                            }
+                        });
+                    }
+
+                    function fetchAndDrawChart() {
+                        // Lấy giá trị từ ô input cho startDate và endDate
+                        var startDate = document.getElementById('startDate').value;
+                        var endDate = document.getElementById('endDate').value;
+
+                        // Gọi API với tham số là startDate và endDate
+                        fetch(`https://localhost:7162/api/Chart/DatePicker?startDate=${startDate}&endDate=${endDate}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                var ctx = document.getElementById('selectedChart').getContext('2d');
+                                if (yearlyChart) {
+                                    yearlyChart.destroy()
+                                }
+                                if (monthlyChart){
+                                    monthlyChart.destroy();
+                                }
+                                if (weeklyChart) {
+                                    weeklyChart.destroy()
+                                }
+                                if (PickDateChart) {
+                                    PickDateChart.destroy()
+                                }
+                                currentChart = "DatePicker";
+                                console.log(currentChart);
+
+                                // Sử dụng moment.js để định dạng lại các ngày
+                                var formattedDates = data.labels.map(date => moment(date).format('DD-MM-YYYY'));
+
+                                // Tạo biểu đồ
+                                PickDateChart = new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: formattedDates,
+                                        datasets: [{
+                                            label: data.label,
+                                            data: data.values,
+                                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                            borderColor: 'rgba(75, 192, 192, 1)',
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: false
+                                            }
+                                        }
+                                    }
+                                });
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
+
+                    function validateAndFetch() {
+                        // Lấy giá trị từ ô input
+                        var startDateValue = document.getElementById("startDate").value;
+                        var endDateValue = document.getElementById("endDate").value;
+
+                        // Kiểm tra xem có nhập đủ dữ liệu hay không
+                        if (!startDateValue || !endDateValue) {
+                            alert("Vui lòng nhập đủ dữ liệu cho ngày bắt đầu và ngày kết thúc.");
+                            return;
+                        }
+                        // Kiểm tra nếu ngày bắt đầu lớn hơn ngày kết thúc
+                        if (new Date(startDateValue) > new Date(endDateValue)) {
+                            alert("Ngày tháng năm không hợp lệ");
+                            return;
+                        }
+                        // Nếu dữ liệu đủ, tiếp tục thực hiện fetchAndDrawChart hoặc hành động mong muốn
+                        fetchAndDrawChart();
+                    }
+
+                    $(document).ready(function () {
+                        // growth
+                        function growthToLastMonth(data) {
+                            const gr = document.getElementById('growth');
+                            const lastindex = data.values.length - 1;
+
+                            if (lastindex >= 1) {
+                                const growthRate = ((data.values[lastindex] / data.values[lastindex - 1]) - 1) * 100;
+                                const roundedGrowth = Math.round(growthRate * 100) / 100; // Làm tròn 2 chữ số sau dấu phẩy
+
+                                if (roundedGrowth < 0) {
+                                    gr.innerHTML = ` giảm ${-roundedGrowth}% `;
+                                    gr.style.color = 'red'; // Màu đỏ
+                                } else if (roundedGrowth > 0) {
+                                    gr.innerHTML = `tăng ${roundedGrowth}% `;
+                                    gr.style.color = 'green'; // Màu xanh lá
+                                } else {
+                                    gr.innerHTML = 'giữ nguyên'; // Giữ nguyên giá trị là '0%'
+                                    gr.style.color = 'orange'; // Màu vàng
+                                }
+
+                            } else if (lastindex === 0) {
+                                const growthRate = data.values[lastindex] * 100;
+                                const roundedGrowth = Math.round(growthRate * 100) / 100;
+
+                                if (roundedGrowth < 0) {
+                                    gr.innerHTML = `giảm ${-roundedGrowth}% `;
+                                    gr.style.color = 'red'; // Màu đỏ
+                                } else if (roundedGrowth > 0) {
+                                    gr.innerHTML = `tăng ${roundedGrowth}% `;
+                                    gr.style.color = 'green'; // Màu xanh lá
+                                } else {
+                                    gr.innerHTML = 'giữ nguyên'; // Giữ nguyên giá trị là '0%'
+                                    gr.style.color = 'orange'; // Màu vàng
+                                }
+
+                            } else {
+                                gr.innerHTML = 'giữ nguyên'; // Giữ nguyên giá trị là '0%'
+                                gr.style.color = 'orange'; // Màu vàng
+                            }
+                        }
+                        var cryear = new Date().getFullYear();
+                        function RevenueGrowth() {
+                            $.ajax({
+                                url: 'https://localhost:7162/api/Chart/' + cryear,
+                                method: 'GET',
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data && data.values && data.label) {
+                                        growthToLastMonth(data);
+                                    } else {
+                                        console.error('Invalid data received from API');
+                                    }
+                                },
+                                error: function (error) {
+                                    console.error('Error fetching data:', error);
+                                }
+                            });
+                        }
+                        // Mặc định chọn năm hiện tại
+                        var currentYear = new Date().getFullYear();
+                        $('#yearDropdown').val(currentYear);
+                        DrawChartForYear(currentYear);
+                        GetCustomer();
+                        GetProducts();
+                        GetRevenues();
+                        GetOrders();
+                        RevenueGrowth();
+                        var currentDay = new Date();
+
+                        // Sự kiện thay đổi của dropdown
+                        $('#chartTypeDropdown').on('change', function () {
+                            var selectedChartType = $(this).val();
+
+                            // Hủy bỏ biểu đồ hiện tại nếu có
+                            if (yearlyChart) {
+                                yearlyChart.destroy()
+                            }
+                            if (monthlyChart) {
+                                monthlyChart.destroy()
+                            }
+                            if (PickDateChart) {
+                                PickDateChart.destroy()
+                            }
+
+                            // Gọi hàm vẽ biểu đồ tương ứng dựa trên loại đã chọn
+                            if (selectedChartType === 'yearly') {
+                                var selectedYear = $('#yearDropdown').val();
+                                currentChart = "yearly";
+                                console.log(currentChart);
+                                DrawChartForYear(selectedYear);
+                            } else if(selectedChartType === 'monthly'){
+                                var selectedMonth = $('#monthDropdown').val();
+                                var selectedYear = $('#yearDropdown').val();
+                                currentChart = "monthly";
+                                console.log(currentChart);
+                                DrawChartForMonthOfTheYear(selectedMonth, selectedYear);
+                            } else if (selectedChartType === 'weekly') {
+                                currentChart = "weekly";
+                                console.log(currentChart);
+                                DrawLast7DayChart();
+                            }
+                        });
+                        $('#yearDropdown').on('change', function () {
+                            var selectedYear = $(this).val();
+                            var selectedMonth = document.getElementById("monthDropdown").value;
+                            // Nếu dropdown chọn loại biểu đồ đang là 'weekly', thay đổi nó thành 'yearly'
+                            if ($('#chartTypeDropdown').val() === 'weekly' || $('#chartTypeDropdown').val() === 'monthly') {
+                                $('#chartTypeDropdown').val('yearly');
+                            }                            
+                            if (yearlyChart) {
+                                yearlyChart.destroy()
+                            }
+                            if (monthlyChart){
+                                monthlyChart.destroy()
+                            }
+                            if (weeklyChart) {
+                                weeklyChart.destroy()
+                            }
+                            if (PickDateChart) {
+                                PickDateChart.destroy()
+                            }
+                            // updateDateInputs();
+                            if (selectedMonth !== "0") {
+                                $('#chartTypeDropdown').val('monthly');
+                                DrawChartForMonthOfTheYear(selectedMonth, selectedYear);
+                            } else {
+                                DrawChartForYear(selectedYear);
+                            }                            
+                            currentChart = "yearly";
+                            console.log(currentChart);
+                        });
+                        $('#monthDropdown').on('change', function () {
+                            var selectedMonth = $(this).val();
+                            var selectedYear = document.getElementById("yearDropdown").value;
+                            // Nếu dropdown chọn loại biểu đồ đang là 'weekly', thay đổi nó thành 'yearly'
+                            if ($('#chartTypeDropdown').val() === 'weekly' || $('#chartTypeDropdown').val() === 'yearly') {
+                                $('#chartTypeDropdown').val('monthly');
+                            }
+                            if (yearlyChart) {
+                                yearlyChart.destroy()
+                            }
+                            if (monthlyChart) {
+                                monthlyChart.destroy()
+                            }
+                            if (weeklyChart) {
+                                weeklyChart.destroy()
+                            }
+                            if (PickDateChart) {
+                                PickDateChart.destroy()
+                            }
+                            // updateDateInputs();
+                            DrawChartForMonthOfTheYear(selectedMonth,selectedYear);
+                            currentChart = "monthly";
+                            console.log(currentChart);
+                        });
+                        // Hàm vẽ biểu đồ với dữ liệu từ API
+                        function DrawChart(data, chartType) {
+                            // Hủy bỏ biểu đồ hiện tại nếu có
+                            if (yearlyChart) {
+                                yearlyChart.destroy();
+                            }
+                            if (monthlyChart) {
+                                monthlyChart.destroy();
+                            }
+                            if (weeklyChart) {
+                                weeklyChart.destroy();
+                            }
+                            if (PickDateChart) {
+                                PickDateChart.destroy();
+                            }
+
+                            const ctx = document.getElementById('selectedChart').getContext('2d');
+
+                            if (chartType === 'yearly') {
+                                // Mảng chứa giá trị của 12 tháng
+                                var monthsData = new Array(12).fill(0);
+
+                                // Ánh xạ dữ liệu từ API vào mảng đầy đủ của 12 tháng
+                                data.values.forEach(function (value, index) {
+                                    // Tháng được trả về từ API là 1-indexed, chuyển về 0-indexed
+                                    var monthIndex = data.labels[index] - 1;
+                                    monthsData[monthIndex] = value;
+                                });
+
+                                yearlyChart = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                                        datasets: [{
+                                            label: data.label,
+                                            data: monthsData,
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                            } 
+                            else if (chartType === 'monthly') {
+                                // Giả sử data.labels là mảng các ngày trong tháng
+                                var daysInMonth = new Array(31).fill(0);
+
+                                // Ánh xạ dữ liệu từ API vào mảng đầy đủ của các ngày trong tháng
+                                data.values.forEach(function (value, index) {
+                                    // Ngày được trả về từ API là 1-indexed, chuyển về 0-indexed
+                                    var dayIndex = data.labels[index] - 1;
+                                    daysInMonth[dayIndex] = value;
+                                });
+
+                                monthlyChart = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: Array.from({ length: 31 }, (_, i) => `Ngày ${i + 1}`),
+                                        datasets: [{
+                                            label: data.label,
+                                            data: daysInMonth,
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        // Hàm gọi API và vẽ biểu đồ cho năm được chọn
+                        function DrawChartForYear(selectedYear) {
+                            $.ajax({
+                                url: 'https://localhost:7162/api/Chart/' + selectedYear,
+                                method: 'GET',
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data && data.values && data.label) {
+                                        DrawChart(data,'yearly');
+                                    } else {
+                                        console.error('Invalid data received from API');
+                                    }
+                                },
+                                error: function (error) {
+                                    console.error('Error fetching data:', error);
+                                }
+                            });
+                        }
+                        function DrawChartForMonthOfTheYear(selectedMonth,selectedYear) {
+                            var linkapi = "";
+                            var datatype = "";
+                            if (selectedMonth === "0") {
+                                linkapi = 'https://localhost:7162/api/Chart/' + selectedYear;
+                                datatype = 'yearly';
+                                $('#chartTypeDropdown').val('yearly');
+                            } else {
+                                linkapi = 'https://localhost:7162/api/Chart/' + selectedMonth + '/' + selectedYear;
+                                datatype = 'monthly';
+                            }
+                            $.ajax({   
+                                url: linkapi,
+                                method: 'GET',
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data && data.values && data.label) {
+                                        DrawChart(data,datatype);
+                                    } else {
+                                        console.error('Invalid data received from API');
+                                    }
+                                },
+                                error: function (error) {
+                                    console.error('Error fetching data:', error);
+                                }
+                            });
+                        }
+                        function Last7DayChart(data) {
+                            var currentDay = new Date();
+
+                            const ctx = document.getElementById('selectedChart').getContext('2d');
+                            // Hủy bỏ biểu đồ hiện tại nếu có
+                            if (yearlyChart) {
+                                yearlyChart.destroy()
+                            }
+                            if (monthlyChart) {
+                                monthlyChart.destroy()
+                            }
+                            if (weeklyChart) {
+                                weeklyChart.destroy()
+                            }
+                            if (PickDateChart) {
+                                PickDateChart.destroy()
+                            }
+
+                            // Mảng chứa giá trị của 7 ngày gần nhất
+                            var dayData = new Array(7).fill(0);
+
+                            // Mảng chứa nhãn của 7 ngày gần nhất với định dạng ngày/tháng
+                            var labels = [];
+                            for (var i = 6; i >= 0; i--) {
+                                var date = new Date(currentDay);
+                                date.setDate(currentDay.getDate() - i);
+
+                                var day = date.getDate();
+                                var month = date.getMonth() + 1;
+
+                                // Định dạng ngày và tháng thành "dd/mm" và thêm vào mảng labels
+                                var formattedDate = `${day < 10 ? '0' : ''}${day}/${month < 10 ? '0' : ''}${month}`;
+                                labels.push(formattedDate);
+                            }
+
+                            var z = labels[0].slice(0, 2);
+                            // console.log('Begin Date:' + z);
+                            var dayIndex = 0;
+                            var biengancuaIndex = 0;
+                            // Ánh xạ dữ liệu từ API vào mảng của 7 ngày gần nhất
+                            data.values.forEach(
+                                function (value, index) {
+                                    // 25/11
+                                    var day = data.labels[index];
+                                    var daydate;
+
+                                    // Kiểm tra định dạng dd/mm/yyyy
+                                    if (day.length === 10) {
+                                        daydate = day.slice(3, 5); // Lấy ngày từ vị trí 3 đến 4 trong chuỗi
+                                    }
+                                    // Kiểm tra định dạng dd/mm/yyyy
+                                    else if (day.length === 9 && day.indexOf("/") === 1) {
+                                        daydate = day.slice(2, 3); // Lấy ngày từ vị trí 2 trong chuỗi
+                                    }
+                                    // Kiểm tra định dạng dd/m/yyyy
+                                    else if (day.length === 9 && day.indexOf("/") === 2) {
+                                        daydate = day.slice(3, 4); // Lấy ngày từ vị trí 3 trong chuỗi
+                                    }
+                                    // Kiểm tra định dạng dd/m/yyyy
+                                    else if (day.length === 8 && day.indexOf("/") === 1) {
+                                        daydate = day.slice(2, 3); // Lấy ngày từ vị trí 2 trong chuỗi
+                                    }
+                                    // Kiểm tra định dạng dd/m/yyyy hoặc d/mm/yyyy
+                                    else if (day.length === 8 && day.indexOf("/") === 2) {
+                                        daydate = day.slice(3, 4); // Lấy ngày từ vị trí 3 trong chuỗi
+                                    }
+
+                                    // console.log("Ngày là: " + daydate);
+
+                                    dayIndex = daydate - z;
+                                    if (dayIndex < 0) {
+                                        dayData[biengancuaIndex] = value;
+                                        biengancuaIndex += 1;
+                                        // console.log("Bien: " + biengancuaIndex);
+                                    }
+
+                                    else {
+                                        dayData[dayIndex] = value;
+                                        biengancuaIndex = dayIndex + 1;
+                                        // console.log("Bien: " + dayIndex);
+                                    }
+                                }
+
+                            );
+                            weeklyChart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: data.label,
+                                        data: dayData,
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        // Hàm vẽ biểu đồ hàng tuần
+                        function DrawLast7DayChart() {
+                            $.ajax({
+                                url: 'https://localhost:7162/api/Chart/weekly',
+                                method: 'GET',
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data && data.labels && data.values && data.label) {
+                                        Last7DayChart(data);
+                                    } else {
+                                        console.error('Invalid data received from API');
+                                    }
+                                },
+                                error: function (error) {
+                                    console.error('Error fetching data:', error);
+                                }
+                            });
+                        }
+                        function GetCustomer() {
+                            // Gọi API sử dụng Fetch API
+                            fetch('https://localhost:7162/api/Chart/Customers/Count')
+                                .then(response => response.json())
+                                .then(data => {
+                                    var customerCountElement = document.getElementById('customerCount');
+
+                                    // Kiểm tra xem phần tử có tồn tại không
+                                    if (customerCountElement) {
+                                        customerCountElement.innerText = data.count;
+                                    }
+                                })
+                                .catch(error => console.error('Error fetching customer data:', error));
+                        };
+                        function GetProducts() {
+                            fetch('https://localhost:7162/api/Chart/Products/Count')
+                                .then(response => response.json())
+                                .then(data => {
+                                    var productsCountElement = document.getElementById('products');
+
+                                    // Kiểm tra xem phần tử có tồn tại không
+                                    if (productsCountElement) {
+                                        productsCountElement.innerText = data.totalQuantity;
+                                    }
+                                })
+                                .catch(error => console.error('Error fetching customer data:', error));
+                        };
+                        function GetRevenues() {
+                            fetch('https://localhost:7162/api/Chart/Revenues/Count')
+                                .then(response => response.json())
+                                .then(data => {
+                                    var totalRevenue = document.getElementById('revenues');
+
+                                    // Kiểm tra xem phần tử có tồn tại không
+                                    if (totalRevenue) {
+                                        totalRevenue.innerText = data.totalRevenue;
+                                    }
+                                })
+                                .catch(error => console.error('Error fetching customer data:', error));
+                        };
+                        function GetOrders() {
+                            fetch('https://localhost:7162/api/Chart/CountOrders/Count')
+                                .then(response => response.json())
+                                .then(data => {
+                                    var totalOrder = document.getElementById('orderCount');
+
+                                    // Kiểm tra xem phần tử có tồn tại không
+                                    if (totalOrder) {
+                                        totalOrder.innerText = data.countOrder;
+                                    }
+                                })
+                                .catch(error => console.error('Error fetching customer data:', error));
+                        };
+
+                    });
+
+                    function exportToExcel() {
+                        if (confirm("Tải về file Excel?")) {
+                            var url = "https://localhost:7162/api/Chart/ExportDataToExcel/" + currentChart;
+                            var selectedyear = document.getElementById("yearDropdown").value;
+                            console.log(selectedyear)
+                            // Kiểm tra nếu là DatePicker thì lấy giá trị startDate và endDate từ các phần tử HTML
+                            if (currentChart === "DatePicker") {
+                                var startDateElement = document.getElementById("startDate");
+                                var endDateElement = document.getElementById("endDate");
+
+                                // Kiểm tra xem phần tử có tồn tại không
+                                if (startDateElement && endDateElement) {
+                                    var startDateValue = startDateElement.value;
+                                    var endDateValue = endDateElement.value;
+
+                                    // Thêm tham số startDate và endDate vào đường dẫn
+                                    url += `?startDate=${encodeURIComponent(startDateValue)}&endDate=${encodeURIComponent(endDateValue)}`;
+                                }
+                                else {
+                                    console.error("Không tìm thấy phần tử HTML");
+                                    return;
+                                }
+                            } else if (currentChart === "yearly") {
+                                url += `?currentyear=${encodeURIComponent(selectedyear)}`;
+                            }
+
+                            // Chuyển hướng đến đường dẫn đã tạo
+                            window.location.href = url;
+                        }
+                    }
+
+                </script>
+            </div>
+
         </div>
         <!-- /.row (main row) -->
     </div><!-- /.container-fluid -->

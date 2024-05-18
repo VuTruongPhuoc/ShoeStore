@@ -57,9 +57,9 @@
                         @Html.HiddenFor(x => x.Id)
                         <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                             <div class="form-group">
-                                <label name="Name" class="control-label">Tên màu</label>
+                                <label name="Name" class="control-label">Tên quyền</label>
                                 <input name="Name" class="form-control" value="@Model.Name" />
-                                <span asp-validation-for="Name" class="text-danger"></span>
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary">Lưu</button>

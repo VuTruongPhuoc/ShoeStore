@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ShoeStore.Data;
 using ShoeStore.Models;
 using X.PagedList;
@@ -9,12 +11,18 @@ namespace ShoeStore.Areas.Admin.Controllers
     [Route("admin/category")]
     [Route("admin/category/{action}")]
     [Route("admin/category/{action}/{id}")]
+    [Authorize(Roles = "Admin, Employee")]
     public class CategoryController : Controller
     {
         private ShoeStoreContext db = new ShoeStoreContext();
+        private readonly INotyfService _notyf;
+        public CategoryController(INotyfService notyf)
+        {
+            _notyf = notyf;
+        }
         public async Task<IActionResult> Index(string Searchtext, int? page)
         {
-            var pageSize = 3;
+            var pageSize = 5;
             if (page == null)
             {
                 page = 1;
@@ -24,7 +32,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             {
                 items = items.Where(x => x.Name.Contains(Searchtext));
             }
-            var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
+            var pageIndex = page.HasValue && page > 0 ? Convert.ToInt32(page) : 1;
             items = items.ToPagedList(pageIndex, pageSize);
             ViewBag.PageSize = pageSize;
             ViewBag.Page = page;
@@ -44,18 +52,19 @@ namespace ShoeStore.Areas.Admin.Controllers
                 try
                 {
                     db.Categories.Add(model);
-                    db.SaveChangesAsync();
-                    return RedirectToAction("Index", "Category", new { area = "Admin" });
-                }
-                catch (Exception ex)
-                {
-                    // Xử lý ngoại lệ một cách thích hợp, có thể ghi log hoặc hiển thị thông báo lỗi
-                    ModelState.AddModelError("", "Đã xảy ra lỗi khi lưu dữ liệu.");
-                }
-            }
-            // Nếu ModelState không hợp lệ, quay lại view với dữ liệu và thông báo lỗi
-            return View(model);
-        }
+                    await db.SaveChangesAsync();
+					_notyf.Success("Thêm dữ liệu thành công");
+					return RedirectToAction("index", "category", new { area = "admin" });
+				}
+				catch (Exception ex)
+				{
+					_notyf.Error("Có lỗi khi thêm dữ liệu " + ex.Message);
+					return View(model);
+				}
+			}
+			_notyf.Error("Có lỗi khi thêm dữ liệu");
+			return View(model);
+		}
 
         public IActionResult Edit(int id)
         {
@@ -78,17 +87,18 @@ namespace ShoeStore.Areas.Admin.Controllers
                     item.Image = model.Image;
                     item.Status = model.Status;
                     await db.SaveChangesAsync();
-                    return RedirectToAction("Index", "Category", new { area = "Admin" });
-                }
-                catch (Exception ex)
-                {
-                    // Xử lý ngoại lệ một cách thích hợp, có thể ghi log hoặc hiển thị thông báo lỗi
-                    ModelState.AddModelError("", "Đã xảy ra lỗi khi cập nhật dữ liệu.");
-                }
-            }
-            // Nếu ModelState không hợp lệ hoặc xảy ra ngoại lệ, quay lại view với dữ liệu và thông báo lỗi
-            return View(model);
-        }
+					_notyf.Success("Cập nhật dữ liệu thành công");
+					return RedirectToAction("index", "category", new { area = "admin" });
+				}
+				catch (Exception ex)
+				{
+					_notyf.Error("Có lỗi khi cập nhật dữ liệu " + ex.Message);
+					return View(model);
+				}
+			}
+			_notyf.Error("Có lỗi khi cập nhật dữ liệu");
+			return View(model);
+		}
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
@@ -115,24 +125,6 @@ namespace ShoeStore.Areas.Admin.Controllers
             }
             return Json(new { success = false });
         }
-        [HttpPost]
-        public async Task<IActionResult> DeleteAll(string idstr)
-        {
-            if (!string.IsNullOrEmpty(idstr))
-            {
-                var items = idstr.Split(",");
-                if (items != null && items.Any())
-                {
-                    foreach (var i in items)
-                    {
-                        var obj = await db.Categories.FindAsync(Convert.ToInt32(i));
-                        db.Categories.Remove(obj);
-                        await db.SaveChangesAsync();
-                    }
-                }
-                return Json(new { succes = true });
-            }
-            return Json(new { success = false });
-        }
+
     }
 }

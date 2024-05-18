@@ -1,5 +1,82 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = null;
 }
+
+<!DOCTYPE html>
+<html lang="en"
+      class="light-style layout-wide"
+      dir="ltr"
+      data-theme="theme-default"
+      data-template="vertical-menu-template-free">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>404 Not Found</title>
+
+    <meta name="description" content="Page not found" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="~/icon/icon3.png" sizes="32x32">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .error-wrapper {
+            text-align: center;
+        }
+
+        .error-code {
+            font-size: 6rem;
+            font-weight: 700;
+            color: #343a40;
+        }
+
+        .error-message {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary {
+            padding: 0.75rem 1.25rem;
+            font-size: 1rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="error-wrapper">
+        <h1 class="error-code">404</h1>
+        <h4 class="error-message">Page Not Found ⚠️</h4>
+        <p class="error-description">We couldn't find the page you are looking for.</p>
+        <div class="d-flex justify-content-center">
+           
+            <a href="#" class="btn btn-primary text-center my-4" onclick="goBack()">Come back</a>
+            <script>
+                function goBack() {
+                    window.history.back();
+                }
+            </script>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

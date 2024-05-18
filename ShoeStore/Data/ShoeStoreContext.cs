@@ -40,7 +40,7 @@ public partial class ShoeStoreContext : DbContext
 
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
-    public virtual DbSet<Voucher> Vouchers { get; set; }
+    public virtual DbSet<Vouchers> Vouchers { get; set; }
     public virtual DbSet<VoucherForAcc> VoucherForAccs { get; set; }
 
     public virtual DbSet<WishList> WishLists { get; set; }
@@ -138,13 +138,10 @@ public partial class ShoeStoreContext : DbContext
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.Property(e => e.Commnet).HasMaxLength(4000);
+            entity.Property(e => e.Content).HasMaxLength(4000);
             entity.Property(e => e.CreateAt).HasColumnType("datetime");
             entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Reviews)
-                .HasForeignKey(d => d.AccountId)
-                .HasConstraintName("FK_Reviews_Account");
 
             entity.HasOne(d => d.Product).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.ProductId)
@@ -172,7 +169,7 @@ public partial class ShoeStoreContext : DbContext
                 .IsUnicode(true);
         });
 
-        modelBuilder.Entity<Voucher>(entity =>
+        modelBuilder.Entity<Vouchers>(entity =>
         {
             entity.ToTable("Voucher");
 
@@ -181,7 +178,8 @@ public partial class ShoeStoreContext : DbContext
                 .IsUnicode(true);
             entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.StartDate).HasColumnType("datetime");
-        });
+
+		});
 
         modelBuilder.Entity<WishList>(entity =>
         {
@@ -191,9 +189,6 @@ public partial class ShoeStoreContext : DbContext
                 .HasForeignKey(d => d.AccountId)
                 .HasConstraintName("FK_WishLists_Account");
 
-            entity.HasOne(d => d.Product).WithMany(p => p.WishLists)
-                .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK_WishLists_Product");
         });
 
         OnModelCreatingPartial(modelBuilder);

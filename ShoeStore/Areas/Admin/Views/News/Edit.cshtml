@@ -60,7 +60,7 @@
                             <div class="form-group">
                                 <label name="Title" class="control-label">Tiêu đề</label>
                                 <input name="Title" class="form-control" value="@Model.Title"/>
-                                <span asp-validation-for="Title" class="text-danger"></span>
+                                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
                             </div>
                             <div class="form-group">
                                 <label name="Image" class="control-label">Ảnh đại diện</label>
@@ -68,18 +68,18 @@
                                 <div>
                                     <img src="@Model.Image" id="ImageView" width="100" />
                                 </div>
-                                <button type="button" id="btnBrowse">Chọn ảnh</button>
-                                <span asp-validation-for="Image" class="text-danger"></span>
+                                <button type="button" class="btn btn-sm btn-primary" id="btnBrowse">Chọn ảnh</button>
+                                @Html.ValidationMessageFor(model => model.Image, "", new { @class = "text-danger" })
                             </div>
                             <div class="form-group">
                                 <label name="Description" class="control-label">Mô tả</label>
                                 <textarea name="Description" class="form-control">@Model.Description</textarea>
-                                <span asp-validation-for="Description" class="text-danger"></span>
+                                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
                             </div>
                             <div class="form-group">
                                 <label name="Detail" class="control-label">Chi tiết</label>
                                 <textarea name="Detail" class="form-control" id="txtDetail">@Model.Detail</textarea>
-                                <span asp-validation-for="Detail" class="text-danger"></span>
+                                @Html.ValidationMessageFor(model => model.Detail, "", new { @class = "text-danger" })
                             </div>
 
                             <div class="form-group">
@@ -209,6 +209,7 @@
                 ['style', ['style']],
                 ['font', ['bold', 'underline', 'clear']],
                 ['fontname', ['fontname']],
+                ['fontsize', ['fontsize']],
                 ['color', ['color']],
                 ['para', ['ul', 'ol', 'paragraph']],
                 ['table', ['table']],

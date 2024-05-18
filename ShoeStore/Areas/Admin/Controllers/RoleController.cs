@@ -1,4 +1,5 @@
-﻿using elFinder.NetCore.Helpers;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using elFinder.NetCore.Helpers;
 using MailKit.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,11 +14,17 @@ namespace ShoeStore.Areas.Admin.Controllers
     [Route("admin/role")]
     [Route("admin/role/{action}")]
     [Route("admin/role/{action}/{id}")]
+    [Authorize(Roles = "Admin, Employee")]
     //[Authorize(Roles = "Admin")]
     public class RoleController : Controller
     {
         private readonly ShoeStoreContext db = new ShoeStoreContext();
+        private readonly INotyfService _notyf;
 
+        public RoleController(INotyfService notyf)
+        {
+            _notyf = notyf;
+        }
         public async Task<IActionResult> Index()
         {
             var items = db.Roles.ToList();
@@ -38,13 +45,18 @@ namespace ShoeStore.Areas.Admin.Controllers
                 {
                     db.Roles.Add(role);
                     db.SaveChanges();
+                    _notyf.Success("Thêm dữ liệu thành công");
+                    return RedirectToAction("index", "role", new { area = "admin" });
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Đã xảy ra lỗi khi lưu dữ liệu.");
+                    _notyf.Error("Đã xảy ra lỗi khi thêm dữ liệu" + ex.Message);
+                    return View(role);
                 }
             }
-            return RedirectToAction("index", "role", new { area = "admin" });
+            _notyf.Error("Đã xảy ra lỗi khi thêm dữ liệu");
+            return View(role);
+           
         }
 
         [HttpGet]
@@ -58,13 +70,26 @@ namespace ShoeStore.Areas.Admin.Controllers
         public async Task<ActionResult> Edit(Role model)
         {
             var item = await db.Roles.FindAsync(model.Id);
-            if(item != null)
-            {
-                item.Name = model.Name;
-                await db.SaveChangesAsync();
-                return RedirectToAction("index", "role", new { area = "admin" });
+            if (ModelState.IsValid && item is not null)
+        {
+                try
+                {
+                    item.Name = model.Name;
+                    await db.SaveChangesAsync();
+                    _notyf.Success("Cập nhật dữ liệu thành công");
+                    return RedirectToAction("index", "role", new { area = "admin" });
+                }
+                catch (Exception ex)
+                {
+                    _notyf.Error("Đã xảy ra lỗi khi cập nhật dữ liệu " + ex.Message);
+                    return View(model);
+                }
+                   
+                
             }
+            _notyf.Error("Đã xảy ra lỗi khi cập nhật dữ liệu");
             return View(item);
+
         }
         [HttpPost]
         public async Task<ActionResult> Delete(int id)

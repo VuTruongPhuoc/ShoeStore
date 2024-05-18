@@ -1,5 +1,6 @@
 ﻿@using X.PagedList;
 @using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
 @model X.PagedList.PagedList<ShoeStore.Models.Supplier>;
 @{
     ViewData["Title"] = "Danh sách nhà cung cấp";
@@ -52,7 +53,7 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-6">
+                <div class="col-4">
                     <!-- Tìm kiếm  -->
                     <form id="searchForm" asp-controller="Supplier" asp-action="Index" method="get">
                         <div class="input-group input-group-sm">
@@ -65,10 +66,10 @@
 
                 </div>
             </div>
-            <table class="table table-hover">
+            <div class="" style="padding-top:10px">
+                <table class="table table-hover table-bordered">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" id="SelectAll" /></th>
                         <th>STT</th>
                         <th>Tên</th>
                         <th>Số điện thoại </th>
@@ -85,7 +86,6 @@
                         {
 
                             <tr id="trow_@item.Id">
-                                <td><input type="checkbox" class="cbkItem" value="@item.Id" /></td>
                                 <td>@i</td>
                                 <td>@item.Name</td>
                                 <td>@item.PhoneNumber</td>
@@ -107,16 +107,24 @@
 
                 </tbody>
             </table>
-            @if (Model != null && Model.Any()){
+            </div>
+            @if (Model != null && Model.Any())
+            {
                 <div class="row">
-                    <div class="col-6 d-flex justify-content-end">
+                    <div class="col-12 d-flex justify-content-end" style="float:right">
                         <a href="#">
-                            @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page = page }),
-                                     new X.PagedList.Web.Common.PagedListRenderOptions
-                        {
-                            LiElementClasses = new string[] { "page-item" },
-                            PageClasses = new string[] { "page-link" }
-                        })
+                            @Html.PagedListPager(Model, page => Url.Action("index", new { page = page, sort = ViewBag.sort, Searchtext = ViewBag.Searchtext }), new PagedListRenderOptions()
+                           {
+                               ActiveLiElementClass = "active",
+                               PageClasses = new[] { "page-link" },
+                               LiElementClasses = new[] { "page-item" },
+                               UlElementClasses = new[] { "pagination", "justify-content-center", "mt-3", "size" },
+                               LinkToNextPageFormat = "Tiếp",
+                               LinkToPreviousPageFormat = "Trước",
+                               MaximumPageNumbersToDisplay = 10,
+                               DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                               DisplayLinkToNextPage = PagedListDisplayMode.Always
+                           })
                         </a>
 
                     </div>

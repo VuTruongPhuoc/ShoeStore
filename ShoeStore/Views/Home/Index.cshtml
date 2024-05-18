@@ -1,6 +1,7 @@
 ﻿@{
-    ViewData["Title"] = "P Shoe";
+	ViewData["Title"] = "PShop";
 	Layout = "~/Views/Shared/_Layout.cshtml";
+	List<WishList> wishlists = ViewBag.wishlist;
 }
 @model IEnumerable<ShoeStore.Models.ProductDetail>
 <!-- Slider -->
@@ -74,7 +75,7 @@
 						foreach (var item in Model)
 						{
 							if (ViewBag.Product != null)
-							{
+								{
 								foreach (var prd in ViewBag.Product)
 								{
 									if(@prd.Id == item.ProductId)
@@ -83,12 +84,30 @@
 										{
 											if(category.Id == prd.CategoryId)
 											{
-												<div class="product-item @category.Alias ">
-												<div class="product discount product_filter">
-													<div class="product_image">
-														<img src="@item.Image" height="221px" alt="@prd.Name">
-													</div>
-													<div class="favorite favorite_left"></div>
+												var userid = 0;
+												@if (User.Identity.IsAuthenticated)
+												{
+													userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
+												}
+												var wishlist = wishlists.FirstOrDefault(w => w.AccountId == userid && w.ProductDetailId == item.Id);
+												var isWishlist = false;
+												if (wishlist != null)
+												{
+													isWishlist = true;
+												}
+												<div class="product-item @category.Alias">
+													<div class="product discount product_filter">
+														<div class="product_image">
+															<img src="@item.Image" height="221px" alt="@prd.Name">
+														</div>
+														@if (isWishlist == true)
+														{
+															<div class="favorite favorite_left active" data-id="@item.Id"></div>
+														}
+														else
+														{
+															<div class="favorite favorite_left" data-id="@item.Id"></div>
+														}
 													@if (item.PriceSale > 0)
 													{
 														<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
@@ -194,13 +213,32 @@
 									{
 										if (@prd.Id == item.ProductId)
 										{
+											var userid = 0;
+											@if (User.Identity.IsAuthenticated)
+											{
+												userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
+											}
+
+											var wishlist = wishlists.FirstOrDefault(w => w.AccountId == userid && w.ProductDetailId == item.Id);
+											var isWishlist = false;
+											if (wishlist != null)
+											{
+												isWishlist = true;
+											}
 											<div class="owl-item product_slider_item">
-												<div class="product-item">
-													<div class="product discount">
+												<div class="product-item item">
+													<div class="product discount product_filter">
 														<div class="product_image">
 															<img src="@item.Image" height="221px" alt="@prd.Name">
 														</div>
-														<div class="favorite favorite_left"></div>
+														@if (isWishlist)
+														{
+															<div class="favorite favorite_left active" data-id="@item.Id"></div>
+														}
+														else
+														{
+															<div class="favorite favorite_left" data-id="@item.Id"></div>
+														}
 														@if (item.PriceSale > 0)
 														{
 															<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
@@ -242,3 +280,4 @@
 		</div>
 	</div>
 </div>
+

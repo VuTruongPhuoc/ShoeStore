@@ -56,7 +56,7 @@
                         <div class="form-group">
                             <label name="Name" class="control-label">Tên quyền</label>
                             <input name="Name" class="form-control" />
-                            <span asp-validation-for="Name" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Lưu</button>
@@ -80,7 +80,4 @@
 @section Styles {
     <link rel="stylesheet" href="~/lib/jqueryui/themes/base/theme.css" />
     <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.css" />
-    <link rel="stylesheet" href="~/admin/content/elfinder/css/elfinder.full.css" />
-    <link rel="stylesheet" href="~/admin/content/elfinder/css/theme.min.css" />
-    <link rel="stylesheet" href="~/admin/content/elfinder-material-theme/Material/css/theme-gray.css" />
 }

@@ -10413,6 +10413,22 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\news\\arsvsmu.png",
+      "PackagePath": "staticwebassets\\files\\images\\news\\arsvsmu.png"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\news\\arsvsmu2.png",
+      "PackagePath": "staticwebassets\\files\\images\\news\\arsvsmu2.png"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\news\\djokovic.jpg",
+      "PackagePath": "staticwebassets\\files\\images\\news\\djokovic.jpg"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\card.jpg",
+      "PackagePath": "staticwebassets\\files\\images\\product\\card.jpg"
+    },
+    {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\giaybongda.jpg",
       "PackagePath": "staticwebassets\\files\\images\\product\\giaybongda.jpg"
     },
@@ -10431,6 +10447,10 @@
     {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\lining-white.jpeg",
       "PackagePath": "staticwebassets\\files\\images\\product\\lining-white.jpeg"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\maugiay.jpg",
+      "PackagePath": "staticwebassets\\files\\images\\product\\maugiay.jpg"
     },
     {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\mizuno-den.jpg",

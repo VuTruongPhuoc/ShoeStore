@@ -26,7 +26,7 @@ namespace ShoeStore.Controllers
     {
         private INotyfService _notyf;
         private ISendEmail _sendEmail;
-        private ShoeStoreContext db = new ShoeStoreContext();
+        private readonly ShoeStoreContext db;
         public AccountController(ISendEmail sendEmail, ShoeStoreContext db, INotyfService notyf)
         {
             _sendEmail = sendEmail;
@@ -122,42 +122,28 @@ namespace ShoeStore.Controllers
                         var role = db.Roles.SingleOrDefault(p => p.Id == result.RoleId);
                         var claims = new List<Claim>()
                         {
-                            new Claim(ClaimTypes.NameIdentifier, result.Username)
+                            new Claim(ClaimTypes.NameIdentifier, result.Username),
+                            new Claim(ClaimTypes.Role, role.Name),
+                            new Claim("Id", result.Id.ToString()),
+                            new Claim("Username", result.Username),
+                            new Claim(ClaimTypes.Name, result.Username),
+                            new Claim(ClaimTypes.Email, result.Email)
                         };
-                        claims.Add(new Claim(ClaimTypes.Role, role.Name));
-                        claims.Add(new Claim("Id", result.Id.ToString()));
-                        claims.Add(new Claim("Username", result.Username));
-                        claims.Add(new Claim(ClaimTypes.Name, result.Username));
-                        claims.Add(new Claim(ClaimTypes.Email, result.Email));
 
                         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         var principal = new ClaimsPrincipal(identity);
 
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-                        var checkRoleAdmin = false;
-                        var checkRoleEmpoloyee = false;
-                        var checkRoles = role.Name;
-                        if (checkRoles.StartsWith("Adm"))
-                        {
-                            checkRoleAdmin = true;
-                        }
-                        else if (checkRoles.StartsWith("Sta"))
-                        {
-                            checkRoleEmpoloyee = true;
-                        }
-                        else
-                        {
-                            checkRoleAdmin = false;
-                        }
+                       
 
-                        if (checkRoleAdmin == true)
+                        if (role.Name.StartsWith("Adm"))
                         {
-                            return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/Admin/HomeAdmin/Index");
+                            return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/Admin/Index");
 
                         }
-                        else if (checkRoleEmpoloyee == true)
+                        else if (role.Name.StartsWith("Emp"))
                         {
-                            return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/Admin/HomeAdmin/Index");
+                            return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/Admin/Index");
                         }
                         else
                         {
@@ -203,7 +189,7 @@ namespace ShoeStore.Controllers
             }
             else if (checkEmail != null)
             {
-                ViewData["ErrorMessage"] = "Email này đã được đăng kí, hãy tạo tài khoản bằng email khác để đăng kí!";
+                ViewData["ErrorMessage"] = "Email này đã được đăng ký, hãy tạo tài khoản bằng email khác để đăng kí!";
                 return View("Register", model);
             }
             else if (checkPhone != null)
@@ -216,7 +202,7 @@ namespace ShoeStore.Controllers
             {
                 Username = model.Username,
                 FullName = model.FullName,
-                RoleId = 3,
+                RoleId = 4,  // nếu chạy lại cơ sở dữ liệu thì sẽ là số id mà bạn thêm vào thứ bao nhiêu với customer
                 PhoneNumber = model.PhoneNumber,
                 Address = model.Address,
                 Email = model.Email,
@@ -228,7 +214,7 @@ namespace ShoeStore.Controllers
             };
             db.Accounts.Add(acc);
             await db.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Đăng ký thành công!";
+            _notyf.Success("Đăng ký tài khoản thành công");
             return View("Login");
         }
         #endregion
@@ -320,8 +306,8 @@ namespace ShoeStore.Controllers
             }
 
         }
-        #endregion                   
-
+        #endregion
+        #region orderhistory
         [HttpGet,Authorize(Roles = "Customer")]
         public async Task<IActionResult> OrderHistory(int id , int? page , string? searchtext, int? status, DateTime? startdate , DateTime? enddate )
         {
@@ -390,19 +376,38 @@ namespace ShoeStore.Controllers
             ViewBag.image = db.ProductImages.ToList();
             return View(userorders);
         }
+        #endregion
         public async Task<IActionResult> Received(int id)
         {
             var userid = int.Parse(User.Claims.FirstOrDefault(u=>u.Type == "Id").Value);
             var x = await db.Orders.FindAsync(id);
             x.StatusOrder = 4;
             x.UpdateAt = DateTime.Now;
+            x.PaymentDate = DateTime.Now; 
             x.TypePayment = "Đã nhận hàng và thanh toán";
             await db.SaveChangesAsync();
             return RedirectToAction("orderhistorydetail","account", new {orderid = id});
         }
+        public async Task<IActionResult> CancelOrder(int id)
+        {
+            var x = await db.Orders.FindAsync(id);
+            if(x.StatusOrder == 1)
+            {
+                x.StatusOrder = 0;
+                x.UpdateAt = DateTime.Now;
+                await db.SaveChangesAsync();
+            }else if(x.StatusOrder == 2)
+            {
+                x.StatusOrder = 5;
+                x.UpdateAt = DateTime.Now;
+            }
+           
+            _notyf.Success("Đã xác nhận hủy đơn");
+            return RedirectToAction("orderhistorydetail", "account", new { orderid = id});
+        }
         public async Task<IActionResult> Logout()
 		{
-			HttpContext.Session.Clear();
+			//HttpContext.Session.Clear();
 			await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 			return Redirect("~/home/index");
 		}
