@@ -41,24 +41,33 @@ namespace ShoeStore.Controllers
             return View(user);
         }
         [HttpPost, AllowAnonymous]
-        public async Task<IActionResult> Profile(AccountVM model)
+        public async Task<IActionResult> Profile(Account model)
         {
-            try
+            var user = await db.Accounts.FindAsync(model.Id);
+            if(user != null)
             {
-                var user = new Account();
-                user.Username = model.Username;
-                user.Email = model.Email;
-                user.PhoneNumber = model.PhoneNumber;
-                user.FullName = model.FullName;
-                user.Address = model.Address;
-                db.SaveChanges();
-                _notyf.Success("Lưu thông tin thành công");
-                return Redirect($"~/Account/Profile?id={model.Id}");
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        user.Username = model.Username;
+                        user.Email = model.Email;
+                        user.PhoneNumber = model.PhoneNumber;
+                        user.FullName = model.FullName;
+                        user.Address = model.Address;
+                        await db.SaveChangesAsync();
+                        _notyf.Success("Lưu thông tin thành công");
+                        return RedirectToAction("profile", "account", new { id = model.Id });
+                    }
+                    catch (Exception ex)
+                    {
+                        _notyf.Warning("Có lỗi khi cập nhật dữ liệu" + ex.Message);
+                        return View(model);
+                    }
+                }
             }
-            catch
-            {
-                return View();
-            }
+            _notyf.Warning("Có lỗi khi cập nhật dữ liệu");
+            return View(model);
         }
         #endregion
         #region changepassword
@@ -202,7 +211,7 @@ namespace ShoeStore.Controllers
             {
                 Username = model.Username,
                 FullName = model.FullName,
-                RoleId = 4,  // nếu chạy lại cơ sở dữ liệu thì sẽ là số id mà bạn thêm vào thứ bao nhiêu với customer
+                RoleId = 2,  // nếu chạy lại cơ sở dữ liệu thì sẽ là số id mà bạn thêm vào thứ bao nhiêu với customer
                 PhoneNumber = model.PhoneNumber,
                 Address = model.Address,
                 Email = model.Email,
@@ -324,7 +333,6 @@ namespace ShoeStore.Controllers
             {
                 items = items.Where(o => o.CreateAt >= startdate).ToList();
             }
-
             if (enddate != null)
             {
                 items = items.Where(o => o.CreateAt <= enddate).ToList();
@@ -335,14 +343,14 @@ namespace ShoeStore.Controllers
             }
             if (!searchtext.IsNullOrEmpty())
             {
-                items = db.Orders.Where(o => o.Code.ToLower().Contains(searchtext.ToLower()) || o.CustomerName.ToLower().Contains(searchtext.ToLower())).ToList();
+                items =items.Where(o => o.Code.ToLower().Contains(searchtext.ToLower()) || o.CustomerName.ToLower().Contains(searchtext.ToLower())).ToList();
             }
             if (status != null)
             {
-                items = db.Orders.Where(o => o.StatusOrder == status).ToList();
+                items = items.Where(o => o.StatusOrder == status).ToList();
             }
             var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
-            var pageSize = 10;
+            var pageSize = 5;
             ViewBag.PageSize = pageSize;
             ViewBag.Page = page;
             items = items.OrderByDescending(x => x.CreateAt).ToList();
@@ -381,10 +389,8 @@ namespace ShoeStore.Controllers
         {
             var userid = int.Parse(User.Claims.FirstOrDefault(u=>u.Type == "Id").Value);
             var x = await db.Orders.FindAsync(id);
-            x.StatusOrder = 4;
             x.UpdateAt = DateTime.Now;
-            x.PaymentDate = DateTime.Now; 
-            x.TypePayment = "Đã nhận hàng và thanh toán";
+            _notyf.Success("Đã xác nhận nhận hàng");
             await db.SaveChangesAsync();
             return RedirectToAction("orderhistorydetail","account", new {orderid = id});
         }

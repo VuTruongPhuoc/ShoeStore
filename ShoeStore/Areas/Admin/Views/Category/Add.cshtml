@@ -1,4 +1,5 @@
 ﻿@model ShoeStore.Models.Category
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Thêm mới loại sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -11,7 +12,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+            <a href="/admin" class="nav-link">Trang chủ</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="/admin/category/index" class="nav-link">Loại sản phẩm</a>
@@ -53,28 +54,28 @@
                     @Html.AntiForgeryToken()
                     <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                         <div class="form-group">
-                            <label name="Name" class="control-label">Loại sản phẩm</label>
-                            <input name="Name" class="form-control" />
-                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                            <label asp-for="Name" class="control-label">Loại sản phẩm</label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="Alias" class="control-label">Bí danh</label>
-                            <input name="Alias" class="form-control" />
-                            @Html.ValidationMessageFor(model => model.Alias, "", new { @class = "text-danger" })
+                            <label asp-for="Alias" class="control-label">Bí danh</label>
+                            <input asp-for="Alias" class="form-control" />
+                            <span asp-validation-for="Alias" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="Description" class="control-label">Mô tả</label>
-                            <input name="Description" class="form-control" />
-                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                            <label asp-for="Description" class="control-label">Mô tả</label>
+                            <input asp-for="Description" class="form-control" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="Image" class="control-label">Ảnh đại diện</label>
-                            <input name="Image" class="form-control" id="txtImage" />
+                            <label asp-for="Image" class="control-label">Ảnh đại diện</label>
+                            <input asp-for="Image" class="form-control" id="txtImage" />
                             <div>
                                 <img src="" id="ImageView" width="100" />
                             </div>
                             <button type="button" class="btn btn-primary" id="btnBrowse">Chọn ảnh</button>
-                            @Html.ValidationMessageFor(model => model.Image, "", new { @class = "text-danger" })
+                            <span asp-validation-for="Image" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Status" class="control-label">Hiển thị</label>
@@ -100,8 +101,16 @@
 @section Styles {
     <link rel="stylesheet" href="~/lib/jqueryui/themes/base/theme.css" />
     <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" href="~/admin/content/elfinder/css/elfinder.full.css" />
+    <link rel="stylesheet" href="~/admin/content/elfinder/css/theme.min.css" />
+    <link rel="stylesheet" href="~/admin/content/elfinder-material-theme/Material/css/theme-gray.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.css" rel="stylesheet">
+   
 }
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.js"></script>
+    <!-- Include elFinder JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/elfinder/2.1.59/js/elfinder.min.js"></script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

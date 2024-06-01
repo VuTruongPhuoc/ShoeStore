@@ -1,4 +1,5 @@
 ﻿@model ShoeStore.Models.Product
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Thêm mới sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -11,7 +12,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+            <a href="/admin" class="nav-link">Trang chủ</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="/admin/product/index" class="nav-link">Sản phẩm</a>
@@ -53,13 +54,13 @@
                     @Html.AntiForgeryToken()
                     <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                         <div class="form-group">
-                            <label name="Name" class="control-label">Tên sản phẩm</label>
-                            <input name="Name" class="form-control" />
-                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                            <label asp-for="Name" class="control-label">Tên sản phẩm</label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div> 
                         <div class="form-group">
-                            <label name="CategoryId" class="control-label">Loại sản phẩm</label>
-                            <select name="CategoryId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
+                            <label asp-for="CategoryId" class="control-label">Loại sản phẩm</label>
+                            <select asp-for="CategoryId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
                                 @if(ViewBag.Category != null) {
                                     foreach (var item in ViewBag.Category)
                                     {
@@ -67,11 +68,11 @@
                                      }
                                 }
                             </select>
-                            @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="SupplierId" class="control-label">Nhà cung cấp</label>
-                            <select name="SupplierId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
+                            <label asp-for="SupplierId" class="control-label">Nhà cung cấp</label>
+                            <select asp-for="SupplierId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
                                 @if (ViewBag.Supplier != null)
                                 {
                                     foreach (var item in ViewBag.Supplier)
@@ -80,22 +81,22 @@
                                     }
                                 }
                             </select>
-                            @Html.ValidationMessageFor(model => model.SupplierId, "", new { @class = "text-danger" })
+                            <span asp-validation-for="SupplierId" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="Code" class="control-label">Mã Code</label>
-                            <input name="Code" class="form-control" />
-                            @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+                            <label asp-for="Code" class="control-label">Mã Code</label>
+                            <input asp-for="Code" class="form-control" />
+                            <span asp-validation-for="Code" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="Description" class="control-label">Mô tả</label>
-                            <textarea name="Description" class="form-control"></textarea>
-                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                            <label asp-for="Description" class="control-label">Mô tả</label>
+                            <textarea asp-for="Description" class="form-control"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="Detail" class="control-label">Chi tiết</label>
-                            <textarea name="Detail" class="form-control" id="txtDetail"></textarea>
-                            @Html.ValidationMessageFor(model => model.Detail, "", new { @class = "text-danger" })
+                            <label asp-for="Detail" class="control-label">Chi tiết</label>
+                            <textarea asp-for="Detail" class="form-control" id="txtDetail"></textarea>
+                            <span asp-validation-for="Detail" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Status" class="control-label">Hiển thị</label>
@@ -157,7 +158,7 @@
             toolbar: [
                 ['style', ['style']],
                 ['font', ['bold', 'underline', 'clear']],
-                ['fontname', ['fontname']],
+                ['fontasp-for', ['fontasp-for']],
                 ['color', ['color']],
                 ['para', ['ul', 'ol', 'paragraph']],
                 ['table', ['table']],

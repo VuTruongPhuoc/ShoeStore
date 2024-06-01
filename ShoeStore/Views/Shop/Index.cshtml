@@ -2,17 +2,21 @@
 @using X.PagedList.Mvc.Core
 @using X.PagedList.Web.Common
 @using System.Globalization
+@using Newtonsoft.Json
 @model X.PagedList.IPagedList<ShoeStore.Models.ProductDetail>
 @{
 	ViewData["Title"] = "Cửa hàng";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	List<WishList> wishlists = ViewBag.wishlist;
+	List<Category> categories = ViewBag.Category;
+	List<Color> color = ViewBag.Color;
+	List<Size> sizes = ViewBag.Size;
+	List<Product> product = ViewBag.Product;
+	var categoryid = ViewBag.CategoryId;
 }
 <!-- Hamburger Menu -->
 <link rel="stylesheet" type="text/css" href="~/assets/styles/categories_styles.css">
 <link rel="stylesheet" type="text/css" href="~/assets/styles/categories_responsive.css">
-
-
 <div class="container product_section_container">
 	<div class="row">
 		<div class="col product_section clearfix">
@@ -33,32 +37,24 @@
 					<div class="sidebar_title">
 						<h5>Loại sản phẩm</h5>
 					</div>
-					<ul class="sidebar_categories">
-						@{						
-							ShoeStore.Data.ShoeStoreContext db = new ShoeStore.Data.ShoeStoreContext();
-							foreach (var item in db.Categories.ToList())
-							{
-								if (ViewBag.CategoryId == item.Id)
+					<form id="category-filter-form">
+						<ul class="sidebar_categories">
+							@if (ViewBag.Category != null)
 								{
-									<li class="active"><a href="~/shop/index/@item.Id"><span><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>@item.Name</a></li>
+									<li class="filter-list">
+										<input class="pixel-radio" type="checkbox" id="category-all" value="all" name="category">
+										<label for="category-all">Tất cả loại</label>
+									</li>
+									foreach(var item in categories)
+									{
+									<li class="filter-list">
+										<input class="pixel-radio" type="checkbox" id="category-@item.Id" value="@item.Id" name="category" @(item.Id == categoryid ? "checked" : "")>
+										<label for="category-@item.Id">@item.Name</label>
+									</li>
+									}
 								}
-								else
-								{
-									<li><a href="~/shop/index/@item.Id">@item.Name</a></li>
-								}
-							}
-
-						}
-						@if(ViewBag.CategoryId == null)
-						{
-							<li class="active"><a href="~/shop/index"><span><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>Cửa hàng</a></li>
-						}
-						else
-						{
-							<li><a href="~/shop/index">Cửa hàng</a></li>
-						}
-
-					</ul>			
+						</ul>
+					</form>
 				</div>
 
 				<!-- Price Range Filtering -->
@@ -66,59 +62,97 @@
 					<div class="sidebar_title">
 						<h5>Lọc theo giá</h5>
 					</div>
-					<p>
+					@* <p>
 						<input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
 					</p>
-					<div id="slider-range"></div>
-					<div class="filter_button"><span>Lọc</span></div>
+					<div id="slider-range"></div> 
+					<div class="filter_button"><span>Lọc</span></div>*@
+					 <form id="price-filter-form">
+						<ul>
+							<li class="filter-list">
+								<input class="pixel-radio" type="checkbox" id="price-all" value="all" name="price" >
+								<label for="price-all">Tất cả giá</label>
+							</li>
+							<li class="filter-list">
+								<input class="pixel-radio" type="checkbox" id="price-1" value="0-100000" name="price">
+								<label for="price-1">Dưới 100k</label>
+							</li>
+							<li class="filter-list">
+								<input class="pixel-radio" type="checkbox" id="price-2" value="100000-300000" name="price">
+								<label for="price-2">100k - 300k</label>
+							</li>
+							<li class="filter-list">
+								<input class="pixel-radio" type="checkbox" id="price-3" value="300000-500000" name="price">
+								<label for="price-3">300k - 500k</label>
+							</li>
+							<li class="filter-list">
+								<input class="pixel-radio" type="checkbox" id="price-4" value="500000-700000" name="price">
+								<label for="price-4">500k - 700k</label>
+							</li>
+							<li class="filter-list">
+								<input class="pixel-radio" type="checkbox" id="price-5" value="700000-1000000" name="price">
+								<label for="price-5">700k - 1000k</label>
+							</li>
+							<li class="filter-list">
+								<input class="pixel-radio" type="checkbox" id="price-5" value="1000000-0" name="price">
+								<label for="price-5">Trên 1000k</label>
+							</li>
+						</ul>
+					</form>
 					
 				</div>
 
 				<!-- Sizes -->
 				<div class="sidebar_section">
 					<div class="sidebar_title">
-						<h5>Sizes</h5>
+						<h5>Kích cỡ</h5>
 					</div>
-					<ul class="checkboxes">
-						@if (ViewBag.Size != null && ViewBag.Size.Count > 0)
-						{
-							<li class="filter-list">
-								<input class="pixel-radio" type="checkbox" id="size-all" value="all" name="size">
-								<label for="size-all">Tất cả size</label>
-							</li>
-							@foreach (var item in ViewBag.Size)
+					<form id="size-filter-form">
+						<ul class="checkboxes">
+							@if (ViewBag.Size != null && ViewBag.Size.Count > 0)
 							{
 								<li class="filter-list">
-									<input class="pixel-radio" type="checkbox" id="size-@item.Id" value="@item.Name" name="size">
-									<label for="size-@item.Id">@item.Name</label>
+									<input class="pixel-radio" type="checkbox" id="size-all" value="all" name="size">
+									<label for="size-all">Tất cả size</label>
 								</li>
+								@foreach (var item in sizes)
+								{
+									<li class="filter-list">
+										<input class="pixel-radio " type="checkbox" id="size-@item.Name" value="@item.Id" name="size">
+										<label class="" for="size-@item.Id">@item.Name</label>
+									</li>
+								}
 							}
-						}
-
-
-					</ul>
+						</ul>
+					</form>
 				</div>
 
-				<!-- Color -->
-				@* <div class="sidebar_section">
+				<!-- color -->
+				<div class="sidebar_section">
 					<div class="sidebar_title">
-						<h5>Color</h5>
+						<h5>Màu sắc</h5>
 					</div>
-					<ul class="checkboxes">
-						<li><i class="fa fa-square-o" aria-hidden="true"></i><span>Đen</span></li>
-						<li class="active"><i class="fa fa-square" aria-hidden="true"></i><span>Hồng</span></li>
-						<li><i class="fa fa-square-o" aria-hidden="true"></i><span>Trắng</span></li>
-						<li><i class="fa fa-square-o" aria-hidden="true"></i><span>Xanh blue</span></li>
-						<li><i class="fa fa-square-o" aria-hidden="true"></i><span>Cam</span></li>
-						<li><i class="fa fa-square-o" aria-hidden="true"></i><span>Đỏ</span></li>
-					</ul>
-					<div class="show_more">
-						<span><span>+</span>Show More</span>
-					</div>
-				</div> *@
+					<form id="color-filter-form">
+						<ul>
+							<li class="filter-list">
+								<input class="pixel-radio" type="checkbox" id="color-all" value="all" name="color">
+								<label for="color-all">Tất cả màu sắc</label>
+							</li>
+							@{
+								foreach (var item in color)
+								{
+									<li class="filter-list">
+										<input class="pixel-radio" type="checkbox" id="color-@item.Id" value="@item.Id" name="color">
+										<label for="@item.Id">@item.Name</label>
+									</li>
+								}
+							}
+						</ul>
+					</form>
+				</div>
 
 			</div>
-
+			@* <button id="btnFilter" class="btn btn-close">Lọc</button> *@
 			<!-- Main Content -->
 
 			<div class="main_content">
@@ -131,7 +165,7 @@
 
 							<!-- Product Sorting -->
 
-							<div class="product_sorting_container product_sorting_container_top">
+							@* <div class="product_sorting_container product_sorting_container_top">
 								<ul class="product_sorting">
 									<li>
 										<span class="type_sorting_text">Mặc định</span>
@@ -142,97 +176,65 @@
 											<li class="type_sorting_btn" data-isotope-option='{ "sortBy": "name" }'><span>Tên sản phẩm</span></li>
 										</ul>
 									</li>
-									<li>
-										<span>Hiển thị</span>
-										<span class="num_sorting_text">4</span>
-										<i class="fa fa-angle-down"></i>
-										<ul class="sorting_num">
-											<li class="num_sorting_btn"><span>4</span></li>
-											<li class="num_sorting_btn"><span>8</span></li>
-											<li class="num_sorting_btn"><span>12</span></li>
-										</ul>
-									</li>
 								</ul>
-								@* <div class="pages d-flex flex-row align-items-center">
-									<div class="page_current">
-										<span>1</span>
-										<ul class="page_selection">
-											<li><a href="#">1</a></li>
-											<li><a href="#">2</a></li>
-											<li><a href="#">3</a></li>
-										</ul>
-									</div>
-									<div class="page_total"><span>of</span> 3</div>
-									<div id="next_page" class="page_next"><a href="#"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a></div>
-								</div> *@
 
-							</div>
+							</div> *@
 
 							<!-- Product Grid -->
 
-							<div class="product-grid">
-
+							<div class="product-grid row" id="filtered-products">
 								<!-- Product 1 -->
 								@if (Model != null && Model.Any())
 								{
 									foreach (var item in Model)
 									{
-										if (ViewBag.Product != null)
+										var prd = product.FirstOrDefault(p => p.Id == item.ProductId);
+										var userid = 0;
+										@if (User.Identity.IsAuthenticated)
 										{
-											foreach (var prd in ViewBag.Product)
-											{
-												if (@prd.Id == item.ProductId)
-												{
-													var userid = 0;
-													@if (User.Identity.IsAuthenticated)
-													{
-														userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
-													}
-													var wishlist = wishlists.FirstOrDefault(w => w.AccountId == userid && w.ProductDetailId == item.Id);
-													var isWishlist = false;
-													if (wishlist != null)
-													{
-														isWishlist = true;
-													}
-													<div class="product-item item">
-														<div class="product discount product_filter">
-															<div class="product_image">
-																<img src="@item.Image" height="221px" alt="@prd.Name">
-															</div>
-															@if (isWishlist == true)
-															{
-																<div class="favorite favorite_left active" data-id="@item.Id"></div>
-															}
-															else
-															{
-																<div class="favorite favorite_left" data-id="@item.Id"></div>
-															}
-
-															@if (item.PriceSale > 0)
-															{
-																<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
-															}
-															<div class="product_info">
-																<h6 class="product_name"><a href="~/shop/detail/@item.Id"> @prd.Name</a></h6>
-																@if (item.PriceSale > 0)
-																{
-																	<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.PriceSale, 0)<span>@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</span></div>
-
-																	<div style="display:none;" class="in_product_price"> @item.PriceSale</div>
-																}
-																else
-																{
-																	<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</div>
-																	<div style="display:none;" class="in_product_price"> @item.Price</div>
-																}
-															</div>
-														</div>
-														<div class="red_button add_to_cart_button"><a href="~/shop/detail/@item.Id">Mua ngay</a></div>
-													</div>
-												}
-											}
+											userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
 										}
+										var wishlist = wishlists.FirstOrDefault(w => w.AccountId == userid && w.ProductDetailId == item.Id);
+										var isWishlist = false;
+										if (wishlist != null)
+										{
+											isWishlist = true;
+										}
+										<div class="product-item item">
+											<div class="product discount product_filter">
+												<div class="product_image">
+													<img src="@item.Image" height="221px" alt="@item.Name">
+												</div>
+												@if (isWishlist == true)
+												{
+													<div class="favorite favorite_left active" data-id="@item.Id"></div>
+												}
+												else
+												{
+													<div class="favorite favorite_left" data-id="@item.Id"></div>
+												}
 
+												@if (item.PriceSale > 0)
+												{
+													<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
+												}
+												<div class="product_info">
+													<h6 class="product_name"><a href="~/shop/detail/@item.Id"> @item.Name</a></h6>
+													@if (item.PriceSale > 0)
+													{
+														<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.PriceSale, 0)<span>@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</span></div>
+
+														<div style="display:none;" class="in_product_price"> @item.PriceSale</div>
+													}
+													else
+													{
+														<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</div>
+														<div style="display:none;" class="in_product_price"> @item.Price</div>
+													}
+												</div>
+											</div>
+											<div class="red_button add_to_cart_button"><a href="~/shop/detail/@item.Id">Mua ngay</a></div>
+										</div>
 									}
 
 								}
@@ -241,7 +243,7 @@
 
 							<!-- Product Sorting -->
 							<div class="col-md-12" style="float:right">
-								@if (Model != null && Model.Any())
+								@* @if (Model != null && Model.Any())
 								{
 									<div class="product_sorting_container product_sorting_container_bottom clearfix">
 										@Html.PagedListPager(Model, page => Url.Action("index", new { page = page, sort = ViewBag.sort, sizes = ViewBag.sizes,searchtext = ViewBag.searchtext }), new PagedListRenderOptions()
@@ -258,7 +260,7 @@
 										})
 									</div>
 								}
-							</div>
+							</div> *@
 							
 						
 						</div>
@@ -271,36 +273,69 @@
 @section Scripts {
 	<script src="~/assets/js/categories_customs.js"></script>
 	<script>
-		$(document).ready(function () {
-			// Khôi phục trạng thái của các checkbox khi trang được tải lại
-			var storedSizes = localStorage.getItem('selectedSizes');
-			if (storedSizes) {
-				storedSizes = JSON.parse(storedSizes);
-				storedSizes.forEach(function (size) {
-					$('input[type="checkbox"][name="size"][value="' + size + '"]').prop('checked', true);
+		document.addEventListener("DOMContentLoaded", function () {
+			// Thêm sự kiện cho nút lọc
+			function handleCheckboxChange(){
+				var categories = getSelectedCheckboxes("category-filter-form");
+				var colors = getSelectedCheckboxes("color-filter-form");
+				var sizes = getSelectedCheckboxes("size-filter-form");
+				var priceRange = getSelectedCheckboxes("price-filter-form");
+				var data = {
+					Categories: categories,
+					Colors: colors,
+					Sizes: sizes,
+					PriceRanges: priceRange
+				};
+
+				// Gửi yêu cầu lọc đến server
+				fetch("/Shop/GetFilterProducts", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(data)
+				})
+					.then(handleResponse)
+					.then(updateFilteredProducts)
+					.catch(handleError);
+			}
+			$('input[type=checkbox]').on('change', function () {
+				handleCheckboxChange();
+			});
+
+
+			// Hàm xử lý phản hồi từ fetch
+			function handleResponse(response) {
+				if (response.ok) {
+					return response.text();
+				} else {
+					throw new Error("Error sending data to the controller");
+				}
+			}
+
+			// Hàm cập nhật sản phẩm sau khi lọc
+			function updateFilteredProducts(result) {
+				$("#filtered-products").html(result);
+
+				$("#filtered-products").css({
+					"height": ""
+
 				});
 			}
 
-			// Lưu trạng thái của các checkbox vào local storage khi có sự thay đổi
-			$('input[type="checkbox"][name="size"]').on('change', function () {
-				var selectedSizes = $('input[type="checkbox"][name="size"]:checked').map(function () {
+			// Hàm xử lý lỗi
+			function handleError(error) {
+				console.log("An error occurred: ", error);
+			}
+			var productsData = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Productlists ?? new List<ProductDetail>()));
+			// Hàm lấy giá trị của các checkbox được chọn trong một biểu mẫu
+			function getSelectedCheckboxes(formId) {
+				var checkboxes = $('#' + formId + ' input[type="checkbox"]:checked');
+				return checkboxes.map(function () {
 					return $(this).val();
 				}).get();
-				localStorage.setItem('selectedSizes', JSON.stringify(selectedSizes));
-			});
-		});
-
-		// Xử lý sự kiện chuyển trang khi có sự thay đổi
-		$('input[type="checkbox"][name="size"]').on('change', function () {
-			var selectedSizes = $('input[type="checkbox"][name="size"]:checked').map(function () {
-				return $(this).val();
-			}).get();
-
-			// Xây dựng URL mới dựa trên các size được chọn
-			var url = "/Shop/index?sizes=" + selectedSizes.join(',');
-
-			// Chuyển hướng trình duyệt đến URL mới
-			window.location.href = url;
+			}
+			
 		});
 	</script>
 

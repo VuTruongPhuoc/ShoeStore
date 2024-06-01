@@ -23,7 +23,7 @@ namespace ShoeStore.Areas.Admin.Controllers
         }
         public IActionResult Index(string Searchtext,int? page)
         {
-            var pageSize = 3;
+            var pageSize = 10;
             if (page == null)
             {
                 page = 1;

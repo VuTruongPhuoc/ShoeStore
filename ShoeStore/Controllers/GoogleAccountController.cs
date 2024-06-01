@@ -14,6 +14,11 @@ namespace ShoeStore.Controllers
     public class GoogleAccountController : Controller
     {
         private ShoeStoreContext db = new ShoeStoreContext();
+        public GoogleAccountController(ShoeStoreContext db)
+        {
+            this.db = db;
+        }
+
         [AllowAnonymous]
         [Route("/google/login")]
         public IActionResult GoogleLogin(string returnUrl)
@@ -53,28 +58,14 @@ namespace ShoeStore.Controllers
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, newprincipal);
 
-                    var checkRoleAdmin = false;
-                    var checkRoleEmpoloyee = false;
                     var checkRoles = role.Name;
-                    if (checkRoles.StartsWith("Adm"))
-                    {
-                        checkRoleAdmin = true;
-                    }
-                    else if (checkRoles.StartsWith("Sta"))
-                    {
-                        checkRoleEmpoloyee = true;
-                    }
-                    else
-                    {
-                        checkRoleAdmin = false;
-                    }
 
-                    if (checkRoleAdmin == true)
+                    if (checkRoles.StartsWith("Adm"))
                     {
                         return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/admin/index");
 
                     }
-                    else if (checkRoleEmpoloyee == true)
+                    else if (checkRoles.StartsWith("Emp"))
                     {
                         return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/admin/index");
                     }

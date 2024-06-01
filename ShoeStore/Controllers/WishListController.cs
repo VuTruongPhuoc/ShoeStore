@@ -11,6 +11,11 @@ namespace ShoeStore.Controllers
     public class WishListController : Controller
     {
         private readonly ShoeStoreContext db = new ShoeStoreContext();
+        public WishListController(ShoeStoreContext db)
+        {
+            this.db = db;
+        }
+
         public async  Task<IActionResult> Index(int? page)
         {
             ViewBag.product = db.Products.ToList();

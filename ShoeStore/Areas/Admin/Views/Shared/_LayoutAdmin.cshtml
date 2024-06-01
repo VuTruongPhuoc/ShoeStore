@@ -169,7 +169,7 @@
                              with font-awesome or any other icon font library -->
                         <li class="nav-item ">
                             <a href="#">                            
-                                Core
+                                Trang chủ
                             </a>
                         </li>
                         <li class="nav-item ">
@@ -187,7 +187,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fa fa-user"></i>
                                 <p>
                                     Quản lý người dùng
                                     <i class="right fas fa-angle-left"></i>
@@ -212,7 +212,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fa fa-snowflake-o"></i>
                                 <p>
                                     Quản lý phân quyền
                                     <i class="right fas fa-angle-left"></i>
@@ -229,7 +229,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fa fa-vimeo"></i>
                                 <p>
                                     Quản lý voucher
                                     <i class="right fas fa-angle-left"></i>
@@ -246,7 +246,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fa fa-newspaper-o"></i>
                                 <p>
                                     Quản lý tin tức
                                     <i class="right fas fa-angle-left"></i>
@@ -264,7 +264,7 @@
                        
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fas fa-clipboard-list"></i>
                                 <p>
                                     Quản lý đơn hàng
                                     <i class="right fas fa-angle-left"></i>
@@ -330,7 +330,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fab fa-envira"></i>
                                 <p>
                                     Quản lý nhà cung cấp
                                     <i class="right fas fa-angle-left"></i>
@@ -354,11 +354,36 @@
                             </ul>
                         </li>
                         <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fa fa-bar-chart"></i>
+                                <p>
+                                    Thống kê
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="~/admin/statistics/revenuestatistics" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Thống kê doanh thu</p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="~/admin/statistics/inventorystatistics" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Thống kê hàng tồn</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
                             <a href="~/home/index" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fa fa-backward"></i>
                                 <p>
                                     Quay lại trang chủ
-                                    <i class="right fas fa-angle-left"></i>
+                                   @*  <i class="right fas fa-angle-left"></i> *@
                                 </p>
                             </a> 
                         </li>
@@ -366,7 +391,7 @@
                         {
                         <li class="nav-item">
                             <a href="javascript:document.getElementById('logoutForm').submit()" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
+                                    <i class="nav-icon fa fa-sign-out"></i>
                                 <p>
                                     Đăng xuất
                                     @*<span class="right badge badge-danger">New</span>*@
@@ -375,7 +400,7 @@
                         </li>
                         
                             <div style="display:none">
-                                @using (Html.BeginForm("logout", "Account", FormMethod.Post, new { @id = "logoutForm" }))
+                                @using (Html.BeginForm("logout", "account", FormMethod.Post, new { @id = "logoutForm" }))
                                 {
                                     @Html.AntiForgeryToken()
                                 }

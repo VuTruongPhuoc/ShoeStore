@@ -1,0 +1,66 @@
+﻿﻿@using System.Globalization;   
+@{
+	List<WishList> wishlists = ViewBag.wishlist;
+	List<Category> categories = ViewBag.Category;
+	List<Color> color = ViewBag.Color;
+	List<Size> sizes = ViewBag.Size;
+	List<Product> product = ViewBag.Product;
+    var checkproductdt = new List<int>();
+
+}
+
+@foreach (var item in ViewBag.Productlists ?? Enumerable.Empty<ShoeStore.Models.ProductDetail>())
+{
+	@* if (checkproductdt.Any(c => c == productdt))
+	{
+		continue;
+	} *@
+	var prd = product.FirstOrDefault(p => p.Id == item.productdetail.ProductId);
+	var userid = 0;
+	@if (User.Identity.IsAuthenticated)
+	{
+		userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
+	}
+	var wishlist = wishlists.FirstOrDefault(w => w.AccountId == userid && w.ProductDetailId == item.productdetail.Id);
+	var isWishlist = false;
+	if (wishlist != null)
+	{
+		isWishlist = true;
+	}
+	<div class="product-item item">
+		<div class="product discount product_filter">
+			<div class="product_image">
+				<img src="@item.productdetail.Image" height="221px" alt="@prd.Name">
+			</div>
+			@if (isWishlist == true)
+			{
+				<div class="favorite favorite_left active" data-id="@item.productdetail.Id"></div>
+			}
+			else
+			{
+				<div class="favorite favorite_left" data-id="@item.productdetail.Id"></div>
+			}
+
+			@if (item.productdetail.PriceSale > 0)
+			{
+				<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
+			}
+			<div class="product_info">
+				<h6 class="product_name"><a href="~/shop/detail/@item.productdetail.Id"> @prd.Name</a></h6>
+				@if (item.productdetail.PriceSale > 0)
+				{
+					<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.productdetail.PriceSale, 0)<span>@ShoeStore.Common.Common.FormatNumber(item.productdetail.Price, 0)</span></div>
+
+					<div style="display:none;" class="in_product_price"> @item.productdetail.PriceSale</div>
+				}
+				else
+				{
+					<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.productdetail.Price, 0)</div>
+					<div style="display:none;" class="in_product_price"> @item.productdetail.Price</div>
+				}
+			</div>
+		</div>
+		<div class="red_button add_to_cart_button"><a href="~/shop/detail/@item.productdetail.Id">Mua ngay</a></div>
+	</div>
+}
+<script src="~/assets/js/custom.js"></script>

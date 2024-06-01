@@ -30,13 +30,13 @@
                 <!-- small box -->
                 <div class="small-box bg-info">
                     <div class="inner">
-                        <h3>150</h3>
-                        <p>Đơn hàng mới</p>
+                        <h3 id="orderCount">Loading...</h3>
+                        <p>Tổng hóa đơn đã thanh toán</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-bag"></i>
                     </div>
-                    <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a>
+                 @*    <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a> *@
                 </div>
             </div>
             <!-- ./col -->
@@ -44,14 +44,13 @@
                 <!-- small box -->
                 <div class="small-box bg-success">
                     <div class="inner">
-                        <h3>53@* <sup style="font-size: 20px"></sup> *@</h3>
-
-                        <p>Đánh giá</p>
+                        <h3 id="products">Loading...</h3>
+                        <p>Tổng số sản phẩm đã bán</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-stats-bars"></i>
                     </div>
-                    <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a>
+                   @*  <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a> *@
                 </div>
             </div>
             <!-- ./col -->
@@ -59,13 +58,13 @@
                 <!-- small box -->
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>44</h3>
-                        <p>Người dùng đăng ký</p>
+                        <h3 id="customerCount">Loading...</h3>
+                        <p>Tổng số khách hàng</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-person-add"></i>
                     </div>
-                    <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a>
+                    @* <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a> *@
                 </div>
             </div>
             <!-- ./col -->
@@ -73,14 +72,14 @@
                 <!-- small box -->
                 <div class="small-box bg-danger">
                     <div class="inner">
-                        <h3>65</h3>
+                        <h3 id="revenues">Loading...</h3>
 
-                        <p>Số lượng khách truy cập</p>
+                        <p>Tổng doanh thu</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-pie-graph"></i>
                     </div>
-                    <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a>
+                  @*   <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a> *@
                 </div>
             </div>
             <!-- ./col -->
@@ -90,93 +89,6 @@
         <div class="container-xxl flex-grow-1 container-p-y">
             <div class="row gy-4">
                 <!-- Chart -->
-                <div class="col-lg-12">
-
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <h5 class="card-title m-0 me-2">Tổng quan</h5>
-                                <div class="dropdown">
-                                    <button class="btn p-0"
-                                            type="button"
-                                            id="transactionID"
-                                            data-bs-toggle="dropdown"
-                                            aria-haspopup="true"
-                                            aria-expanded="false"
-                                            style="visibility:hidden">
-                                        <i class="mdi mdi-dots-vertical mdi-24px"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID">
-                                        <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Share</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Update</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <p class="mt-3">
-                                <span class="fw-medium">Doanh thu </span>
-                                <span id="growth" style="font-weight: bold"></span> so với tháng trước!
-                            </p>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-3 col-6">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar">
-                                            <div class="avatar-initial bg-primary rounded shadow">
-                                                <i class="mdi mdi-trending-up mdi-24px"></i>
-                                            </div>
-                                        </div>
-                                        <div class="ms-3">
-                                            <div class="small mb-1">Tổng hoá đơn đã thanh toán</div>
-                                            <h5 class="mb-0" id="orderCount">Loading...</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 col-6">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar">
-                                            <div class="avatar-initial bg-success rounded shadow">
-                                                <i class="mdi mdi-account-outline mdi-24px"></i>
-                                            </div>
-                                        </div>
-                                        <div class="ms-3">
-                                            <div class="small mb-1">Tổng số khách hàng</div>
-                                            <h5 class="mb-0" id="customerCount">Loading...</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 col-6">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar">
-                                            <div class="avatar-initial bg-warning rounded shadow">
-                                                <i class="mdi mdi-cellphone-link mdi-24px"></i>
-                                            </div>
-                                        </div>
-                                        <div class="ms-3">
-                                            <div class="small mb-1">Tổng sản phẩm đã bán</div>
-                                            <h5 class="mb-0" id="products">Loading...</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 col-6">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar">
-                                            <div class="avatar-initial bg-info rounded shadow">
-                                                <i class="mdi mdi-currency-usd mdi-24px"></i>
-                                            </div>
-                                        </div>
-                                        <div class="ms-3">
-                                            <div class="small mb-1">Tổng doanh thu</div>
-                                            <h5 class="mb-0" id="revenues">Loading...</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="col-xl-12 col-md-12">
                     <div class="card">
                         <div class="card-header">
@@ -237,7 +149,7 @@
                                 <button class="btn btn-primary" value="datepicker" onclick="validateAndFetch()">Xác nhận</button>
 
                                 <!-- Button to export data to Excel -->
-                                <button id="exportBtn" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất ra file Excel</button>
+                                <button id="exportBtn" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -256,13 +168,13 @@
                         <div class="card-header d-flex align-items-center justify-content-between">
                             <h5 class="card-title m-0 me-2">Top 5 sản phẩm bán chạy</h5>
                             <div class="dropdown" style="margin-right: 10px;">
-                                <button class="btn p-0" type="button" id="saleStatus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @* <button class="btn p-0" type="button" id="saleStatus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical mdi-24px"></i>
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="saleStatus">
                                     <a class="dropdown-item" onclick="sortBy('quantity')" style="cursor:pointer">Theo số lượng</a>
                                     <a class="dropdown-item" onclick="sortBy('earnings')" style="cursor:pointer">Theo tổng tiền</a>
-                                </div>
+                                </div> *@
                             </div>
                         </div>
                         <div class="card-body">
@@ -274,7 +186,6 @@
                                             <th>Ảnh</th>
                                             <th>Tên sản phẩm</th>
                                             <th>Đã bán(đôi)</th>
-                                            <th>Doanh thu</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -303,8 +214,7 @@
                     var currentChart = "yearly";
                     var PickDateChart;
                     // Danh sách sản phẩm
-                    $(document).ready(
-                        sortBy('quantity'));
+                    $(document).ready(sortBy('quantity'));
 
                     function updateDateInputs() {
                         // var selectedYear = document.getElementById("monthDropdown").value;
@@ -354,13 +264,12 @@
                                 // Kiểm tra cấu trúc dữ liệu để xác định tên thuộc tính
                                 var productNameKey = 'ProductName';
                                 var quantitySoldKey = 'QuantitySold';
-                                var totalEarningsKey = 'TotalEarnings';
                                 var imageProductKey = 'ProductImage';
 
                                 // Sử dụng $.each để lặp qua mảng dữ liệu
                                 $.each(data.labels, function (index, productName) {
                                     var quantitySold = data.quantities[index];
-                                    var totalEarnings = data.earnings[index];
+
                                     var imageProduct = data.images[index];
 
                                     // Hiển thị thông tin sản phẩm trong bảng
@@ -370,7 +279,6 @@
                                         '</td>' +
                                         '<td>' + productName + '</td>' +
                                         '<td>' + quantitySold + '</td>' +
-                                        '<td>' + parseFloat(totalEarnings).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) + '</td>' +
                                         '</tr>';
                                     tableBody.append(row);
                                 });
@@ -426,7 +334,7 @@
                                     options: {
                                         scales: {
                                             y: {
-                                                beginAtZero: false
+                                                beginAtZero: true
                                             }
                                         }
                                     }
@@ -455,64 +363,7 @@
                     }
 
                     $(document).ready(function () {
-                        // growth
-                        function growthToLastMonth(data) {
-                            const gr = document.getElementById('growth');
-                            const lastindex = data.values.length - 1;
-
-                            if (lastindex >= 1) {
-                                const growthRate = ((data.values[lastindex] / data.values[lastindex - 1]) - 1) * 100;
-                                const roundedGrowth = Math.round(growthRate * 100) / 100; // Làm tròn 2 chữ số sau dấu phẩy
-
-                                if (roundedGrowth < 0) {
-                                    gr.innerHTML = ` giảm ${-roundedGrowth}% `;
-                                    gr.style.color = 'red'; // Màu đỏ
-                                } else if (roundedGrowth > 0) {
-                                    gr.innerHTML = `tăng ${roundedGrowth}% `;
-                                    gr.style.color = 'green'; // Màu xanh lá
-                                } else {
-                                    gr.innerHTML = 'giữ nguyên'; // Giữ nguyên giá trị là '0%'
-                                    gr.style.color = 'orange'; // Màu vàng
-                                }
-
-                            } else if (lastindex === 0) {
-                                const growthRate = data.values[lastindex] * 100;
-                                const roundedGrowth = Math.round(growthRate * 100) / 100;
-
-                                if (roundedGrowth < 0) {
-                                    gr.innerHTML = `giảm ${-roundedGrowth}% `;
-                                    gr.style.color = 'red'; // Màu đỏ
-                                } else if (roundedGrowth > 0) {
-                                    gr.innerHTML = `tăng ${roundedGrowth}% `;
-                                    gr.style.color = 'green'; // Màu xanh lá
-                                } else {
-                                    gr.innerHTML = 'giữ nguyên'; // Giữ nguyên giá trị là '0%'
-                                    gr.style.color = 'orange'; // Màu vàng
-                                }
-
-                            } else {
-                                gr.innerHTML = 'giữ nguyên'; // Giữ nguyên giá trị là '0%'
-                                gr.style.color = 'orange'; // Màu vàng
-                            }
-                        }
-                        var cryear = new Date().getFullYear();
-                        function RevenueGrowth() {
-                            $.ajax({
-                                url: 'https://localhost:7162/api/Chart/' + cryear,
-                                method: 'GET',
-                                dataType: 'json',
-                                success: function (data) {
-                                    if (data && data.values && data.label) {
-                                        growthToLastMonth(data);
-                                    } else {
-                                        console.error('Invalid data received from API');
-                                    }
-                                },
-                                error: function (error) {
-                                    console.error('Error fetching data:', error);
-                                }
-                            });
-                        }
+                        
                         // Mặc định chọn năm hiện tại
                         var currentYear = new Date().getFullYear();
                         $('#yearDropdown').val(currentYear);
@@ -521,7 +372,7 @@
                         GetProducts();
                         GetRevenues();
                         GetOrders();
-                        RevenueGrowth();
+                       
                         var currentDay = new Date();
 
                         // Sự kiện thay đổi của dropdown
@@ -579,11 +430,13 @@
                             // updateDateInputs();
                             if (selectedMonth !== "0") {
                                 $('#chartTypeDropdown').val('monthly');
+                                currentChart = "monthly";
                                 DrawChartForMonthOfTheYear(selectedMonth, selectedYear);
                             } else {
+                                currentChart = "yearly";
                                 DrawChartForYear(selectedYear);
                             }                            
-                            currentChart = "yearly";
+                           
                             console.log(currentChart);
                         });
                         $('#monthDropdown').on('change', function () {
@@ -711,11 +564,11 @@
                             var linkapi = "";
                             var datatype = "";
                             if (selectedMonth === "0") {
-                                linkapi = 'https://localhost:7162/api/Chart/' + selectedYear;
+                                linkapi = 'https://localhost:7162/api/Chart/StatisticsByYear/' + selectedYear;
                                 datatype = 'yearly';
                                 $('#chartTypeDropdown').val('yearly');
                             } else {
-                                linkapi = 'https://localhost:7162/api/Chart/' + selectedMonth + '/' + selectedYear;
+                                linkapi = 'https://localhost:7162/api/Chart/StatisticsByMonthOfTheYear/' + selectedMonth + '/' + selectedYear;
                                 datatype = 'monthly';
                             }
                             $.ajax({   
@@ -903,7 +756,7 @@
 
                                     // Kiểm tra xem phần tử có tồn tại không
                                     if (totalOrder) {
-                                        totalOrder.innerText = data.countOrder;
+                                        totalOrder.innerText = data.countorder;
                                     }
                                 })
                                 .catch(error => console.error('Error fetching customer data:', error));
@@ -914,7 +767,9 @@
                     function exportToExcel() {
                         if (confirm("Tải về file Excel?")) {
                             var url = "https://localhost:7162/api/Chart/ExportDataToExcel/" + currentChart;
+                            var selectedmonth = document.getElementById("monthDropdown").value;
                             var selectedyear = document.getElementById("yearDropdown").value;
+                            
                             console.log(selectedyear)
                             // Kiểm tra nếu là DatePicker thì lấy giá trị startDate và endDate từ các phần tử HTML
                             if (currentChart === "DatePicker") {
@@ -933,7 +788,12 @@
                                     console.error("Không tìm thấy phần tử HTML");
                                     return;
                                 }
-                            } else if (currentChart === "yearly") {
+                            } else if (currentChart === "monthly"){
+                                url += `?month=${encodeURIComponent(selectedmonth)}&currentyear=${encodeURIComponent(selectedyear)}`;
+
+
+                            }
+                            else if (currentChart === "yearly") {
                                 url += `?currentyear=${encodeURIComponent(selectedyear)}`;
                             }
 

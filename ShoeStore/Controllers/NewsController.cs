@@ -8,6 +8,11 @@ namespace ShoeStore.Controllers
     public class NewsController : Controller
     {
         private readonly ShoeStoreContext db = new ShoeStoreContext();
+        public NewsController(ShoeStoreContext db)
+        {
+            this.db = db;
+        }
+
         public async Task<IActionResult> Index(int ? page)
         {
             var pageSize = 5;

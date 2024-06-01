@@ -19,7 +19,7 @@ namespace ShoeStore.Areas.Admin.Controllers
     [Route("admin/account")]
     [Route("admin/account/{action}")]
     [Route("admin/account/{action}/{id}")]
-    [Authorize(Roles = "Admin,Employee")]
+    [Authorize(Roles = "Admin")]
     public class AccountController : Controller
     {
         private readonly ShoeStoreContext db;
@@ -106,7 +106,6 @@ namespace ShoeStore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Account model)
         {
-           
             var item = await db.Accounts.FindAsync(model.Id);
 
             if (ModelState.IsValid && item is not null)
@@ -129,6 +128,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                     return View(model);
                 }
             }
+            ViewBag.Role = db.Roles.ToList();
             _notyf.Error("Có lỗi khi cập nhật dữ liệu");
             return View(model);
         }

@@ -14,6 +14,7 @@ public partial class ShoeStoreContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer("Data Source=DESKTOP-UQLBFFV\\SQLEXPRESS;Initial Catalog=ShoeStore;Integrated Security=True;TrustServerCertificate=Yes;Encrypt=False");
+        //optionsBuilder.UseSqlServer("Data Source=shoestoredbserver.database.windows.net;Initial Catalog=ShoeStore;Persist Security Info=True;User ID=vuphuoc01;Password=phuoc123@;Trust Server Certificate=True");
     }
     public virtual DbSet<Account> Accounts { get; set; }
 

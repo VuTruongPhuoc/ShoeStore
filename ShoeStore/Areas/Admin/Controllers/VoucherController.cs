@@ -60,21 +60,23 @@ namespace ShoeStore.Areas.Admin.Controllers
                         _notyf.Warning("Ngày kết thúc không được nhỏ hơn ngày bắt đầu", 10);
                         return View(model);
                     }
-                    var voucher = await db.Vouchers.FindAsync(model.Code);
-                    if(model.Code == voucher.Code && model.Value != voucher.Value)
-                    {
-                        _notyf.Warning("Hiện tại đã có mã giảm giá này rồi vui lòng chọn mã khác", 10);
-                        return View(model);
-                    }
-                    if(model.Code == voucher.Code && model.Value == voucher.Value)
-                    {
-                        voucher.Quantity += model.Quantity;
-                        db.Vouchers.Add(voucher);
-                        await db.SaveChangesAsync();
-                        _notyf.Success("Thêm số lượng của voucher thành công");
-                        return RedirectToAction("index", "voucher", new { area = "admin" });
-                    }
-                    
+                        var voucher = db.Vouchers.FirstOrDefault(v=>v.Code == model.Code);
+                        if(voucher != null)
+                        {
+						    if (model.Code == voucher.Code && model.Value != voucher.Value)
+						    {
+							    _notyf.Warning("Hiện tại đã có mã giảm giá này rồi vui lòng chọn mã khác", 10);
+							    return View(model);
+						    }
+						    if (model.Code == voucher.Code && model.Value == voucher.Value)
+						    {
+							    voucher.Quantity += model.Quantity;
+							    db.Vouchers.Add(voucher);
+							    await db.SaveChangesAsync();
+							    _notyf.Success("Thêm số lượng của voucher thành công");
+							    return RedirectToAction("index", "voucher", new { area = "admin" });
+						    }
+                        }					                                 
                     model.CreateAt = DateTime.Now;
 					model.UpdateAt = DateTime.Now;
 					db.Vouchers.Add(model);
@@ -104,11 +106,11 @@ namespace ShoeStore.Areas.Admin.Controllers
             {
                 try
                 {
-                    //if (model.StartDate.Date < DateTime.Now.Date)
-                    //{
-                    //    _notyf.Warning("Ngày bắt đầu không được nhỏ hơn ngày hiện tại",10);
-                    //    return View(model);
-                    //}
+                    if (model.StartDate.Date < DateTime.Now.Date)
+                    {
+                        _notyf.Warning("Ngày bắt đầu không được nhỏ hơn ngày hiện tại", 10);
+                        return View(model);
+                    }
                     if (model.EndDate.Date < model.StartDate.Date)
                     {
                         _notyf.Warning("Ngày kết thúc không được nhỏ hơn ngày bắt đầu",10);

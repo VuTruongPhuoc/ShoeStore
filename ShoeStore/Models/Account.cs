@@ -15,8 +15,11 @@ public partial class Account
     public string? Username { get; set; }
     public string? Password { get; set; }
     public string? FullName { get; set; }
-    public string? PhoneNumber { get; set; }
+    [MaxLength(24, ErrorMessage = "Tối đa 24 ký tự")]
+    [RegularExpression(@"0[987563241]\d{8}", ErrorMessage = "Chưa đúng định dạng số điện thoại")]
+    public string? PhoneNumber { get; set; }  
     public string? Address { get; set; }
+    [EmailAddress(ErrorMessage = "Chưa đúng định dạng email")]
     public string Email { get; set; }
     public string? ResetPasswordcode { get; set; }
     public int? Status { get; set; }

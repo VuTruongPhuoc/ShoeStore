@@ -14,6 +14,7 @@
 	<link rel="stylesheet" type="text/css" href="~/assets/styles/main_styles.css">
 	<link rel="stylesheet" type="text/css" href="~/assets/styles/responsive.css">
 	<link rel="stylesheet" type="text/css" href="~/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
 	<link rel="icon" type="image/png" href="~/icon/icon3.png" sizes="32x32">
 	<style>
 		body {
@@ -46,15 +47,6 @@
 						<div class="col-md-6 text-right">
 							<div class="top_nav_right">
 								<ul class="top_nav_menu">
-									<li class="language">
-										<a href="#">
-											English
-											<i class="fa fa-angle-down"></i>
-										</a>
-										<ul class="language_selection">
-											<li><a href="#">Tiếng Việt</a></li>
-										</ul>
-									</li>
 									<li class="account">
 										
 										@if (User.Identity.IsAuthenticated)
@@ -73,6 +65,10 @@
 												{
 													<li><a asp-controller="account" asp-action="orderhistory" asp-route-id="@Id_userValue"><i class="fa fa-history" aria-hidden="true"></i>Lịch sử đơn hàng</a></li>
 													<li><a asp-controller="voucher" asp-action="yourvouchers"><i class="fa fa-vimeo" aria-hidden="true"></i>Voucher của bạn</a></li>
+												}
+												@if(User.IsInRole("Admin") || User.IsInRole("Employee"))
+												{
+													<li><a asp-controller="admin" asp-action="index" asp-route-id="@Id_userValue"><i class="fa fa-history" aria-hidden="true"></i>Trang quản trị</a></li>
 												}
 												<li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-in" aria-hidden="true"></i> Đăng xuất</a></li>
 											</ul>
@@ -119,7 +115,7 @@
 									<li><a asp-controller="introduce" asp-action="index">Giới thiệu</a></li>
 									<li><a asp-controller="news" asp-action="index">Tin tức</a></li>
 									<li><a asp-controller="voucher" asp-action="index">Khuyến mãi</a></li>
-									<li><a asp-controller="contact" asp-action="index">Liên hệ</a></li>
+									@* <li><a asp-controller="contact" asp-action="index">Liên hệ</a></li> *@
 								</ul>
 								<ul class="navbar_user">
 									<li>
@@ -130,10 +126,8 @@
 									</li>
 
 									<!-- modal -->
-									
 								
-
-									<li><a asp-controller="wishlist" asp-action="index"><i class="fa fa-heart" aria-hidden="true"></i></a></li>
+									<li><a asp-controller="wishlist" asp-action="index"><i class="far fa-heart"></i></a></li>
 									<li class="checkout">
 										<a asp-controller="shoppingcart" asp-action="index">
 											<i class="fa fa-shopping-cart" aria-hidden="true"></i>
@@ -155,6 +149,61 @@
 			</div>
 		</header>
 		@* @await Html.PartialAsync("_HeaderPartial.cshtml"); *@
+		<div class="fs_menu_overlay"></div>
+		<div class="hamburger_menu">
+			<div class="hamburger_close"><i class="fa fa-times" aria-hidden="true"></i></div>
+			<div class="hamburger_menu_content text-right">
+				<ul class="menu_top_nav">
+					<li class="menu_item has-children">
+						@if (User.Identity.IsAuthenticated)
+						{
+							@* var userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id")); *@
+							var userid = ((System.Security.Claims.ClaimsIdentity)User.Identity).FindFirst("Id");
+							string Id_userValue = userid?.Value;
+							<a href="#">
+								Chào mừng: @User.Identity.Name
+								<i class="fa fa-angle-down"></i>
+							</a>
+							<ul class="menu_selection">
+								<li><a asp-controller="account" asp-action="profile" asp-route-id="@Id_userValue"><i class="fa fa-user-circle" aria-hidden="true"></i>Thông tin</a></li>
+								<li><a asp-controller="account" asp-action="changepassword" asp-route-id="@Id_userValue"><i class="fa fa-user-plus" aria-hidden="true"></i>Đổi mật khẩu</a></li>
+								@if (User.IsInRole("Customer"))
+								{
+									<li><a asp-controller="account" asp-action="orderhistory" asp-route-id="@Id_userValue"><i class="fa fa-history" aria-hidden="true"></i>Lịch sử đơn hàng</a></li>
+									<li><a asp-controller="voucher" asp-action="yourvouchers"><i class="fa fa-vimeo" aria-hidden="true"></i>Voucher của bạn</a></li>
+								}
+								<li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-in" aria-hidden="true"></i> Đăng xuất</a></li>
+							</ul>
+						}
+						else
+						{
+							<a href="#">
+								Tài khoản của tôi
+								<i class="fa fa-angle-down"></i>
+							</a>
+							<ul class="account_selection">
+								<li><a href="~/account/login"><i class="fa fa-sign-in" aria-hidden="true"></i>Đăng nhập</a></li>
+								<li><a href="~/account/register"><i class="fa fa-user-plus" aria-hidden="true"></i>Đăng ký</a></li>
+							</ul>
+						}
+						@if (User.Identity.IsAuthenticated)
+						{
+							<div style="display:none">
+								@using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { @id = "logoutForm" }))
+								{
+									@Html.AntiForgeryToken()
+								}
+							</div>
+						}
+					</li>
+					<li class="menu_item"><a asp-controller="home" asp-action="index">Trang chủ</a></li>
+					<li class="menu_item"><a asp-controller="shop" asp-action="index">Cửa hàng</a></li>
+					<li class="menu_item"><a asp-controller="introduce" asp-action="index">Giới thiệu</a></li>
+					<li class="menu_item"><a asp-controller="news" asp-action="index">Tin tức</a></li>
+					<li class="menu_item"><a asp-controller="voucher" asp-action="index">Khuyến mãi</a></li>
+				</ul>
+			</div>
+		</div>
 		@RenderBody()
 
 		<!-- Modal -->
@@ -198,8 +247,8 @@
 						<div class="benefit_item d-flex flex-row align-items-center">
 							<div class="benefit_icon"><i class="fa fa-truck" aria-hidden="true"></i></div>
 							<div class="benefit_content">
-								<h6>free shipping</h6>
-								<p>Suffered Alteration in Some Form</p>
+								<h6>Miễn phí vận chuyển</h6>
+								<p>Bị thay đổi dưới một số hình thức</p>
 							</div>
 						</div>
 					</div>
@@ -207,8 +256,8 @@
 						<div class="benefit_item d-flex flex-row align-items-center">
 							<div class="benefit_icon"><i class="fa fa-money" aria-hidden="true"></i></div>
 							<div class="benefit_content">
-								<h6>cach on delivery</h6>
-								<p>The Internet Tend To Repeat</p>
+								<h6>Thanh toán online</h6>
+								<p>Internet có xu hướng lặp lại</p>
 							</div>
 						</div>
 					</div>
@@ -216,8 +265,8 @@
 						<div class="benefit_item d-flex flex-row align-items-center">
 							<div class="benefit_icon"><i class="fa fa-undo" aria-hidden="true"></i></div>
 							<div class="benefit_content">
-								<h6>45 days return</h6>
-								<p>Making it Look Like Readable</p>
+								<h6>Hoàn trả trong vòng 45 ngày</h6>
+								<p>Làm cho nó trông dễ đọc</p>
 							</div>
 						</div>
 					</div>
@@ -225,8 +274,8 @@
 						<div class="benefit_item d-flex flex-row align-items-center">
 							<div class="benefit_icon"><i class="fa fa-clock-o" aria-hidden="true"></i></div>
 							<div class="benefit_content">
-								<h6>opening all week</h6>
-								<p>8AM - 09PM</p>
+								<h6>Mở cửa cả tuần</h6>
+								<p>8 AM - 09 PM</p>
 							</div>
 						</div>
 					</div>
@@ -243,15 +292,15 @@
 				<div class="row">
 					<div class="col-lg-6">
 						<div class="newsletter_text d-flex flex-column justify-content-center align-items-lg-start align-items-md-center text-center">
-							<h4>Newsletter</h4>
-							<p>Subscribe to our newsletter and get 20% off your first purchase</p>
+							<h4>Bản tin</h4>
+							<p>Đăng ký bản tin của chúng tôi để biết thêm thông tin mới nhất về cửa hàng</p>
 						</div>
 					</div>
 					<div class="col-lg-6">
 						<form action="post">
 							<div class="newsletter_form d-flex flex-md-row flex-column flex-xs-column align-items-center justify-content-lg-end justify-content-center">
-								<input id="newsletter_email" type="email" placeholder="Your email" required="required" data-error="Valid email is required.">
-								<button id="newsletter_submit" type="submit" class="newsletter_submit_btn trans_300" value="Submit">subscribe</button>
+								<input id="newsletter_email" type="email" placeholder="email của bạn" required="required" data-error="Valid email is required.">
+								<button id="newsletter_submit" type="submit" class="newsletter_submit_btn trans_300" value="Submit">Đăng ký</button>
 							</div>
 						</form>
 					</div>
@@ -273,6 +322,11 @@
 	@* <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCIwF204lFZg1y4kPSIhKaHEXMLYxxuMhA"></script> *@
     <script src="~/assets/js/contact_custom.js"></script>  
 	<script src="~/js/jsShopping.js"></script>
+	<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+	<df-messenger intent="WELCOME"
+				  chat-title="PShop_AI"
+				  agent-id="2f08cd4b-b2e7-499d-85d0-c3162b2b2757"
+				  language-code="en"></df-messenger>
 	<script>
 		const myModal = document.getElementById('myModal')
 		const searchModal = document.getElementById('searchModal')

@@ -5,6 +5,7 @@
 @{
     ViewData["Title"] = "Danh sách chi tiết sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var prid = ViewBag.ProductId;
 }
 
 @section naviheader {
@@ -14,7 +15,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+            <a href="/admin" class="nav-link">Trang chủ</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="/admin/productdetail/getlist" class="nav-link">@ViewBag.Title</a>
@@ -47,7 +48,7 @@
             <h3 class="card-title">@ViewBag.Title</h3>
 
             <div class="card-tools">
-                <a href="/admin/productdetail/add/@ViewBag.ProductId" class="btn btn-primary">Thêm mới</a>
+                <a href="/admin/productdetail/add/@prid" data-prid="@ViewBag.ProductId" class="btn btn-primary">Thêm mới</a>
                 <a href="#" class="btn btn-danger" id="BtnDeleteAll">Xóa</a>
             </div>
         </div>
@@ -72,9 +73,7 @@
                 <div class="col-md-4" style="position: relative;">
                     <form asp-controller="product" asp-action="ExportToExcel">
                         <div style="position: absolute; right: 0;">
-                            <button type="submit" class="btn btn-outline-secondary">
-                                Xuất File Excel <i class="fas fa-file-excel"></i>
-                            </button>
+                            <button id="exportBtn" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
                         </div>
                     </form>
                 </div>
@@ -106,7 +105,7 @@
                                     <tr id="trow_@item.Id">
                                         <td>@i</td>
                                         <td><img class="imgproduct" src="@item.Image" data-id="@item.Id" width="60" /></td>
-                                        <td>@item.Product.Name</td>
+                                        <td>@item.Name</td>
                                         <td>@item.Quantity</td>
                                         <td>@item.Price.ToString("N2")</td>
                                         @foreach (var obj in ViewBag.Size)

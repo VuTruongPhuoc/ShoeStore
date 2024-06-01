@@ -278,3 +278,14 @@ D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\Microsoft.Extensions.Caching.
 D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\Pipelines.Sockets.Unofficial.dll
 D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\StackExchange.Redis.dll
 D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\StackExchange.Redis.StrongName.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\EPPlus.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\EPPlus.Interfaces.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\EPPlus.System.Drawing.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\Microsoft.IO.RecyclableMemoryStream.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\System.IO.Packaging.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\ClosedXML.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\DocumentFormat.OpenXml.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\ExcelNumberFormat.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\Irony.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\SixLabors.Fonts.dll
+D:\CNTT4\DATN\ShoeStore\ShoeStore\bin\Debug\net8.0\XLParser.dll

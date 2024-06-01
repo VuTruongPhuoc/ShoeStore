@@ -36,11 +36,11 @@
             <input type="hidden" name="ReturnUrl" value="@ViewData["ReturnUrl"]" />
             <input asp-for="@Model.Email" type="text" id="email" name="email" placeholder="Nhập địa chỉ email"> <br>
             <input asp-for="@Model.Password" type="Password" id="Password" placeholder="Nhập mật khẩu của bạn"> <br>
-            <a href="~/account/forgotpassword" class="link forgot" target="_blank">Quên mật khẩu?</a> <br>
+            <a href="~/account/forgotpassword" class="link forgot" >Quên mật khẩu?</a> <br>
             <input type="submit" value="Đăng nhập" class="btn-submit"> <br>
             <label for="">Bạn chưa có tài khoản?</label><a href="~/account/register" class="link ">Đăng ký</a> <br>
             <span class="line left"></span><span class="center">or</span><span class="line right"></span> <br>
-            <a href="~/facebook/login" class="btn face">Đăng nhập bằng Facebook</a> <br>
+           @*  <a href="~/facebook/login" class="btn face">Đăng nhập bằng Facebook</a> <br> *@
             <a href="~/google/login" class="btn google">Đăng nhập bằng Google</a>
         </form>
     </div>

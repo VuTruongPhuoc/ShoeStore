@@ -68,9 +68,7 @@
                 <div class="col-md-6" style="position: relative;">
                     <form asp-controller="product" asp-action="ExportToExcel">
                         <div style="position: absolute; right: 0;">
-                            <button type="submit" class="btn btn-outline-secondary">
-                                Xuất File Excel <i class="fas fa-file-excel"></i>
-                            </button>
+                            <button id="exportBtn" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
                         </div>
                     </form>
                 </div>
@@ -104,7 +102,7 @@
                                 <td><input type="checkbox" class="cbkItem" value="@item.Id" /></td>
                                 <td>@i</td>                                
                                 <td><img class="imgproduct" src="@item.Image" data-id="@item.Id" width="60" /></td>
-                                <td width="100px">@item.Product.Name</td>
+                                <td width="100px">@item.Name</td>
                                 <td>@item.Quantity</td>
                                 <td>@item.Price.ToString("N2")</td>
                                 @foreach (var obj in ViewBag.Size)

@@ -16,9 +16,10 @@ namespace ShoeStore.Areas.Admin.Controllers
     {
         private ShoeStoreContext db = new ShoeStoreContext();
         private readonly INotyfService _notyf;
-        public CategoryController(INotyfService notyf)
+        public CategoryController(INotyfService notyf, ShoeStoreContext db)
         {
             _notyf = notyf;
+            this.db = db;
         }
         public async Task<IActionResult> Index(string Searchtext, int? page)
         {

@@ -13,6 +13,7 @@ using static System.Runtime.CompilerServices.RuntimeHelpers;
 using System.Security.Policy;
 using System.Web;
 using System.Security.Claims;
+using OfficeOpenXml.FormulaParsing.Excel.Functions;
 
 namespace ShoeStore.Controllers
 {
@@ -26,12 +27,13 @@ namespace ShoeStore.Controllers
         public string tmnCode = "L4F2PXZX";
         public string hashSecret = "GHT0O7GN8PWAECBZYPURV2KL0ITF5C4T";
         private ShoeStoreContext db = new ShoeStoreContext();
-		public ShoppingCartController(IWebHostEnvironment env, ISendEmail sendEmail, IConfiguration config,INotyfService notyf)
+		public ShoppingCartController(IWebHostEnvironment env, ISendEmail sendEmail, IConfiguration config,INotyfService notyf, ShoeStoreContext db)
 		{
 			_env = env;
 			_sendEmail = sendEmail;
 			_config = config;
 			_notyf = notyf;
+			this.db = db;
 		}
 		public List<ShoppingCartItem> Cart => HttpContext.Session.Get<List<ShoppingCartItem>>(MySetting.CART_KEY) ?? new List<ShoppingCartItem>();
 		public IActionResult Index()
@@ -47,7 +49,8 @@ namespace ShoeStore.Controllers
 		{
 			return View();
 		}
-		[HttpGet, Authorize(Roles ="Customer")]
+        #region checkout
+        [HttpGet, Authorize(Roles ="Customer")]
 		public ActionResult Checkout(string selectedVoucher)
 		{
 			var cart = Cart;
@@ -80,13 +83,44 @@ namespace ShoeStore.Controllers
 				ViewBag.CheckCart = cart.ToList();
 				if (ModelState.IsValid)
 				{
-					var userid = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-					Order order = new Order();
-					order.CustomerName = ordervm.CustomerName;
+                    var userid = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                    var order = new Order();
+                    var customer = new Account();
+                    if (ordervm.LikeCustomers)
+                    {
+                        customer = db.Accounts.SingleOrDefault(p => p.Id == userid);
+                        if (customer.PhoneNumber != null)
+                        {
+                            order.Phone = ordervm.Phone ?? customer.PhoneNumber;
+                        }
+                        else
+                        {
+                            _notyf.Warning("Vui lòng cập nhật số điện thoại trong tài khoản của bạn");
+                            return RedirectToAction("profile", "account", new { id = userid });
+                        }
+                        if (customer.Address != null)
+                        {
+                            order.Address = ordervm.Address ?? customer.Address;
+                        }
+                        else
+                        {
+                            _notyf.Warning("Vui lòng cập nhật địa chỉ trong tài khoản của bạn");
+                            return RedirectToAction("profile", "account", new { id = userid });
+                        }
+                    }
+                    
+					order.CustomerName = ordervm.CustomerName ?? customer.FullName;
 					order.AccountId = userid;
-					order.Phone = ordervm.Phone;
-					order.Address = ordervm.Address + " , " + ordervm.City + " - " + ordervm.District + " - " + ordervm.Ward;
-					order.Email = ordervm.Email;
+					
+
+                    if (ordervm.Address != null)
+					{
+						order.Address = ordervm.Address + " , " + ordervm.Ward + " - " + ordervm.District + " - " + ordervm.City;
+					}
+					else {
+						order.Address = customer.Address;
+                    }
+					order.Email = ordervm.Email ?? customer.Email;
 					order.Note = ordervm.Note;
 					order.TotalAmount = ordervm.totalAmount;
 					order.TypePayment = ordervm.TypePayment + " - Chưa thanh toán";
@@ -97,15 +131,14 @@ namespace ShoeStore.Controllers
 					{
                         order.VoucherId = voucher.Id;
                     }
-					//var voucherforacc = db.VoucherForAccs.FirstOrDefault(x => x.Code == ordervm.VoucherCode);
-					//if(voucherforacc != null)
-					//{
-					//	voucherforacc.Status = false;
-					//	db.Update(voucherforacc);
-					//	await db.SaveChangesAsync();
-					//}
-
-                    Random rd = new Random();
+					var voucherforacc = db.VoucherForAccs.FirstOrDefault(x => x.Code == ordervm.VoucherCode);
+					if (voucherforacc != null)
+					{
+						voucherforacc.Status = false;
+						db.Update(voucherforacc);
+						await db.SaveChangesAsync();
+					}
+					Random rd = new Random();
 					var date = DateTime.Now;
 					order.Code = "DH" + date.Year.ToString() + date.Month.ToString() + date.Day.ToString() + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9);
 					order.CreateAt = DateTime.Now;
@@ -140,53 +173,94 @@ namespace ShoeStore.Controllers
 						strSanPham += "</tr>";
 						thanhtien += sp.Price * sp.Quantity;
 					}
-					string contentCustomer;
-					string filePath = Path.Combine(_env.WebRootPath, "assets", "templates", "customersend.html");
-					if (System.IO.File.Exists(filePath))
+					var checkvoucher = "";
+                    if (voucher != null)
+                    {
+                        checkvoucher =  voucher.Name;
+                    }
+                    else
+                    {
+                        checkvoucher = "Không có voucher áp dụng";
+                    }
+					var sendemailord = new SendEmailOrderVM()
 					{
-						contentCustomer = System.IO.File.ReadAllText(filePath);
-						contentCustomer = contentCustomer.Replace("{{MaDon}}", order.Code);
-						contentCustomer = contentCustomer.Replace("{{SanPham}}", strSanPham);
-						contentCustomer = contentCustomer.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
-						contentCustomer = contentCustomer.Replace("{{TenKhachHang}}", order.CustomerName);
-						contentCustomer = contentCustomer.Replace("{{Phone}}", order.Phone);
-						contentCustomer = contentCustomer.Replace("{{Email}}", ordervm.Email);
-						contentCustomer = contentCustomer.Replace("{{DiaChiNhanHang}}", order.Address);
-						contentCustomer = contentCustomer.Replace("{{ThanhTien}}", ShoeStore.Common.Common.FormatNumber(thanhtien, 0));
-						contentCustomer = contentCustomer.Replace("{{GiamGia}}", ShoeStore.Common.Common.FormatNumber(ordervm.discountValue, 0));
-						contentCustomer = contentCustomer.Replace("{{Voucher}}", voucher.Name);
-						contentCustomer = contentCustomer.Replace("{{PhiShip}}", ShoeStore.Common.Common.FormatNumber(ordervm.ShipFee, 0));
-						contentCustomer = contentCustomer.Replace("{{TongTien}}", ShoeStore.Common.Common.FormatNumber(TongTien, 0));
-						_sendEmail.SendEmailAsync(ordervm.Email, "Đơn hàng #" + order.Code, contentCustomer.ToString());
-					}
-					string filePath2 = Path.Combine(_env.WebRootPath, "assets", "templates", "adminsend.html");
-					if (System.IO.File.Exists(filePath2))
-					{
-						contentCustomer = System.IO.File.ReadAllText(filePath2);
-						contentCustomer = contentCustomer.Replace("{{MaDon}}", order.Code);
-						contentCustomer = contentCustomer.Replace("{{SanPham}}", strSanPham);
-						contentCustomer = contentCustomer.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
-						contentCustomer = contentCustomer.Replace("{{TenKhachHang}}", order.CustomerName);
-						contentCustomer = contentCustomer.Replace("{{Phone}}", order.Phone);
-						contentCustomer = contentCustomer.Replace("{{Email}}", ordervm.Email);
-						contentCustomer = contentCustomer.Replace("{{DiaChiNhanHang}}", order.Address);
-						contentCustomer = contentCustomer.Replace("{{ThanhTien}}", ShoeStore.Common.Common.FormatNumber(thanhtien, 0));
-						contentCustomer = contentCustomer.Replace("{{GiamGia}}", ShoeStore.Common.Common.FormatNumber(ordervm.discountValue, 0));
-						contentCustomer = contentCustomer.Replace("{{Voucher}}", voucher.Name);
-						contentCustomer = contentCustomer.Replace("{{PhiShip}}", ShoeStore.Common.Common.FormatNumber(ordervm.ShipFee, 0));
-						contentCustomer = contentCustomer.Replace("{{TongTien}}", ShoeStore.Common.Common.FormatNumber(TongTien, 0));
-						_sendEmail.SendEmailAsync(_config.GetValue<string>("SendEmail:Email"), "Đơn hàng #" + order.Code, contentCustomer.ToString());
-					}
-
-					if (ordervm.TypePayment == "Online")
-					{
-						return await Payment(order);
-					}
+						OrderID = order.Id,
+						OrderCode = order.Code,
+						strSanPham = strSanPham,
+						TenKhachHang = order.CustomerName,
+						Phone = order.Phone,
+						Email = ordervm.Email ?? customer.Email,
+						DiaChiNhanHang = order.Address,
+						ThanhTien = thanhtien,
+						GiamGia = ordervm.discountValue ?? 0,
+						Voucher = checkvoucher,
+						PhiShip = ordervm.ShipFee ?? 0,
+						TongTien = TongTien ?? 0,
+						HinhThucThanhToan = "Thanh toán khi nhận hàng"
+					};
+                    if (ordervm.TypePayment == "Online")
+                    {
+                        return await Payment(sendemailord);
+                    }
+                    SendEmailOrder(sendemailord);
+                    /*
+     //               string contentCustomer;
+					//string filePath = Path.Combine(_env.WebRootPath, "assets", "templates", "customersend.html");
+					//if (System.IO.File.Exists(filePath))
+					//{
+					//	contentCustomer = System.IO.File.ReadAllText(filePath);
+					//	contentCustomer = contentCustomer.Replace("{{MaDon}}", order.Code);
+					//	contentCustomer = contentCustomer.Replace("{{SanPham}}", strSanPham);
+					//	contentCustomer = contentCustomer.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
+					//	contentCustomer = contentCustomer.Replace("{{TenKhachHang}}", order.CustomerName);
+					//	contentCustomer = contentCustomer.Replace("{{Phone}}", order.Phone);
+					//	contentCustomer = contentCustomer.Replace("{{Email}}", ordervm.Email ?? customer.Email);
+					//	contentCustomer = contentCustomer.Replace("{{DiaChiNhanHang}}", order.Address);
+					//	contentCustomer = contentCustomer.Replace("{{ThanhTien}}", ShoeStore.Common.Common.FormatNumber(thanhtien, 0));
+					//	contentCustomer = contentCustomer.Replace("{{GiamGia}}", ShoeStore.Common.Common.FormatNumber(ordervm.discountValue, 0));
+					//	if(voucher != null)
+					//	{
+     //                       contentCustomer = contentCustomer.Replace("{{Voucher}}", voucher.Name);
+					//	}
+					//	else
+					//	{
+     //                       contentCustomer = contentCustomer.Replace("{{Voucher}}", "Không có voucher áp dụng");
+     //                   }
+					//	contentCustomer = contentCustomer.Replace("{{PhiShip}}", ShoeStore.Common.Common.FormatNumber(ordervm.ShipFee, 0));
+					//	contentCustomer = contentCustomer.Replace("{{TongTien}}", ShoeStore.Common.Common.FormatNumber(TongTien, 0));
+					//	_sendEmail.SendEmailAsync(ordervm.Email, "Đơn hàng #" + order.Code, contentCustomer.ToString());
+					//}
+					//string filePath2 = Path.Combine(_env.WebRootPath, "assets", "templates", "adminsend.html");
+					//if (System.IO.File.Exists(filePath2))
+					//{
+					//	contentCustomer = System.IO.File.ReadAllText(filePath2);
+					//	contentCustomer = contentCustomer.Replace("{{MaDon}}", order.Code);
+					//	contentCustomer = contentCustomer.Replace("{{SanPham}}", strSanPham);
+					//	contentCustomer = contentCustomer.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
+					//	contentCustomer = contentCustomer.Replace("{{TenKhachHang}}", order.CustomerName);
+					//	contentCustomer = contentCustomer.Replace("{{Phone}}", order.Phone);
+					//	contentCustomer = contentCustomer.Replace("{{Email}}", ordervm.Email ?? customer.Email);
+					//	contentCustomer = contentCustomer.Replace("{{DiaChiNhanHang}}", order.Address);
+					//	contentCustomer = contentCustomer.Replace("{{ThanhTien}}", ShoeStore.Common.Common.FormatNumber(thanhtien, 0));
+					//	contentCustomer = contentCustomer.Replace("{{GiamGia}}", ShoeStore.Common.Common.FormatNumber(ordervm.discountValue, 0));
+					//	if(voucher != null)
+					//	{
+     //                       contentCustomer = contentCustomer.Replace("{{Voucher}}", voucher.Name);
+					//	}
+					//	else
+					//	{
+     //                       contentCustomer = contentCustomer.Replace("{{Voucher}}", "Không có voucher áp dụng");
+     //                   }
+					//	contentCustomer = contentCustomer.Replace("{{PhiShip}}", ShoeStore.Common.Common.FormatNumber(ordervm.ShipFee, 0));
+					//	contentCustomer = contentCustomer.Replace("{{TongTien}}", ShoeStore.Common.Common.FormatNumber(TongTien, 0));
+					//	_sendEmail.SendEmailAsync(_config.GetValue<string>("SendEmail:Email"), "Đơn hàng #" + order.Code, contentCustomer.ToString());
+					//}
+                    */
                     HttpContext.Session.Set<List<ShoppingCartItem>>(MySetting.CART_KEY, new List<ShoppingCartItem>());
                     _notyf.Success("Đặt hàng thành công");
 					return RedirectToAction("Success", "ShoppingCart");
 				}
-			}
+			}					
             if (cart.Count == 0)
             {
 				_notyf.Warning("Hiện tại không có sản phẩm,vui lòng chọn thêm sản phẩm");
@@ -196,10 +270,29 @@ namespace ShoeStore.Controllers
             ordervm.VoucherForAccs = db.VoucherForAccs.Where(v => v.Status && v.EndDate > DateTime.Now).ToList();
             return View(ordervm);
 		}
-        public async Task<IActionResult> Payment(Order order)
+        #endregion
+        #region payment
+        public async Task<IActionResult> Payment(SendEmailOrderVM sendemailord)
         {
             string url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-			string returnUrl = $"https://localhost:{7162}/shoppingcart/paymentconfirm?id={order.Id}";
+            int port = 7162; // Port của ứng dụng của bạn
+            string domain;
+
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            {
+                // Đây là production, sử dụng tên miền của website thực tế
+                domain = "phshop.azurewebsites.net";
+            }
+            else
+            {
+                // Đây là local development, sử dụng localhost và cổng port
+                domain = $"localhost:{port}";
+            }
+            //string encodedData = HttpUtility.UrlEncode(serializedData);
+            //string returnUrl = $"https://{domain}/shoppingcart/paymentconfirm?id={order.Id}";
+            //string returnUrl = $"https://phshop.azurewebsites.net/shoppingcart/paymentconfirm?id={sendemailord.OrderID}&email={sendemailord.Email}&voucher={sendemailord.Voucher}&discountamount={sendemailord.GiamGia}";
+
+            string returnUrl = $"https://localhost:{7162}/shoppingcart/paymentconfirm?id={sendemailord.OrderID}&email={sendemailord.Email}&voucher={sendemailord.Voucher}&discountamount={sendemailord.GiamGia}";
 			string hostName = System.Net.Dns.GetHostName();
             string clientIPAddress = System.Net.Dns.GetHostAddresses(hostName).GetValue(0).ToString();
             PayLib pay = new PayLib();
@@ -207,7 +300,7 @@ namespace ShoeStore.Controllers
             pay.AddRequestData("vnp_Version", "2.1.0"); //Phiên bản api mà merchant kết nối. Phiên bản hiện tại là 2.1.0
             pay.AddRequestData("vnp_Command", "pay"); //Mã API sử dụng, mã cho giao dịch thanh toán là 'pay'
             pay.AddRequestData("vnp_TmnCode", tmnCode); //Mã website của merchant trên hệ thống của VNPAY (khi đăng ký tài khoản sẽ có trong mail VNPAY gửi về)
-            pay.AddRequestData("vnp_Amount", ((long)(order.TotalAmount * 100)).ToString()); //số tiền cần thanh toán, công thức: số tiền * 100 - ví dụ 10.000 (mười nghìn đồng) --> 1000000
+            pay.AddRequestData("vnp_Amount", ((long)(sendemailord.TongTien * 100)).ToString()); //số tiền cần thanh toán, công thức: số tiền * 100 - ví dụ 10.000 (mười nghìn đồng) --> 1000000
             pay.AddRequestData("vnp_BankCode", ""); //Mã Ngân hàng thanh toán (tham khảo: https://sandbox.vnpayment.vn/apis/danh-sach-ngan-hang/), có thể để trống, người dùng có thể chọn trên cổng thanh toán VNPAY
             pay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss")); //ngày thanh toán theo định dạng yyyyMMddHHmmss
             pay.AddRequestData("vnp_CurrCode", "VND"); //Đơn vị tiền tệ sử dụng thanh toán. Hiện tại chỉ hỗ trợ VND
@@ -221,7 +314,7 @@ namespace ShoeStore.Controllers
             string paymentUrl = pay.CreateRequestUrl(url, hashSecret);
             return Redirect(paymentUrl);
         }
-        public async Task<IActionResult> PaymentConfirm(int id)
+        public async Task<IActionResult> PaymentConfirm(int id ,string email, string voucher, string discountamount)
         {
             var order = await db.Orders.FindAsync(id);
             if (Request.QueryString.HasValue)
@@ -252,29 +345,79 @@ namespace ShoeStore.Controllers
                 {
                     if (vnp_ResponseCode == "00")
                     {
-                        ViewBag.Message = "Thanh toán thành công hóa đơn " + orderId + " | Mã giao dịch: " + vnpayTranId;
-
+                      
                         if (order != null)
                         {
-                            order.TypePayment = "Online - Đã Thanh Toán";
-                            order.Code = orderId.ToString();
-                            order.CreateAt = DateTime.Now;
-							await db.SaveChangesAsync();
+                            var orderdt = db.OrderDetails.Where(c => c.OrderId == id).ToList();
+                            foreach (var item in orderdt)
+                            {
+                                var prddt = db.ProductDetails.FirstOrDefault(c => c.Id == item.ProductDetailId);
+                                var sl = prddt.Quantity = prddt.Quantity - item.Quantity;
 
+                                if (sl < 0)
+                                {
+                                    _notyf.Warning("Mặt hàng này trong kho không đủ");
+                                    return RedirectToAction("index");
+                                }
+                                else
+                                {
+									var thanhtien = decimal.Zero;
+                                    var strSanPham = "";
+									var cart = Cart;
+                                    foreach (var sp in cart.ToList())
+                                    {
+                                        strSanPham += "<tr>";
+                                        strSanPham += "<td>" + sp.ProductName + "</td>";
+                                        strSanPham += "<td>" + sp.Size + "</td>";
+                                        strSanPham += "<td>" + sp.Quantity + "</td>";
+                                        strSanPham += "<td>" + ShoeStore.Common.Common.FormatNumber(sp.TotalPrice, 0) + "</td>";
+                                        strSanPham += "</tr>";
+                                        thanhtien += sp.Price * sp.Quantity;
+                                    }
+                                    prddt.Quantity = sl;
+                                    await db.SaveChangesAsync();
+                                    order.Code = orderId.ToString();
+                                    order.StatusOrder = 2;
+                                    order.TypePayment = "Online - Đã thanh toán";
+                                    order.CreateAt = DateTime.Now;
+                                    order.UpdateAt = DateTime.Now;
+                                    await db.SaveChangesAsync();
+                                    
+                                    var sendemailord = new SendEmailOrderVM()
+                                    {
+                                        OrderID = order.Id,
+                                        OrderCode = order.Code,
+                                        strSanPham = strSanPham,
+                                        TenKhachHang = order.CustomerName,
+                                        Phone = order.Phone,
+                                        Email = email,
+                                        DiaChiNhanHang = order.Address,
+                                        ThanhTien = thanhtien,
+                                        GiamGia = decimal.Parse(discountamount),
+                                        Voucher = voucher,
+                                        PhiShip = order.ShipFee ?? 0,
+                                        TongTien = order.TotalAmount ?? 0,
+                                        HinhThucThanhToan = "Thanh toán toán online"
+                                    };
+                                    SendEmailOrder(sendemailord);
+                                    HttpContext.Session.Set<List<ShoppingCartItem>>(MySetting.CART_KEY, new List<ShoppingCartItem>());
+                                    _notyf.Success("Đặt hàng thành công");
+                                    ViewData["Success"] = "Thanh toán thành công hóa đơn " + orderId + " | Mã giao dịch: " + vnpayTranId;
+                                    if (!User.Identity.IsAuthenticated)
+                                    {
+                                        return RedirectToAction("Index");
+                                    }
+                                    var userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
+                                    return RedirectToAction("orderhistory", "account", new { id = userid });
+                                }
+                            }
+                            return RedirectToAction("checkout", "shoppingcart");
                         }
-                        HttpContext.Session.Set<List<ShoppingCartItem>>(MySetting.CART_KEY, new List<ShoppingCartItem>());
-                        _notyf.Success("Đặt hàng thành công");
-                        if (!User.Identity.IsAuthenticated)
-                        {
-                            return RedirectToAction("Index");
-                        }
-						var userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
-                        return RedirectToAction("orderhistory", "account" ,new {id = userid});
                     }
                     else
                     {
 						//Thanh toán không thành công.Mã lỗi: vnp_ResponseCode
-						var orderdt = db.OrderDetails.Where(c => c.OrderId == id);
+						var orderdt = db.OrderDetails.Where(c => c.OrderId == id).ToList();
 						foreach (var item in orderdt)
 						{
 							db.OrderDetails.Remove(item);
@@ -282,9 +425,9 @@ namespace ShoeStore.Controllers
 						}
 						db.Orders.Remove(order);
 						await db.SaveChangesAsync();
-						//Thanh toán không thành công.Mã lỗi: vnp_ResponseCode
+                        //Thanh toán không thành công.Mã lỗi: vnp_ResponseCode
 
-						ViewBag.Message = "Có lỗi xảy ra trong quá trình xử lý hóa đơn " + orderId + " | Mã giao dịch: " + vnpayTranId + " | Mã lỗi: " + vnp_ResponseCode;
+                        ViewData["ErrorMessage"] = "Có lỗi xảy ra trong quá trình xử lý hóa đơn " + orderId + " | Mã giao dịch: " + vnpayTranId + " | Mã lỗi: " + vnp_ResponseCode;
                         _notyf.Error("Đặt hàng thất bại");
 						return RedirectToAction("checkout","shoppingcart");
                     }
@@ -299,10 +442,10 @@ namespace ShoeStore.Controllers
 					}
 					db.Orders.Remove(order);
 					await db.SaveChangesAsync();
-					//Thanh toán không thành công.Mã lỗi: vnp_ResponseCode
+                    //Thanh toán không thành công.Mã lỗi: vnp_ResponseCode
 
-					ViewBag.Message = "Có lỗi xảy ra trong quá trình xử lý hóa đơn " + orderId + " | Mã giao dịch: " + vnpayTranId + " | Mã lỗi: " + vnp_ResponseCode;
-                    _notyf.Error("Đặt hàng thất bại");
+                    ViewData["ErrorMessage"] = "Có lỗi xảy ra trong quá trình xử lý hóa đơn " + orderId + " | Mã giao dịch: " + vnpayTranId + " | Mã lỗi: " + vnp_ResponseCode;
+                    _notyf.Error("Đặt hàng thất bại" );
                     return RedirectToAction("checkout", "shoppingcart");
                 }
             }
@@ -310,8 +453,55 @@ namespace ShoeStore.Controllers
             return RedirectToAction("orderhistory", "account");
 
         }
+        #endregion
+        #region function sendemail
+        public void SendEmailOrder(SendEmailOrderVM sendemailordervm)
+		{
+			string contentCustomer ;
+			string filePath = Path.Combine(_env.WebRootPath, "assets", "templates", "customersend.html");
+            if (System.IO.File.Exists(filePath))
+            {
+                contentCustomer = System.IO.File.ReadAllText(filePath);
+                contentCustomer = contentCustomer.Replace("{{MaDon}}", sendemailordervm.OrderCode);
+                contentCustomer = contentCustomer.Replace("{{SanPham}}", sendemailordervm.strSanPham);
+                contentCustomer = contentCustomer.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
+                contentCustomer = contentCustomer.Replace("{{TenKhachHang}}", sendemailordervm.TenKhachHang);
+                contentCustomer = contentCustomer.Replace("{{Phone}}", sendemailordervm.Phone);
+                contentCustomer = contentCustomer.Replace("{{Email}}", sendemailordervm.Email);
+                contentCustomer = contentCustomer.Replace("{{DiaChiNhanHang}}", sendemailordervm.DiaChiNhanHang);
+                contentCustomer = contentCustomer.Replace("{{ThanhTien}}", ShoeStore.Common.Common.FormatNumber(sendemailordervm.ThanhTien, 0));
+                contentCustomer = contentCustomer.Replace("{{GiamGia}}", ShoeStore.Common.Common.FormatNumber(sendemailordervm.GiamGia, 0));
+                contentCustomer = contentCustomer.Replace("{{HinhThucThanhToan}}", sendemailordervm.HinhThucThanhToan);
+                contentCustomer = contentCustomer.Replace("{{Voucher}}", sendemailordervm.Voucher);
+                contentCustomer = contentCustomer.Replace("{{PhiShip}}", ShoeStore.Common.Common.FormatNumber(sendemailordervm.PhiShip, 0));
+                contentCustomer = contentCustomer.Replace("{{TongTien}}", ShoeStore.Common.Common.FormatNumber(sendemailordervm.TongTien, 0));
+                _sendEmail.SendEmailAsync(sendemailordervm.Email, "Đơn hàng #" + sendemailordervm.OrderCode, contentCustomer.ToString());
+            }
+            string filePath2 = Path.Combine(_env.WebRootPath, "assets", "templates", "adminsend.html");
+            if (System.IO.File.Exists(filePath2))
+            {
+				contentCustomer = System.IO.File.ReadAllText(filePath2);
+                contentCustomer = contentCustomer.Replace("{{MaDon}}", sendemailordervm.OrderCode);
+                contentCustomer = contentCustomer.Replace("{{SanPham}}", sendemailordervm.strSanPham);
+                contentCustomer = contentCustomer.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
+                contentCustomer = contentCustomer.Replace("{{TenKhachHang}}", sendemailordervm.TenKhachHang);
+                contentCustomer = contentCustomer.Replace("{{Phone}}", sendemailordervm.Phone);
+                contentCustomer = contentCustomer.Replace("{{Email}}", sendemailordervm.Email);
+                contentCustomer = contentCustomer.Replace("{{DiaChiNhanHang}}", sendemailordervm.DiaChiNhanHang);
+                contentCustomer = contentCustomer.Replace("{{ThanhTien}}", ShoeStore.Common.Common.FormatNumber(sendemailordervm.ThanhTien, 0));
+                contentCustomer = contentCustomer.Replace("{{GiamGia}}", ShoeStore.Common.Common.FormatNumber(sendemailordervm.GiamGia, 0));
+				contentCustomer = contentCustomer.Replace("{{HinhThucThanhToan}}", sendemailordervm.HinhThucThanhToan);
+				contentCustomer = contentCustomer.Replace("{{Voucher}}", sendemailordervm.Voucher);
+                contentCustomer = contentCustomer.Replace("{{PhiShip}}", ShoeStore.Common.Common.FormatNumber(sendemailordervm.PhiShip, 0));
+                contentCustomer = contentCustomer.Replace("{{TongTien}}", ShoeStore.Common.Common.FormatNumber(sendemailordervm.TongTien, 0));
+                _sendEmail.SendEmailAsync(_config.GetValue<string>("SendEmail:Email"), "Đơn hàng #" + sendemailordervm.OrderCode, contentCustomer.ToString());
+            }
+
+		}
+        #endregion
+        #region checkcart
         [HttpPost]
-		public async Task<ActionResult> AddToCart(int id, string size, int quantity = 1)
+		public async Task<ActionResult> AddToCart(int id, string size,int colorid, int quantity = 1)
 		{
 			var code = new { success = false, msg = "", code = -1, count = 0 };
 			var db = new ShoeStoreContext();
@@ -319,10 +509,12 @@ namespace ShoeStore.Controllers
 			var item = cart.SingleOrDefault(p => p.ProductId == id && p.Size == size);
 			if (item == null)
 			{
+				var checkproduct = await db.ProductDetails.FindAsync(id);
+				var productid = db.Products.FirstOrDefault(p => p.Id == checkproduct.ProductId).Id;
 				var product = (from pd in db.ProductDetails
 							   join p in db.Products on pd.ProductId equals p.Id
 							   join c in db.Categories on p.CategoryId equals c.Id
-							   where pd.Id == id && pd.Size.Name == size
+							   where p.Id == productid && pd.Size.Name == size && pd.ColorId == colorid
 							   select new { ProductDetail = pd, Product = p, Category = c })
 			  .SingleOrDefault();
 
@@ -390,7 +582,7 @@ namespace ShoeStore.Controllers
 				{
 					cart.Remove(item);
 					HttpContext.Session.Set(MySetting.CART_KEY, cart);
-					code = new { success = true, msg = "Xóa sản phẩm khỏi thành công", code = 1, count = cart.Count };
+					code = new { success = true, msg = "Xóa sản phẩm khỏi khỏi giỏ hàng thành công", code = 1, count = cart.Count };
 				}
 			}
 			return Json(code);
@@ -444,7 +636,9 @@ namespace ShoeStore.Controllers
             }
 			return Json(code);
         }
-		[HttpPost]
+        #endregion
+        #region applydiscount
+        [HttpPost]
 		public async Task<IActionResult> ApplyDiscountFromYourVou(string selectedVoucher, OrderVM ordervm)
 		{
 			if (!User.Identity.IsAuthenticated)
@@ -539,6 +733,7 @@ namespace ShoeStore.Controllers
                 return Json(new { success = false, message = "Voucher không tồn tại hoặc quá thời gian sử dụng" });
             }
         }
+        #endregion
 
     }
 }

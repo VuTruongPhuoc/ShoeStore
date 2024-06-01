@@ -1,0 +1,246 @@
+﻿
+@{
+    ViewData["Title"] = "Thống kê doanh thu";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@section naviheader {
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="#" class="nav-link">@ViewBag.Title</a>
+        </li>
+    </ul>
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Thống kê doanh thu</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">@ViewBag.Title</li>
+                </ol>
+            </div>
+
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<section class="content">
+
+    <!-- Default box -->
+    <div class="col-xl-12 col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="mb-1">Doanh thu</h3>
+                    <div class="d-flex align-items-center">
+                        <span class="mr-2">Chọn tháng: </span>
+                        <!-- Dropdown for selecting the past 15 years -->
+                        <div class="dropdown" style="margin-right: 10px;">
+                            <select id="monthDropdown" class="form-control" style="width: 100%">
+                                <option value="0">Không</option>
+                                @for (int month = 1; month <= 12; month++)
+                                {
+                                    <option value="@month">@month</option>
+                                }
+                            </select>
+                        </div>
+                        <span class="mr-2">Chọn năm: </span>
+                        <!-- Dropdown for selecting the past 15 years -->
+                        <div class="dropdown" style="margin-right: 10px;">
+                            <select id="yearDropdown" class="form-control" style="width: 100%">
+                                @for (int year = DateTime.Now.Year; year >= DateTime.Now.Year - 15; year--)
+                                {
+                                    <option value="@year">@year</option>
+                                }
+                            </select>
+                        </div>
+                        <span class="mr-2">Kiểu biểu đồ: </span>
+                        <!-- Dropdown for selecting chart type -->
+                        <div class="dropdown">
+                            <select id="chartTypeDropdown" class="form-control" style="width: 100%">
+                                <option value="yearly">1 năm</option>
+                                <option value="monthly">1 tháng</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Button to export data to Excel -->
+                    <button id="exportBtn" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="container">
+                    <!-- Canvas for the selected chart type -->
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5 class="card-title m-0 me-2">Danh sách đơn hàng</h5>
+                            <div class="dropdown" style="margin-right: 10px;">
+                                <button class="btn p-0" type="button" id="saleStatus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="mdi mdi-dots-vertical mdi-24px"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="saleStatus">
+                                   @*  <a class="dropdown-item" onclick="sortBy('quantity')" style="cursor:pointer">Theo số lượng</a>
+                                    <a class="dropdown-item" onclick="sortBy('earnings')" style="cursor:pointer">Theo tổng tiền</a> *@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                                <!-- HTML cho hiển thị dữ liệu -->
+                                <table class="table table-bordered" id="productTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã đơn</th>
+                                            <th>Ngày đặt</th>
+                                            <th>Ngày cập nhật</th>
+                                            <th>Phí Ship</th>
+                                            <th>Voucher</th>
+                                            <th>Hình thức</th>
+                                            <th>Trạng thái</th>
+                                            <th>Tổng tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot>
+
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.card -->
+
+</section>
+@section Scripts {
+    <script>           
+        // Gọi hàm validateAndFetch khi trang đã được tải
+        $(document).ready(function () {
+            validateAndFetch();
+            $('#yearDropdown').on('change', function () {
+                var selectedYear = $(this).val();
+                var selectedMonth = document.getElementById("monthDropdown").value;
+                // Nếu dropdown chọn loại biểu đồ đang là 'weekly', thay đổi nó thành 'yearly'
+                if ($('#chartTypeDropdown').val() === 'monthly') {
+                    $('#chartTypeDropdown').val('yearly');
+                }
+                validateAndFetch();
+                currentChart = "yearly";
+                console.log(currentChart);
+            });
+            $('#monthDropdown').on('change', function () {
+                var selectedMonth = $(this).val();
+                var selectedYear = document.getElementById("yearDropdown").value;
+                // Nếu dropdown chọn loại biểu đồ đang là 'weekly', thay đổi nó thành 'monthly'
+                if ($('#chartTypeDropdown').val() === 'yearly') {
+                    $('#chartTypeDropdown').val('monthly');
+                }
+                validateAndFetch();
+                currentChart = "monthly";
+                console.log(currentChart);
+            });
+           
+        });
+        function validateAndFetch() {
+                var month = document.getElementById("monthDropdown").value;
+                var year = document.getElementById("yearDropdown").value;
+                var apiUrl = "";
+                if (month === "0") {
+                    apiUrl = "https://localhost:7162/api/Chart/ListsStatistics/" + year
+                    $('#chartTypeDropdown').val('yearly');
+                } else {
+                    apiUrl = "https://localhost:7162/api/Chart/ListsStatistics/" + month + "/" + year;
+                    $('#chartTypeDropdown').val('monthly')
+                }
+                $.ajax({
+                    url: apiUrl,
+                    method: "GET",
+                    success: function (data) {
+                        var tableBody = $('#productTable tbody');
+                        tableBody.empty();
+                        var totalEarnings = parseFloat("0");
+                        $.each(data, function (index, order) {
+                            var orderCode = order.orderCode;
+                            var orderCreateAt = new Date(order.orderCreateAt).toLocaleString('vi-VN');
+                            var orderPaymentDate = new Date(order.orderPaymentDate).toLocaleString('vi-VN');
+                            var orderShipFee = parseFloat(order.orderShipFee).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                            var orderVoucherName = order.orderVoucherName;
+                            var orderTypePayment = order.orderTypePayment;
+                            var orderStatus = order.orderStatus === 1 ? "Chờ xác nhận" : "Khác";
+                            var orderTotalAmount = parseFloat(order.orderTotalAmount);
+
+                            totalEarnings += orderTotalAmount;
+                            if(orderVoucherName == null){
+                                orderVoucherName = "Không có Voucher";
+                            }
+                            // Hiển thị thông tin sản phẩm trong bảng
+                            var row = '<tr>' +
+                                '<td>' + orderCode + '</td>' +
+                                '<td>' + orderCreateAt + '</td>' +
+                                '<td>' + orderPaymentDate + '</td>' +
+                                '<td>' + orderShipFee + '</td>' +
+                                '<td>' + orderVoucherName + '</td>' +
+                                '<td>' + orderTypePayment + '</td>' +
+                                '<td>' + orderStatus + '</td>' +
+                                '<td>' + parseFloat(orderTotalAmount).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) + '</td>' +
+                                '</tr>';
+                            tableBody.append(row);
+                        });
+                        var tfootRow = '<tr>' +
+                            '<td colspan="7"><strong>Tổng doanh thu:</strong></td>' +
+                            '<td>' + totalEarnings.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) + '</td>' +
+                            '</tr>';
+                        var tableFooter = $('#productTable tfoot');
+                        tableFooter.empty();
+                        tableFooter.append(tfootRow);
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
+        function exportToExcel() {
+            if (confirm("Tải về file Excel?")) {
+                var url = "https://localhost:7162/api/Chart/ExportDataToExcel/" + currentChart;
+                var selectedyear = document.getElementById("yearDropdown").value;
+                console.log(selectedyear)
+                // Kiểm tra nếu là DatePicker thì lấy giá trị startDate và endDate từ các phần tử HTML
+                if (currentChart === "DatePicker") {
+                    var startDateElement = document.getElementById("startDate");
+                    var endDateElement = document.getElementById("endDate");
+
+                    // Kiểm tra xem phần tử có tồn tại không
+                    if (startDateElement && endDateElement) {
+                        var startDateValue = startDateElement.value;
+                        var endDateValue = endDateElement.value;
+
+                        // Thêm tham số startDate và endDate vào đường dẫn
+                        url += `?startDate=${encodeURIComponent(startDateValue)}&endDate=${encodeURIComponent(endDateValue)}`;
+                    }
+                    else {
+                        console.error("Không tìm thấy phần tử HTML");
+                        return;
+                    }
+                } else if (currentChart === "yearly") {
+                    url += `?currentyear=${encodeURIComponent(selectedyear)}`;
+                }
+
+                // Chuyển hướng đến đường dẫn đã tạo
+                window.location.href = url;
+            }
+        }
+    </script>
+}

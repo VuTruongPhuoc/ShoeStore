@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ShoeStore.Data;
+using ShoeStore.Models;
+using System.Net.Http;
+using OfficeOpenXml;
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
@@ -10,12 +14,13 @@ namespace ShoeStore.Areas.Admin.Controllers
     public class ChartController : ControllerBase
     {
         private readonly ShoeStoreContext db;
-        //private readonly HttpClient _httpClient;
-        public ChartController(ShoeStoreContext db)
+        private readonly HttpClient _httpClient;
+        public ChartController(ShoeStoreContext db, HttpClient httpClient)
         {
             this.db = db;
+            _httpClient = httpClient;
         }
-        [HttpGet("{year}")]
+        [HttpGet("StatisticsByYear/{year}")]
         public IActionResult StatisticsByYear(int year)
         {
             try
@@ -47,7 +52,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             }
         }
 
-        [HttpGet("{month}/{year}")]
+        [HttpGet("StatisticsByMonthOfTheYear/{month}/{year}")]
         public IActionResult StatisticsByMonthOfTheYear(int month, int year)
         {
             try
@@ -162,6 +167,126 @@ namespace ShoeStore.Areas.Admin.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        private ApiData GetDataFromApi(string apiUrl)
+        {
+            try
+            {
+                // Gọi API để lấy dữ liệu
+                var response = _httpClient.GetAsync(apiUrl).Result;
+
+                // Kiểm tra xem yêu cầu đã thành công hay không
+                if (response.IsSuccessStatusCode)
+                {
+                    // Đọc nội dung từ phản hồi
+                    var content = response.Content.ReadAsStringAsync().Result;
+
+                    // Deserializing JSON thành danh sách DataItem (sử dụng thư viện Newtonsoft.Json)
+                    var apiData = JsonConvert.DeserializeObject<ApiData>(content);
+
+                    return apiData;
+                }
+                else
+                {
+                    throw new Exception($"API request failed with status code {response.StatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi khác nếu có
+                throw new Exception("Error calling API: " + ex.Message);
+            }
+        }
+        public class ApiData
+        {
+            public List<string> Labels { get; set; }
+            public List<decimal> Values { get; set; }
+            public string Label { get; set; }
+        }
+        [HttpGet("ExportDataToExcel/{label}")]
+        public IActionResult ExportDataToExcel(string? month,string? currentyear, string label, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            try
+            {
+                // Tạo một tệp Excel
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                var excelPackage = new ExcelPackage();
+                var worksheet = excelPackage.Workbook.Worksheets.Add("ChartData");
+                string fileName = "";
+                ApiData apiData = null;  // Đặt biến ở ngoài để tránh xung đột
+
+                if (label == "yearly")
+                {
+                    fileName = "_Doanh_thu_" + currentyear;
+                    apiData = GetDataFromApi($"https://localhost:7162/api/Chart/" + currentyear);
+                    worksheet.Cells["A1"].Value = "STT";
+                    worksheet.Cells["B1"].Value = "Tháng";
+                    worksheet.Cells["C1"].Value = "Doanh thu";
+                }
+                else if (label == "monthly")
+                {
+                    fileName = "_Doanh_thu_thang_" + month + "_nam_" + currentyear;
+                    apiData = GetDataFromApi($"https://localhost:7162/api/Chart/" + month + "/" + currentyear);
+                    worksheet.Cells["A1"].Value = "STT";
+                    worksheet.Cells["B1"].Value = "Ngày";
+                    worksheet.Cells["C1"].Value = "Doanh thu";
+                }
+                else if (label == "weekly")
+                {
+                    fileName = "_7_ngay_gan_nhat";
+                    apiData = GetDataFromApi($"https://localhost:7162/api/Chart/weekly");
+                    worksheet.Cells["A1"].Value = "STT";
+                    worksheet.Cells["B1"].Value = "Ngày";
+                    worksheet.Cells["C1"].Value = "Doanh thu";
+                }
+                else if (label == "DatePicker")
+                {
+                    fileName = "_Doanh_thu_datepicker";
+                    apiData = GetDataFromApi($"https://localhost:7162/api/Chart/DatePicker?startDate={startDate}&endDate={endDate}");
+                    worksheet.Cells["A1"].Value = "STT";
+                    worksheet.Cells["B1"].Value = "Ngày";
+                    worksheet.Cells["C1"].Value = "Doanh thu";
+                }
+                else
+                {
+                    // Xử lý trường hợp không hỗ trợ
+                    return BadRequest(new { error = "Invalid label specified" });
+                }
+
+                // Điền dữ liệu vào tệp Excel từ dữ liệu API
+
+                for (int i = 0; i < apiData.Labels.Count; i++)
+                {
+                    worksheet.Cells[i + 2, 1].Value = i + 1;
+
+
+                    if (label == "weekly")
+                    {
+                        worksheet.Cells[i + 2, 2].Value = apiData.Labels[i];
+                    }
+                    else
+                    {
+                        worksheet.Cells[i + 2, 2].Value = apiData.Labels[i] + "/2024";
+                    }
+                    worksheet.Cells[i + 2, 3].Value = apiData.Values[i];
+
+                }
+
+                // Lưu tệp Excel vào một MemoryStream
+                using (var memoryStream = new MemoryStream())
+                {
+                    excelPackage.SaveAs(memoryStream);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+
+                    // Trả về tệp Excel như là một phản hồi HTTP
+                    return File(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileName}_Chart_Data.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
         [HttpGet("SoldProductsByMonth")]
         public IActionResult GetSoldProductsByMonth(string sortBy)
         {
@@ -173,16 +298,14 @@ namespace ShoeStore.Areas.Admin.Controllers
                 var soldProductsQuery = (from products in db.Products
                                          join details in db.ProductDetails on products.Id equals details.ProductId
                                          join orderdetails in db.OrderDetails on details.Id equals orderdetails.ProductDetailId
-                                         join orders in db.Orders on orderdetails.OrderId equals orders.Id
-                                         join images in db.ProductImages on details.Id equals images.ProductDetailId
+                                         join orders in db.Orders on orderdetails.OrderId equals orders.Id                     
                                          where orders.StatusOrder == 1 && orders.CreateAt.HasValue && orders.CreateAt.Value >= currentDate.AddDays(-30)
-                                         group new { products, details, orderdetails, orders, images } by new { products.Name } into grouped
+                                         group new { products, details, orderdetails, orders } by new { products.Name } into grouped
                                          select new
                                          {
                                              ProductName = grouped.Key.Name,
                                              QuantitySold = grouped.Sum(x => x.orderdetails.Quantity),
-                                             TotalEarnings = grouped.Sum(x => x.orders.TotalAmount),
-                                             ProductImage = grouped.FirstOrDefault().images.Image,
+                                             ProductImage = grouped.FirstOrDefault().details.Image,
                                          });
 
                 // Sắp xếp theo số lượng bán hoặc giá tiền
@@ -190,9 +313,6 @@ namespace ShoeStore.Areas.Admin.Controllers
                 {
                     case "quantity":
                         soldProductsQuery = soldProductsQuery.OrderByDescending(x => x.QuantitySold);
-                        break;
-                    case "earnings":
-                        soldProductsQuery = soldProductsQuery.OrderByDescending(x => x.TotalEarnings);
                         break;
                     default:
                         // Mặc định sắp xếp theo số lượng bán nếu không có hoặc không hợp lệ sortBy
@@ -206,7 +326,6 @@ namespace ShoeStore.Areas.Admin.Controllers
                 {
                     ProductName = item.ProductName,
                     QuantitySold = item.QuantitySold,
-                    TotalEarnings = item.TotalEarnings,
                     ProductImage = item.ProductImage
                 }).ToList();
 
@@ -214,7 +333,6 @@ namespace ShoeStore.Areas.Admin.Controllers
                 {
                     labels = responseData.Select(item => item.ProductName),
                     quantities = responseData.Select(item => item.QuantitySold),
-                    earnings = responseData.Select(item => item.TotalEarnings),
                     images = responseData.Select(item => item.ProductImage),
                     label = "Sản Phẩm Đã Bán Tháng Này"
                 };
@@ -265,7 +383,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                 return Ok(new { totalQuantity = formattedQuantity });
             }
             catch (Exception ex)
-            {
+            {   
                 return BadRequest(new { error = ex.Message });
             }
         }
@@ -322,6 +440,62 @@ namespace ShoeStore.Areas.Admin.Controllers
                     formattedCount = countorder.ToString();
                 }
                 return Ok(new { countorder = formattedCount });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+        [HttpGet("ListsStatistics/{year}")]
+        public IActionResult ListsStatisticsByYear(int year)
+        {
+            try
+            {
+                var data = (from orders in db.Orders
+                            join vouchers in db.Vouchers on orders.VoucherId equals vouchers.Id into voucherGroup
+                            from voucher in voucherGroup.DefaultIfEmpty()
+                            where orders.CreateAt.HasValue && orders.CreateAt.Value.Year == year && orders.StatusOrder == 1 &&
+                                  (orders.CreateAt.HasValue || voucher != null)
+                            select new
+                            {
+                                OrderCode = orders.Code,
+                                OrderCreateAt = orders.CreateAt,
+                                OrderPaymentDate = orders.UpdateAt,
+                                OrderShipFee = orders.ShipFee,
+                                OrderVoucherName = voucher != null ? voucher.Name : null, // Handle NULL voucher.Name
+                                OrderTypePayment = orders.TypePayment,
+                                OrderStatus = orders.StatusOrder,
+                                OrderTotalAmount = orders.TotalAmount
+                            }).ToList();
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+        [HttpGet("ListsStatistics/{month}/{year}")]
+        public IActionResult ListsStatisticsByMonth(int month,int year)
+        {
+            try
+            {
+                var data = (from orders in db.Orders
+                            join vouchers in db.Vouchers on orders.VoucherId equals vouchers.Id into voucherGroup
+                            from voucher in voucherGroup.DefaultIfEmpty()
+                            where orders.CreateAt.HasValue && orders.CreateAt.Value.Month == month && orders.CreateAt.Value.Year == year && orders.StatusOrder == 1 &&
+                                  (orders.CreateAt.HasValue || voucher != null)
+                            select new
+                            {
+                                OrderCode = orders.Code,
+                                OrderCreateAt = orders.CreateAt,
+                                OrderPaymentDate = orders.UpdateAt,
+                                OrderShipFee = orders.ShipFee,
+                                OrderVoucherName = voucher != null ? voucher.Name : null, // Handle NULL voucher.Name
+                                OrderTypePayment = orders.TypePayment,
+                                OrderStatus = orders.StatusOrder,
+                                OrderTotalAmount = orders.TotalAmount
+                            }).ToList();
+                return Ok(data);
             }
             catch (Exception ex)
             {

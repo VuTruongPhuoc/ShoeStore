@@ -14,8 +14,7 @@ namespace ShoeStore.Areas.Admin.Controllers
     [Route("admin/role")]
     [Route("admin/role/{action}")]
     [Route("admin/role/{action}/{id}")]
-    [Authorize(Roles = "Admin, Employee")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class RoleController : Controller
     {
         private readonly ShoeStoreContext db = new ShoeStoreContext();
@@ -36,7 +35,6 @@ namespace ShoeStore.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Create(Role role)
         {
             if (ModelState.IsValid)

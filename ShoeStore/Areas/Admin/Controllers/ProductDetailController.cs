@@ -26,7 +26,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             ViewBag.Product = db.Products.ToList().OrderBy(x=>x.Name);
             ViewBag.Size = db.Sizes.ToList().OrderBy(x => x.Name);
             ViewBag.Color = db.Colors.ToList().OrderBy(x => x.Name);
-            var pageSize = 3;
+            var pageSize = 10;
             if (page == null)
             {
                 page = 1;
@@ -49,7 +49,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             ViewBag.Color = db.Colors.ToList().OrderBy(x => x.Name); 
             ViewBag.Product = db.Products.ToList().OrderBy(x => x.Name);
             ViewBag.ProductId = id;
-            var pageSize = 3;
+            var pageSize = 10;
             if (page == null)
             {
                 page = 1;
@@ -69,7 +69,7 @@ namespace ShoeStore.Areas.Admin.Controllers
         public IActionResult Add(int id)
         {
             ViewBag.Size = db.Sizes.ToList().OrderBy(x => x.Name); ;
-            ViewBag.Color = db.Colors.ToList().OrderBy(x => x.Name); ;
+            ViewBag.Color = db.Colors.ToList().OrderBy(x => x.Name);
             ViewBag.Product = db.Products.ToList().OrderBy(x => x.Name);
             ViewBag.ProductId = id;
             return View();
@@ -81,7 +81,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             ViewBag.Size = db.Sizes.ToList();
             ViewBag.Color = db.Colors.ToList();
             ViewBag.Product = db.Products.ToList().OrderBy(x => x.Name);
-
+            model.Id = 0;
             if (ModelState.IsValid)
             {
                 try
@@ -111,16 +111,21 @@ namespace ShoeStore.Areas.Admin.Controllers
                             }
                         }
                     }
-                    if(model.ProductImages.Count == 0)
+                    if(Images.Count == 0)
                     {
+                        model.Image = "/files/images/product/maugiay.jpg";
                         model.ProductImages.Add(new ProductImage
                         {
+
                             ProductDetailId = model.Id,
-                            Image = "files/images/product/maugiay.jpg",
+                            Image = "/files/images/product/maugiay.jpg",
                             IsDefault = true
                             
                         });
                     }
+                    var color = await db.Colors.FindAsync(model.ColorId);
+                    var product = await db.Products.FindAsync(model.ProductId);
+                    model.Name = product.Name + " - " + color.ColorCode;
                     model.CreateAt = DateTime.Now;
                     model.UpdateAt = DateTime.Now;
                     var item = db.ProductDetails.FirstOrDefault(x => x.ProductId == model.ProductId && x.SizeId == model.SizeId && x.ColorId == model.ColorId);
@@ -128,6 +133,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                     {
                         item.Quantity += model.Quantity;
                         await db.SaveChangesAsync();
+                        _notyf.Success("Thêm dữ liệu thành công");
                         return RedirectToAction("Index", "Product", new { area = "Admin" });
                     }
                     db.ProductDetails.Add(model);
@@ -174,17 +180,17 @@ namespace ShoeStore.Areas.Admin.Controllers
                             db.SaveChanges();
                         }
                     }
+                    item.Name = model.Name;
                     item.Price = model.Price;
                     item.Quantity = model.Quantity;
                     item.SizeId = model.SizeId;
                     item.ColorId = model.ColorId;
                     item.PriceSale = model.PriceSale;
-                    item.OriginalPrice = model.OriginalPrice;
                     item.UpdateAt = DateTime.Now;
                     item.Status = model.Status;
                     await db.SaveChangesAsync();
                     _notyf.Success("Cập nhật dữ liệu thành công");
-                    return RedirectToAction("index", "account", new { area = "admin" });
+                    return RedirectToAction("index", "product", new { area = "admin" });
                 }
                 catch (Exception ex)
                 {

@@ -1,4 +1,5 @@
 ﻿@model ShoeStore.Models.Account
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Thêm mới tài khoản";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -10,7 +11,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+            <a href="/admin" class="nav-link">Trang chủ</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="/admin/account/index" class="nav-link">Tài khoản</a>
@@ -51,41 +52,41 @@
                     @Html.AntiForgeryToken()
                     <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                         <div class="form-group">
-                            <label name="Username" class="Username">Tên tài khoản</label>
-                            <input name="Username" class="form-control" />
-                            @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+                            <label asp-for="Username" class="Username">Tên tài khoản</label>
+                            <input asp-for="Username" class="form-control" />
+                            <span asp-validation-for="Username" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="FullName" class="FullName">Tên đầy đủ</label>
-                            <input name="FullName" class="form-control" />
-                            @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+                            <label asp-for="FullName" class="FullName">Tên đầy đủ</label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="Email" class="control-label">Email</label>
-                            <input name="Email" class="form-control" type="text"/>
-                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                            <label asp-for="Email" class="control-label">Email</label>
+                            <input asp-for="Email" class="form-control" type="text" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="PhoneNumber" class="control-label">Số điện thoại</label>
-                            <input name="PhoneNumber" class="form-control" type="number"></input>
-                            @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                            <label asp-for="PhoneNumber" class="control-label">Số điện thoại</label>
+                            <input asp-for="PhoneNumber" class="form-control" type="number"></input>
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label for="Password" class="control-label">Mật khẩu</label>
                             <div class="input-group">
-                                <input name="Password" class="form-control" id="txtPassword" type="password">
+                                <input asp-for="Password" class="form-control" id="txtPassword" type="password">
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" type="button" id="btnTogglePassword">
                                         <i class="fa fa-eye" aria-hidden="true"></i> <!-- Biểu tượng hiển thị mật khẩu -->
                                     </button>
                                 </div>
                             </div>
-                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                            <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
                         <div class="form-group">
-                            <label name="RoleId" class="control-label">Chọn quyền</label>
-                            <select name="RoleId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
+                            <label asp-for="RoleId" class="control-label">Chọn quyền</label>
+                            <select asp-for="RoleId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
                                 @if (ViewBag.Role != null)
                                 {
                                     foreach (var item in ViewBag.Role)
@@ -94,7 +95,7 @@
                                     }
                                 }
                             </select>
-                            @Html.ValidationMessageFor(model => model.RoleId, "", new { @class = "text-danger" })
+                            <span asp-validation-for="RoleId" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Lưu</button>

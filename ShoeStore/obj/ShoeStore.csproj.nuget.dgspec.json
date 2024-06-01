@@ -44,6 +44,14 @@
               "target": "Package",
               "version": "[1.1.0, )"
             },
+            "ClosedXML": {
+              "target": "Package",
+              "version": "[0.102.2, )"
+            },
+            "EPPlus": {
+              "target": "Package",
+              "version": "[7.1.2, )"
+            },
             "MailKit": {
               "target": "Package",
               "version": "[4.5.0, )"

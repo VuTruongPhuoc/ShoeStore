@@ -10485,6 +10485,10 @@
       "PackagePath": "staticwebassets\\icon\\icon3.png"
     },
     {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\js\\jsCheckout.js",
+      "PackagePath": "staticwebassets\\js\\jsCheckout.js"
+    },
+    {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\js\\jsShopping.js",
       "PackagePath": "staticwebassets\\js\\jsShopping.js"
     },

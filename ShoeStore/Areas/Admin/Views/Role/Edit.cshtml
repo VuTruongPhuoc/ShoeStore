@@ -1,4 +1,5 @@
 ﻿@model ShoeStore.Models.Role
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Cập nhật quyền";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -11,7 +12,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+            <a href="/admin" class="nav-link">Trang chủ</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="/admin/role" class="nav-link">Quyền</a>
@@ -57,9 +58,9 @@
                         @Html.HiddenFor(x => x.Id)
                         <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                             <div class="form-group">
-                                <label name="Name" class="control-label">Tên quyền</label>
-                                <input name="Name" class="form-control" value="@Model.Name" />
-                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                                <label asp-for="Name" class="control-label">Tên quyền</label>
+                                <input asp-for="Name" class="form-control" value="@Model.Name" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary">Lưu</button>

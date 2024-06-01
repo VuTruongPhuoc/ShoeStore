@@ -1,5 +1,6 @@
 ﻿@model ShoeStore.Models.Vouchers
 @using System.Globalization
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Chỉnh sửa voucher";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -12,7 +13,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+            <a href="/admin" class="nav-link">Trang chủ</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="/admin/voucher/index" class="nav-link">Voucher</a>
@@ -58,39 +59,39 @@
                         @Html.HiddenFor(x => x.Id)
                         <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                             <div class="form-group">
-                                <label name="Name" class="control-label">Tên voucher</label>
-                                <input name="Name" class="form-control" value="@Model.Name" />
-                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                                <label asp-for="Name" class="control-label">Tên voucher</label>
+                                <input asp-for="Name" class="form-control" value="@Model.Name" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label name="Value" class="control-label">Nhập %</label>
-                                <input type="number" name="Value" class="form-control" value="@Model.Value" />
-                                @Html.ValidationMessageFor(model => model.Value, "", new { @class = "text-danger" })
+                                <label asp-for="Value" class="control-label">Nhập %</label>
+                                <input type="number" asp-for="Value" class="form-control" value="@Model.Value" />
+                                <span asp-validation-for="Value" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label name="Code" class="control-label">Nhập mã</label>
-                                <input name="Code" class="form-control" value="@Model.Code" />
-                                @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+                                <label asp-for="Code" class="control-label">Nhập mã</label>
+                                <input asp-for="Code" class="form-control" value="@Model.Code" />
+                                <span asp-validation-for="Code" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label name="DiscountAmount" class="control-label">Giảm tối đa</label>
-                                <input type="text" class="form-control" name="DiscountAmount" placeholder="Nhập giảm tối đa" value="@Model.DiscountAmount" />
-                                @Html.ValidationMessageFor(model => model.DiscountAmount, "", new { @class = "text-danger" })
+                                <label asp-for="DiscountAmount" class="control-label">Giảm tối đa</label>
+                                <input type="text" class="form-control" asp-for="DiscountAmount" placeholder="Nhập giảm tối đa" value="@Model.DiscountAmount" />
+                                <span asp-validation-for="DiscountAmount" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label name="Quantity" class="control-label">Số lượng</label>
-                                <input type="number" class="form-control" name="Quantity" placeholder="Nhập số lượng" value="@Model.Quantity"/>
-                                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                                <label asp-for="Quantity" class="control-label">Số lượng</label>
+                                <input type="number" class="form-control" asp-for="Quantity" placeholder="Nhập số lượng" value="@Model.Quantity"/>
+                                <span asp-validation-for="Quantity" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label name="StartDate" class="control-label">Ngày bắt đầu</label>
-                                <input type="text" class="form-control" id="StartDate" name="StartDate" placeholder="Nhập ngày bắt đầu" value="@Model.StartDate" />
-                                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                                <label asp-for="StartDate" class="control-label">Ngày bắt đầu</label>
+                                <input type="text" class="form-control" id="StartDate" asp-for="StartDate" placeholder="Nhập ngày bắt đầu" value="@Model.StartDate" />
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label name="EndDate" class="control-label">Ngày kết thúc</label>
-                                <input type="text" class="form-control" id="EndDate" name="EndDate" placeholder="Nhập ngày kết thúc" value="@Model.EndDate" />
-                                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                                <label asp-for="EndDate" class="control-label">Ngày kết thúc</label>
+                                <input type="text" class="form-control" id="EndDate" asp-for="EndDate" placeholder="Nhập ngày kết thúc" value="@Model.EndDate" />
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <label asp-for="Status" class="control-label">Hiển thị</label>

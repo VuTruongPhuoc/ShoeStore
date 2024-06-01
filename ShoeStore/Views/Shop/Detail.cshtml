@@ -4,11 +4,20 @@
 @{
 	ViewData["Title"] = "Chi tiết sản phẩm";
 	Layout = "~/Views/Shared/_Layout.cshtml";
+	List<Category> categories = ViewBag.Category;
+	List<Product> products = ViewBag.Product;
+	List<ProductImage> productImages = ViewBag.ProductImage;
+	List<Size> sizes = ViewBag.Size;
 }
 
 <link rel="stylesheet" type="text/css" href="~/assets/styles/single_styles.css">
 <link rel="stylesheet" type="text/css" href="~/assets/styles/single_responsive.css">
 <style>
+	.disabled-button {
+		opacity: 0.5; /* Độ mờ 50% */
+		pointer-events: none; /* Ngăn chặn sự kiện click */
+	}
+
 	.add_to_cart_button1 {
 		width: 160px;
 		margin-left: 19px;
@@ -50,18 +59,13 @@
 			<div class="breadcrumbs d-flex flex-row align-items-center">
 				<ul>
 					<li><a href="/">Trang chủ</a></li>
-					@foreach(var item in ViewBag.Product)
+					@foreach (var item in products)
 					{
 						@if(Model.ProductId == item.Id)
 						{
-								foreach(var cate in ViewBag.Category)
-								{
-									if(item.CategoryId == cate.Id)
-									{
-										<li><a href="~/shop/index/@cate.Id"><i class="fa fa-angle-right" aria-hidden="true"></i>@cate.Name</a></li>
-									}
-								}
-								<li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>@item.Name</a></li>
+							var cate = categories.FirstOrDefault(c => c.Id == item.CategoryId);
+							<li><a href="~/shop/index/@cate.Id"><i class="fa fa-angle-right" aria-hidden="true"></i>@cate.Name</a></li>
+							<li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>@item.Name</a></li>
 						}
 					}
 				</ul>
@@ -77,7 +81,7 @@
 						<div class="col-lg-3 thumbnails_col order-lg-1 order-2">
 							<div class="single_product_thumbnails">
 								<ul>
-									@foreach (var item in ViewBag.ProductImage)
+									@foreach (var item in productImages)
 									{
 										if(item.ProductDetailId == Model.Id)
 										{
@@ -108,17 +112,19 @@
 			<div class="product_details">
 				@if (ViewBag.Product != null)
 				{
-					foreach (var prd in ViewBag.Product)
+					foreach (var prd in products)
 					{
 						if (@prd.Id == Model.ProductId)
 						{
 							<div class="product_details_title">
-								<h2>@prd.Name </h2>
-								<p>Nam tempus turpis at metus scelerisque placerat nulla deumantos solicitud felis. @prd.Description</p>
+								<h2>@Model.Name </h2>
+								<p>@prd.Description</p>
 							</div>
-							<div class="free_delivery d-flex flex-row align-items-center justify-content-center">
-								<span class="ti-truck"></span><span>free delivery</span>
-							</div>
+								<span id="numberofproducts" style="font-size:16px"></span>
+							@* <div class="free_delivery d-flex flex-row align-items-center justify-content-center">
+							 	<span class="ti-truck"></span><span>free delivery</span> 
+									
+							</div> *@
 
 								@if (Model.PriceSale > 0)
 								{
@@ -142,13 +148,28 @@
 									@Html.Raw((ShoeStore.Common.Common.HtmlRate(totaRating)) )
 									</ul>
 							<div class="product_size">
-								<span>Chọn size:</span>
-								<ul>
-									@foreach(var item in ViewBag.Size)
-									{
-										<li >@item.Name</li>
-									}
-								</ul>
+								<span style="padding-bottom:5px">Chọn size:</span>
+								<p></p>
+									<ul>
+										@{
+											var lstS = new List<int>();
+											foreach (var pd in ViewBag.productdetaillist)
+											{
+												if (lstS.Any(c => c == pd.SizeId))
+												{
+													continue;
+												}
+												var item = sizes.FirstOrDefault(s => s.Id == pd.SizeId);
+												lstS.Add(pd.SizeId);
+												<li data-size-id="@item.Id" data-productdetail-id="@pd.Id" data-color-id="@Model.ColorId">@item.Name</li>
+											}
+										}
+										@* @foreach (var item in ViewBag.Size)
+										{
+											<li data-size-id="@item.Id" data-product-id="@Model.ProductId" >@item.Name</li>
+										} *@
+									</ul>
+
 							</div>
 							<div class="quantity d-flex flex-column flex-sm-row align-items-sm-center">
 								<span style="width:70px">Số lượng:</span>
@@ -158,7 +179,7 @@
 									<span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
 								</div>
 
-									<div class="red_button add_to_cart_button1" style="cursor:pointer"><a class="btnAddToCart" data-id="@Model.Id" style="cursor:pointer">Thêm vào giỏ hàng</a></div>
+									<div class="red_button add_to_cart_button1" style="cursor:pointer"><a class="btnAddToCart" data-id="@Model.Id" data-colorid="@Model.ColorId" style="cursor:pointer">Thêm vào giỏ hàng</a></div>
 								@* <div class="product_favorite d-flex flex-column align-items-center justify-content-center"></div> *@
 							</div>
 							}
@@ -178,7 +199,7 @@
 					<ul class="tabs d-flex flex-sm-row flex-column align-items-left align-items-md-center justify-content-center">
 						<li class="tab active" data-active-tab="tab_1"><span>Mô tả</span></li>
 						<li class="tab" data-active-tab="tab_2"><span>Thông tin thêm</span></li>
-							<li class="tab" data-active-tab="tab_3"><span>Đánh giá (@ViewBag.count)</span></li>
+							<li class="tab" data-active-tab="tab_3"><span class="reviewquantity">Đánh giá (@ViewBag.count)</span></li>
 					</ul>
 				</div>
 			</div>
@@ -217,39 +238,47 @@
 
 						<div class="col-lg-6 reviews_col">
 							<div class="tab_title reviews_title">
-								<h4>Đánh giá (@ViewBag.count)</h4>
+									<h4><span class="reviewquantity">Đánh giá (@ViewBag.count)</span></h4>
 							</div>
 
 							<!-- User Review -->
-								@foreach (var rev in Model.Reviews)
-								{
-									var i = 0;
-									
-									<div class="user_review_container d-flex flex-column flex-sm-row " id="trow_@i">
-										<div class="user">
-											<div class="user_pic"></div>
-											<div class="user_rating">
-												<ul class="star_rating">
-													@Html.Raw(ShoeStore.Common.Common.HtmlRate(rev.Rate ?? 0))
-												</ul>
-											</div>
-										</div>
-										<div class="review">
-											<div class="review_date">@rev.CreateAt.Value.ToString("dd/MM/yyyy HH:mm:ss")</div>
-											<div class="user_name">@rev.Username</div>
-											<p>@rev.Content</p>
-										</div>
-										@if(User.IsInRole("Admin") || User.IsInRole("Employee"))
+								<table class="table">
+									<tbody>
+										@foreach (var rev in Model.Reviews)
 										{
-											<div>
+											var i = 0;
+											 <tr id="trow_@rev.Id">
+												 <td >
+													<div class="user_review_container d-flex flex-column flex-sm-row">
+														<div class="user">
+															<div class="user_pic"></div>
+															<div class="user_rating">
+																<ul class="star_rating">
+																	@Html.Raw(ShoeStore.Common.Common.HtmlRate(rev.Rate ?? 0))
+																</ul>
+															</div>
+														</div>
+														<div class="review">
+															<div class="review_date">@rev.CreateAt.Value.ToString("dd/MM/yyyy HH:mm:ss")</div>
+															<div class="user_name">@rev.Username</div>
+															<p>@rev.Content</p>
+														</div>
+														@if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+														{
+															<div>
 
-												<button class="btnDeleteReview btn btn-sm btn-cancel" data-id="@rev.Id" width="100px" style="height: 30px;margin-left: 30px">Xóa</button>
-											</div>
+																<button class="btnDeleteReview btn btn-sm btn-cancel" data-id="@rev.Id" data-product-id="@Model.ProductId" width="100px" style="height: 30px;margin-left: 30px">Xóa</button>
+															</div>
+														}
+													</div>
+												 </td>
+												
+											</tr>
+											i++;
 										}
-										
-									</div>
-									i++;
-								}
+									</tbody>
+								
+								</table>
 								
 							
 						</div>
@@ -306,20 +335,52 @@
 		});
 		$('body').on('click', '.btnDeleteReview', function () {
 			var id = $(this).data("id");
+			var productid = $(this).data("product-id");
 			var conf = confirm('Bạn có muốn xóa bỉnh luận này không?');
 			if (conf === true) {
 				$.ajax({
 					url: '/shop/DeleteReview',
 					type: 'POST',
-					data: { id: id },
+					data: { id: id ,productid: productid},
 					success: function (rs) {
 						if (rs.success) {
 							$('#trow_' + id).remove();
-							location.reload();
+							// location.reload();
+							$(".reviewquantity").html("Đánh giá (" + rs.reviewquantity + ")");
 						}
 					}
 				});
 			}
 		});
+		$(document).ready(function () {
+			$('.product_size ul li').click(function () {
+				var sizeId = $(this).attr('data-size-id');
+				var colorId = $(this).attr('data-color-id');
+				var productdetailId = $(this).attr('data-productdetail-id');
+
+				$.ajax({
+					url: '/shop/GetNumberOfProductDetail',
+					type: 'GET',
+					data: { id: productdetailId, sizeid: sizeId, colorid : colorId },
+					success: function (response) {
+						if (response.success) {
+							$('#numberofproducts').text('Số lượng sản phẩm hiện có: ' + response.quantity);
+							$('.btnAddToCart').prop('disabled', false);
+							$('.btnAddToCart').removeClass('disabled');
+							$('.red_button').removeClass('disabled-button');
+						} else {
+							$('#numberofproducts').text('Sản phẩm hiện đã hết hàng');
+							$('.btnAddToCart').prop('disabled', true);
+							$('.btnAddToCart').addClass('disabled');
+							$('.red_button').addClass('disabled-button');
+						}
+					},
+					error: function () {
+						$('#numberofproducts').text('Đã xảy ra lỗi khi lấy số lượng.');
+					}
+				});
+			});
+		});
+
 	</script>
 }

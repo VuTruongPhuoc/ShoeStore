@@ -73,6 +73,7 @@ a {
 
 .google {
     color: #555;
+    margin-top: 2rem;
     background-image: url(/assets/images/icons8-google.svg);
     background-repeat: no-repeat;
     background-size: 30px;

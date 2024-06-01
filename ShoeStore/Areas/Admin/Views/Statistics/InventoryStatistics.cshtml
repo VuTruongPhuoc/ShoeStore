@@ -1,0 +1,154 @@
+﻿@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@model X.PagedList.PagedList<ShoeStore.Models.ProductDetail>
+@using ShoeStore.Models;
+@{
+    ViewData["Title"] = "Thống kê hàng tồn";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    List<Product> products = ViewBag.Product;
+    List<Size> sizes = ViewBag.Size;
+    List<Color> colors = ViewBag.Color;
+    List<Supplier> suppliers = ViewBag.Supplier;
+    List<Category> categories = ViewBag.Category;
+
+}
+@section naviheader {
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="#" class="nav-link">@ViewBag.Title</a>
+        </li>
+    </ul>
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Thống kê hàng tồn</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">@ViewBag.Title</li>
+                </ol>
+            </div>
+
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<section class="content">
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <!-- Sắp xếp -->
+                <!-- Tìm kiếm -->
+                <div class="col-md-4">
+                    <form id="searchForm" asp-controller="productdetail" asp-action="Index" method="get">
+                        <div class="input-group input-group-sm">
+                            <input id="searchText" type="text" name="searchtext" class="form-control" value="@ViewBag.searchtext" />
+                            <span class="input-group-append">
+                                <button type="submit" class="btn btn-info btn-flat">Tìm kiếm</button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                </div>
+                <!-- Xuất ra excel -->
+                <div class="col-md-4" style="position: relative;">
+                    <form asp-controller="product" asp-action="ExportToExcel">
+                        <div style="position: absolute; right: 0;">
+                            <button id="exportBtn" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="" style="padding-top:10px">
+                <table class="table table-hover table-bordered" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Kích cỡ</th>
+                            <th>Màu sắc</th>
+                            <th>Loại sản phẩm</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Số lượng tồn</th>                        
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
+
+                            foreach (var item in Model)
+                            {
+                                <tr id="trow_@item.Id">
+                                    <td>@i</td>
+                                    <td>@item.Product.Name</td>
+                                    @{
+                                        var size = sizes.FirstOrDefault(s => s.Id == item.SizeId);
+                                        <td>@size.Name</td>
+                                        var color = colors.FirstOrDefault(c => c.Id == item.ColorId);
+                                        <td>@color.Name</td>
+                                        var category = categories.FirstOrDefault(c => c.Id == item.Product.CategoryId);
+                                        <td>@category.Name</td>
+                                        var supplier = suppliers.FirstOrDefault(s => s.Id == item.Product.SupplierId);
+                                        <td>@supplier.Name</td>
+                                    }                                 
+                                    <td>@item.Quantity</td>
+                                </tr>
+                                i = i + 1;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">Không có bản ghi nào!</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-end" style="float:right">
+                        <a href="#">
+                            @Html.PagedListPager(Model, page => Url.Action("inventorystatistics", new { page = page, Searchtext = ViewBag.searchtext }), new PagedListRenderOptions()
+                           {
+                               ActiveLiElementClass = "active",
+                               PageClasses = new[] { "page-link" },
+                               LiElementClasses = new[] { "page-item" },
+                               UlElementClasses = new[] { "pagination", "justify-content-center", "mt-3", "size" },
+                               LinkToNextPageFormat = "Tiếp",
+                               LinkToPreviousPageFormat = "Trước",
+                               MaximumPageNumbersToDisplay = 10,
+                               DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                               DisplayLinkToNextPage = PagedListDisplayMode.Always
+                           })
+                        </a>
+
+                    </div>
+                </div>
+            }
+
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+</section>

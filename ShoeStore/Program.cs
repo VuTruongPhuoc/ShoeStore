@@ -10,17 +10,19 @@ using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ShoeStoreContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("ShoeStoreConnectStrings")));
 builder.Services.AddDistributedMemoryCache();
-
+//builder.Configuration.AddEnvironmentVariables("aspNetCore:environmentVariables:environmentVariable:value");
 //builder.Services.AddDistributedRedisCache(option =>
 //{
 //    option.Configuration = "localhost:7162";
 //    option.InstanceName = "SampleInstance";
 //});
+builder.Services.AddHttpClient();
 builder.Services.AddSession(options =>
 {
 	options.IdleTimeout = TimeSpan.FromDays(30);
@@ -31,6 +33,9 @@ builder.Services.AddSession(options =>
 var sendmail = builder.Configuration.GetSection("SendEmail");
 builder.Services.Configure<SendEmail>(sendmail);
 builder.Services.AddSingleton<ISendEmail, SendEmailServices>();
+
+//Add Export Excel
+builder.Services.AddSingleton<IExcelHandler, ExcelHandler>();
 //Add Authen
 builder.Services.AddAuthentication(options =>
 {
@@ -79,7 +84,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Error/AccessDenied");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }

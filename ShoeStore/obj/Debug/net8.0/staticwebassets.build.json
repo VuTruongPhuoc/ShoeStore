@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Eg+U9UtoW+oEExxFF0nygZYWgOhRhwI4Y13tmUHw7o4=",
+  "Hash": "2QnZ5zRFEbOZ7UqabbnM5lddKE5sNALtco4aTXidMj0=",
   "Source": "ShoeStore",
   "BasePath": "_content/ShoeStore",
   "Mode": "Default",
@@ -49947,6 +49947,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\icon\\Iconsmind-Outline-Skate-Shoes.512.ico"
+    },
+    {
+      "Identity": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\js\\jsCheckout.js",
+      "SourceId": "ShoeStore",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\",
+      "BasePath": "_content/ShoeStore",
+      "RelativePath": "js/jsCheckout.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\jsCheckout.js"
     },
     {
       "Identity": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\js\\jsShopping.js",

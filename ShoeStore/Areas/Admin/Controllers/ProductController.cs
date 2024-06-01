@@ -5,6 +5,9 @@ using X.PagedList;
 using ShoeStore.Models.Common;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authorization;
+using ShoeStore.Services;
+using MailKit.Search;
+using System.IO;
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
@@ -17,9 +20,21 @@ namespace ShoeStore.Areas.Admin.Controllers
     {
         private ShoeStoreContext db = new ShoeStoreContext();
         private readonly INotyfService _notyf;
-        public ProductController(INotyfService notyf)
+        private readonly IExcelHandler _excelHandler;
+        public ProductController(ShoeStoreContext db,INotyfService notyf, IExcelHandler excelHandler)
         {
+            this.db = db;
             _notyf = notyf;
+            _excelHandler = excelHandler;
+        }
+        public IEnumerable<Product> search(string searchtext)
+        {
+            IEnumerable<Product> items = db.Products.OrderBy(x => x.Id);
+            if (!string.IsNullOrEmpty(searchtext))
+            {
+                items = items.Where(x => x.Name.Contains(searchtext) || x.Code.Contains(searchtext) && x.Status);
+            }
+            return items;
         }
         public IActionResult Index(string searchtext, int ?page)
         {
@@ -31,13 +46,9 @@ namespace ShoeStore.Areas.Admin.Controllers
                 page = 1;
             }
             ViewBag.searchtext = searchtext;
-            IEnumerable<Product> items = db.Products.OrderByDescending(x => x.Id);
-            if (!string.IsNullOrEmpty(searchtext))
-            {
-                items = items.Where(x => x.Name.Contains(searchtext) || x.Code.Contains(searchtext) && x.Status);
-            }
+            var items = search(searchtext);
             var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
-            var pageSize = 5;
+            var pageSize = 10;
             items = items.ToPagedList(pageIndex, pageSize);
             ViewBag.PageSize = pageSize;
             ViewBag.Page = page;
@@ -92,7 +103,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             ViewBag.Category = db.Categories.ToList().OrderByDescending(x => x.Id);
             ViewBag.Supplier = db.Suppliers.ToList().OrderByDescending(x => x.Id);
             var item = await db.Products.FindAsync(model.Id);
-
+           
             if (ModelState.IsValid && item is not null)
             {
                 try
@@ -104,6 +115,20 @@ namespace ShoeStore.Areas.Admin.Controllers
                     item.Detail = model.Detail;
                     item.UpdateAt = DateTime.Now;               
                     item.Status = model.Status;
+                    await db.SaveChangesAsync();
+					var productdts = db.ProductDetails.Where(p => p.ProductId == model.Id).ToList();
+					foreach (var prds in productdts)
+					{
+                        var spl = prds.Name.Split("-");
+						if (spl.Length > 1)
+						{
+							prds.Name = model.Name + " - " + spl[spl.Length-1].Trim(); // Lấy giá trị sau dấu '-' và loại bỏ khoảng trắng ở đầu và cuối chuỗi
+						}
+						else
+						{
+							prds.Name = prds.Name; // Nếu không có dấu '-' thì giữ nguyên giá trị
+						}
+					}
                     await db.SaveChangesAsync();
 					_notyf.Success("Cập nhật dữ liệu thành công");
 					return RedirectToAction("index", "product", new { area = "admin" });
@@ -142,6 +167,13 @@ namespace ShoeStore.Areas.Admin.Controllers
             }
             return Json(new { success = false });
         }
-      
+        public async Task<IActionResult> ExportToExcel(string searchtext)
+        {
+            var items = search(searchtext).ToList(); // Gọi phương thức search đúng cách và chuyển kết quả thành một danh sách
+
+            var stream = await _excelHandler.Export(items); // Sử dụng phương thức Export của IExcelHandler
+
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{DateTime.Now.Ticks}_Report_Data_Product.xlsx");
+        }
     }
 }

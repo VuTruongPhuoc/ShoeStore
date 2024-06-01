@@ -11,7 +11,7 @@
 
 
 <div class="container contact_container">
-	<div class="row">
+	<div class="row col-md-12" >
 		<div class="col">
 
 			<!-- Breadcrumbs -->
@@ -22,7 +22,7 @@
 				</ul>
 			</div>
             <div class="col-md-12" id="load_data">
-                <table class="table">
+                <table class="table col-md-12">
                     <tr class="text-center">
                         <th>STT</th>
                         <th>Ảnh sản phẩm</th>
@@ -55,7 +55,7 @@
                                 <td>@item.Size</td>
                                 <td class="txt-price">@Html.Raw(@item.Price.ToString("C0", new CultureInfo("vi-Vn")).Replace(" ", "&nbsp;"))</td>
                                 <td><input type="number" data-code="@item.ProductId" class="form-control txt-quantity-cart" id="Quantity_@item.ProductId" value="@item.Quantity" min="1" max=@ViewBag.quantity/></td>
-                                <th class="txt-total" data-productid="@item.ProductId">@item.TotalPrice.ToString("C0", new CultureInfo("vi-Vn"))</th>
+                                <th class="txt-total" data-productid="@item.ProductId">@Html.Raw(item.TotalPrice.ToString("C0", new CultureInfo("vi-VN")).Replace(" ", "&nbsp;"))</th>
                                 <td>
                                     <a href="#" data-id="@item.ProductId" class="btn btn-sm btn-danger btnDelete">Xóa</a>
                                 </td>
@@ -64,7 +64,7 @@
                         }
                         <tr>
                             <th colspan="7" class="text-right">Tổng tiền: </th>
-                            <th id="txt-total-cart" class="text-center">@tongtien.ToString("C0", new CultureInfo("vi-Vn"))</th>
+                            <th id="txt-total-cart" class="text-center">@Html.Raw(tongtien.ToString("C0", new CultureInfo("vi-VN")).Replace(" ", "&nbsp;"))</th>
                             <th></th>
                         </tr>
                     }

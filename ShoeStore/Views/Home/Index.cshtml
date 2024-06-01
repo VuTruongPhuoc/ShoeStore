@@ -1,9 +1,12 @@
-﻿@{
+﻿@model IEnumerable<ShoeStore.Models.ProductDetail>
+@{
 	ViewData["Title"] = "PShop";
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	List<WishList> wishlists = ViewBag.wishlist;
+	List<Product> products = ViewBag.Product;
+	List<Category> categories = ViewBag.Category;
 }
-@model IEnumerable<ShoeStore.Models.ProductDetail>
+
 <!-- Slider -->
 
 <div class="main_slider" style="background-image:url(/assets/images/slider_2.jpg)">
@@ -11,9 +14,9 @@
 		<div class="row align-items-center fill_height">
 			<div class="col">
 				<div class="main_slider_content">
-					<h6>Spring / Summer Collection 2024</h6>
-					<h1>Get up to 30% Off New Arrivals</h1>
-					<div class="red_button shop_now_button"><a href="~/shop/index">shop now</a></div>
+					<h6>BỘ SƯU TẬP XUÂN HÈ 2024</h6>
+					<h1>Nhận tới 30% giảm giá Hàng mới</h1>
+					<div class="red_button shop_now_button"><a href="~/shop/index">mua ngay</a></div>
 				</div>
 			</div>
 		</div>
@@ -23,19 +26,16 @@
 <div class="banner">
 	<div class="container">
 		<div class="row">
-			@{
-				ShoeStore.Data.ShoeStoreContext db = new ShoeStore.Data.ShoeStoreContext();
-				foreach (var item in db.Categories.ToList())
+				@foreach (var item in categories)
 				{				
 					<div class="col-md-4">
 						<div class="banner_item align-items-center" style="background-image:url(@item.Image)">
 							<div class="banner_category">
-								<a asp-controller="Shop" asp-action="index" asp-route-id="@item.Id">@item.Name</a>
+								<a asp-controller="shop" asp-action="index" asp-route-id="@item.Id">@item.Name</a>
 							</div>
 						</div>
 					</div>
 				}
-			}
 		</div>
 	</div>
 </div>
@@ -56,7 +56,7 @@
 					<ul class="arrivals_grid_sorting clearfix button-group filters-button-group">
 						<li class="grid_sorting_button button d-flex flex-column justify-content-center align-items-center active is-checked" data-filter="*">Tất cả</li>
 						@{		
-							foreach (var item in db.Categories.ToList())
+							foreach (var item in categories)
 							{
 								<li class="grid_sorting_button button d-flex flex-column justify-content-center align-items-center" data-filter=".@item.Alias">@item.Name</li>
 							}
@@ -72,70 +72,55 @@
 					<!-- Product 1 -->
 					@if (Model != null && Model.Any())
 					{
-						foreach (var item in Model)
+						foreach (var item in Model.OrderByDescending(x=>x.UpdateAt))
 						{
-							if (ViewBag.Product != null)
-								{
-								foreach (var prd in ViewBag.Product)
-								{
-									if(@prd.Id == item.ProductId)
-									{
-										foreach (var category in db.Categories.ToList())
-										{
-											if(category.Id == prd.CategoryId)
-											{
-												var userid = 0;
-												@if (User.Identity.IsAuthenticated)
-												{
-													userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
-												}
-												var wishlist = wishlists.FirstOrDefault(w => w.AccountId == userid && w.ProductDetailId == item.Id);
-												var isWishlist = false;
-												if (wishlist != null)
-												{
-													isWishlist = true;
-												}
-												<div class="product-item @category.Alias">
-													<div class="product discount product_filter">
-														<div class="product_image">
-															<img src="@item.Image" height="221px" alt="@prd.Name">
-														</div>
-														@if (isWishlist == true)
-														{
-															<div class="favorite favorite_left active" data-id="@item.Id"></div>
-														}
-														else
-														{
-															<div class="favorite favorite_left" data-id="@item.Id"></div>
-														}
-													@if (item.PriceSale > 0)
-													{
-														<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
-													}
-													<div class="product_info">
-														<h6 class="product_name"><a asp-controller="shop" asp-action="detail" asp-route-id="@item.Id"> @prd.Name</a></h6>
-														@if (item.PriceSale > 0)
-														{
-															<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.PriceSale, 0)<span>@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</span></div>
-
-															<div style="display:none;" class="in_product_price"> @item.PriceSale</div>
-														}
-														else
-														{
-															<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</div>
-															<div style="display:none;" class="in_product_price"> @item.Price</div>
-														}
-													</div>
-												</div>
-													<div class="red_button add_to_cart_button"><a asp-controller="shop" asp-action="detail" asp-route-id="@item.Id">Mua ngay</a></div>
-												</div>												
-											}
-										}
-										
-									}									
-								}
+							var prd = products.FirstOrDefault(p => p.Id == item.ProductId);
+							var category = categories.FirstOrDefault(c => c.Id == prd.CategoryId);
+							var userid = 0;
+							@if (User.Identity.IsAuthenticated)
+							{
+								userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
 							}
-							
+							var wishlist = wishlists.FirstOrDefault(w => w.AccountId == userid && w.ProductDetailId == item.Id);
+							var isWishlist = false;
+							if (wishlist != null)
+							{
+								isWishlist = true;
+							}
+							<div class="product-item @category.Alias">
+								<div class="product discount product_filter">
+									<div class="product_image">
+										<img src="@item.Image" height="221px" alt="@item.Name">
+									</div>
+									@if (isWishlist == true)
+									{
+										<div class="favorite favorite_left active" data-id="@item.Id"></div>
+									}
+									else
+									{
+										<div class="favorite favorite_left" data-id="@item.Id"></div>
+									}
+									@if (item.PriceSale > 0)
+									{
+										<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
+									}
+									<div class="product_info">
+										<h6 class="product_name"><a asp-controller="shop" asp-action="detail" asp-route-id="@item.Id"> @item.Name</a></h6>
+										@if (item.PriceSale > 0)
+										{
+											<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.PriceSale, 0)<span>@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</span></div>
+
+											<div style="display:none;" class="in_product_price"> @item.PriceSale</div>
+										}
+										else
+										{
+											<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</div>
+											<div style="display:none;" class="in_product_price"> @item.Price</div>
+										}
+									</div>
+								</div>
+								<div class="red_button add_to_cart_button"><a asp-controller="shop" asp-action="detail" asp-route-id="@item.Id">Mua ngay</a></div>
+							</div>
 						}
 
 					}
@@ -148,7 +133,7 @@
 
 <!-- Deal of the week -->
 
-<div class="deal_ofthe_week">
+@* <div class="deal_ofthe_week">
 	<div class="container">
 		<div class="row align-items-center">
 			<div class="col-lg-6">
@@ -184,7 +169,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> *@
 
 <!-- Best Sellers -->
 
@@ -193,7 +178,7 @@
 		<div class="row">
 			<div class="col text-center">
 				<div class="section_title new_arrivals_title">
-					<h2>Bán chạy nhất</h2>
+					<h2>Sản phẩm khuyến mãi</h2>
 				</div>
 			</div>
 		</div>
@@ -205,64 +190,57 @@
 						<!-- Slide 1 -->
 						@if (Model != null && Model.Any())
 						{
-							foreach (var item in Model)
+							foreach (var item in Model.Where(x=>x.PriceSale != null))
 							{
-								if (ViewBag.Product != null)
+								var prd = products.FirstOrDefault(p => p.Id == item.ProductId);
+								var userid = 0;
+								@if (User.Identity.IsAuthenticated)
 								{
-									foreach (var prd in ViewBag.Product)
-									{
-										if (@prd.Id == item.ProductId)
-										{
-											var userid = 0;
-											@if (User.Identity.IsAuthenticated)
-											{
-												userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
-											}
-
-											var wishlist = wishlists.FirstOrDefault(w => w.AccountId == userid && w.ProductDetailId == item.Id);
-											var isWishlist = false;
-											if (wishlist != null)
-											{
-												isWishlist = true;
-											}
-											<div class="owl-item product_slider_item">
-												<div class="product-item item">
-													<div class="product discount product_filter">
-														<div class="product_image">
-															<img src="@item.Image" height="221px" alt="@prd.Name">
-														</div>
-														@if (isWishlist)
-														{
-															<div class="favorite favorite_left active" data-id="@item.Id"></div>
-														}
-														else
-														{
-															<div class="favorite favorite_left" data-id="@item.Id"></div>
-														}
-														@if (item.PriceSale > 0)
-														{
-															<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
-														}
-														<div class="product_info">
-															<h6 class="product_name"><a asp-controller="shop" asp-action="detail" asp-route-id="@item.Id">@prd.Name</a></h6>
-															@if (item.PriceSale > 0)
-															{
-																<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.PriceSale, 0)<span>@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</span></div>
-
-																<div style="display:none;" class="in_product_price"> @item.PriceSale</div>
-															}
-															else
-															{
-																<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</div>
-																<div style="display:none;" class="in_product_price"> @item.Price</div>
-															}
-														</div>
-													</div>
-												</div>
-											</div>
-										}
-									}
+									userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
 								}
+
+								var wishlist = wishlists.FirstOrDefault(w => w.AccountId == userid && w.ProductDetailId == item.Id);
+								var isWishlist = false;
+								if (wishlist != null)
+								{
+									isWishlist = true;
+								}
+								<div class="owl-item product_slider_item">
+									<div class="product-item item">
+										<div class="product discount product_filter">
+											<div class="product_image">
+												<img src="@item.Image" height="221px" alt="@item.Name">
+											</div>
+											@if (isWishlist)
+											{
+												<div class="favorite favorite_left active" data-id="@item.Id"></div>
+											}
+											else
+											{
+												<div class="favorite favorite_left" data-id="@item.Id"></div>
+											}
+											@if (item.PriceSale > 0)
+											{
+												<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
+											}
+											<div class="product_info">
+												<h6 class="product_name"><a asp-controller="shop" asp-action="detail" asp-route-id="@item.Id">@item.Name</a></h6>
+												@if (item.PriceSale > 0)
+												{
+													<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.PriceSale, 0)<span>@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</span></div>
+
+													<div style="display:none;" class="in_product_price"> @item.PriceSale</div>
+												}
+												else
+												{
+													<div class="product_price">@ShoeStore.Common.Common.FormatNumber(item.Price, 0)</div>
+													<div style="display:none;" class="in_product_price"> @item.Price</div>
+												}
+											</div>
+										</div>
+										
+									</div>
+								</div>
 							}
 						}
 					</div>

@@ -1,4 +1,5 @@
 ﻿@model ShoeStore.Models.News
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Thêm mới tin tức";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -11,7 +12,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+            <a href="/admin" class="nav-link">Trang chủ</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="/admin/news/index" class="nav-link">Tin tức</a>
@@ -53,28 +54,28 @@
                     @Html.AntiForgeryToken()
                     <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                         <div class="form-group">
-                            <label name="Title" class="control-label">Tiêu đề</label>
-                            <input name="Title" class="form-control" />
-                            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                            <label asp-for="Title" class="control-label">Tiêu đề</label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="Image" class="control-label">Ảnh đại diện</label>
-                            <input name="Image" class="form-control" id="txtImage" />
+                            <label asp-for="Image" class="control-label">Ảnh đại diện</label>
+                            <input asp-for="Image" class="form-control" id="txtImage" />
                             <div>
                                 <img src="" id="ImageView" width="100" />
                             </div>
                             <button type="button" id="btnBrowse" class="btn btn-sm btn-primary">Chọn ảnh</button>
-                            @Html.ValidationMessageFor(model => model.Image, "", new { @class = "text-danger" })
+                            <span asp-validation-for="Image" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="Description" class="control-label">Mô tả</label>
-                            <textarea name="Description" class="form-control"></textarea>
-                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                            <label asp-for="Description" class="control-label">Mô tả</label>
+                            <textarea asp-for="Description" class="form-control"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label name="Detail" class="control-label">Chi tiết</label>
-                            <textarea name="Detail" class="form-control" id="txtDetail"></textarea>
-                            @Html.ValidationMessageFor(model => model.Detail, "", new { @class = "text-danger" })
+                            <label asp-for="Detail" class="control-label">Chi tiết</label>
+                            <textarea asp-for="Detail" class="form-control" id="txtDetail"></textarea>
+                            <span asp-validation-for="Detail" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Status" class="control-label">Hiển thị</label>
@@ -201,7 +202,7 @@
             toolbar: [
                 ['style', ['style']],
                 ['font', ['bold', 'underline', 'clear']],
-                ['fontname', ['fontname']],
+                ['fontasp-for', ['fontasp-for']],
                 ['fontsize', ['fontsize']],
                 ['color', ['color']],
                 ['para', ['ul', 'ol', 'paragraph']],

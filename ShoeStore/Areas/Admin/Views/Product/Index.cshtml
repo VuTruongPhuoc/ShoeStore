@@ -13,7 +13,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+            <a href="/admin" class="nav-link">Trang chủ</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="#" class="nav-link">@ViewBag.Title</a>
@@ -69,13 +69,11 @@
                 </div>
                 <!-- Xuất ra excel -->
                 <div class="col-md-4" style="position: relative;">
-                    <form asp-controller="product" asp-action="ExportToExcel">
+                   @*  <form asp-controller="product" asp-action="ExportToExcel"> *@
                         <div style="position: absolute; right: 0;">
-                            <button type="submit" class="btn btn-outline-secondary">
-                                Xuất File Excel <i class="fas fa-file-excel"></i>
-                            </button>
+                            <button id="btnExport" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
                         </div>
-                    </form>
+                   @*  </form> *@
                 </div>
 
 
@@ -103,6 +101,7 @@
 
                             foreach (var item in Model)
                             {
+                                <input type="hidden" data-prid="@item.Id" />
                                 var strCheck = item.Status ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>";
                                 <tr id="trow_@item.Id">
                                     <td>@i</td>
@@ -127,7 +126,15 @@
                                         }
                                     }
 
-                                    <td>@item.Description</td>
+                                    <td>
+                                        <script>
+                                            var description = "@item.Description";
+                                            if (description.length > 8) {
+                                                description = description.substring(0, 8) + "...";
+                                            }
+                                            document.write(description);
+                                        </script>
+                                    </td>
                                     <td>@item.CreateAt.Value.ToString("dd/MM/yyyy")</td>
                                     <td class="">
                                         <a href='#' data-id="@item.Id" class="btnActive">@Html.Raw(strCheck)</a>
@@ -187,22 +194,6 @@
 <!-- /.content -->
 @section Scripts {
     <script>
-        // $('#searchText').on('keyup', function (e) {
-        //     var text = $("#searchText").val();
-        //     $("#dataTable tbody tr").each(function (index, row) {
-        //         $(row).children("td").each(function () {
-        //             var ten = $(this).text().toLowerCase()
-        //             if (ten.includes(text.toLowerCase())) {
-        //                 $(this).parent().show();
-        //                 return false;
-        //             } else {
-        //                 $(this).parent().hide();
-        //             }
-        //         })
-
-
-        //     })
-        // })
         $(document).ready(function () {           
             $('body').on('click', '.btnDelete', function () {
                 var id = $(this).data("id");
@@ -241,6 +232,11 @@
                 });
             });
           
+        });
+
+        $(document).on('click', '#btnExport', function () {
+            var searchtext = $('#searchText').val();
+            location.href = `/admin/product/ExportToExcel?searchtext=${searchtext}`;
         });
     </script>
 }

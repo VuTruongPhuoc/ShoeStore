@@ -64,7 +64,6 @@
     /* Button */
     .cancel-button {
         background-color: royalblue;
-        border-radius: 12px;
         border: none;
         color: black;
         padding: 10px 20px;
@@ -118,7 +117,7 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th scope="col">STT</th>
+                                <th scope="col">#</th>
                                 <th scope="col">Tên sản phẩm</th>
                                 <th scope="col">Số lượng</th>
                                 <th scope="col">Size</th>
@@ -158,7 +157,7 @@
                                         <p><h5>@colo.Name</h5></p>
                                     </td>
                                     <td>
-                                        <p><h5>@ord.Price.Value.ToString("C0", new CultureInfo("vi-VN"))</h5></p>
+                                        <p><h5>@ord.Price.ToString("C0", new CultureInfo("vi-VN"))</h5></p>
                                     </td>
 
                                 </tr>
@@ -289,7 +288,7 @@
                                     @if (itemorder.StatusOrder == 1 || itemorder.StatusOrder == 2)
 
                                     {
-                                        <button class="cancel-button" data-itemid="@itemorder.Id" style="background-color:royalblue ; border-radius:12px ; border:none">
+                                        <button class="cancel-button" data-itemid="@itemorder.Id" style="background-color:royalblue;  border:none">
                                             <a href="@Url.Action("CancelOrder", new { id = itemorder.Id })" style="color:black;">Hủy Đơn</a>
                                         </button>
 
@@ -313,23 +312,26 @@
         </div>
     </div>
 </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var cancelButtons = document.querySelectorAll('.cancel-button');
+@section Scripts{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var cancelButtons = document.querySelectorAll('.cancel-button');
 
-        cancelButtons.forEach(function (cancelButton) {
-            cancelButton.addEventListener("click", function (event) {
-                event.preventDefault();
-                var itemId = this.getAttribute('data-itemid');
-                var confirmation = confirm("Bạn có chắc chắn muốn hủy đơn này không?");
+            cancelButtons.forEach(function (cancelButton) {
+                cancelButton.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    var itemId = this.getAttribute('data-itemid');
+                    var confirmation = confirm("Bạn có chắc chắn muốn hủy đơn này không?");
 
-                if (confirmation) {
-                    // Chuyển hướng đến action HuyDon nếu xác nhận
-                    window.location.href = '@Url.Action("cancelorder", "account")?id=' + itemId;
-                } else {
-                    // Không làm gì nếu hủy
-                }
+                    if (confirmation) {
+                        // Chuyển hướng đến action HuyDon nếu xác nhận
+                        window.location.href = '@Url.Action("cancelorder", "account")?id=' + itemId;
+                    } else {
+                        // Không làm gì nếu hủy
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
+}
+

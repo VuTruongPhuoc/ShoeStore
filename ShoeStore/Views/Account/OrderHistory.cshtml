@@ -7,6 +7,17 @@
     @using X.PagedList.Mvc.Core;
     @using X.PagedList.Web.Common;
     @using System.Globalization;
+    var startdate = "";
+    var enddate = "";
+    if(ViewBag.startdate != null)
+    {
+        startdate = ViewBag.startdate.ToString("yyyy-MM-dd");
+    }
+    if(ViewBag.enddate != null)
+    {
+        enddate = ViewBag.enddate.ToString("yyyy-MM-dd");
+    }
+   
 }
 <link rel="stylesheet" type="text/css" href="~/assets/styles/contact_styles.css">
 <link rel="stylesheet" type="text/css" href="~/assets/styles/contact_responsive.css">
@@ -107,6 +118,9 @@
                                     <!option value="5" @(ViewBag.status == 5 ? "selected" : "")>Chờ hủy</!option>
                                     <!option value="0" @(ViewBag.status == 0 ? "selected" : "")>Đơn đã hủy</!option>
                                 </select>
+                                    <input name="searchtext" value="@ViewBag.searchtext" hidden />
+                                    <input id="startdate" name="startdate" class="form-control" value="@ViewBag.startdate" hidden>
+                                    <input name="enddate" class="form-control" value="@ViewBag.enddate" hidden>
                             </div>
                         </form>
                     </div>
@@ -119,19 +133,24 @@
                                 <span class="input-group-append">
                                     <button type="submit" class="btn btn-info btn-flat">Tìm</button>
                                 </span>
+                                    <input name="status" value="@ViewBag.status"  hidden />
+                                    <input id="startdate" name="startdate" class="form-control" value="@ViewBag.startdate" hidden>
+                                    <input name="enddate" class="form-control" value="@ViewBag.enddate" hidden>
                             </div>
                         </form>
                     </div>
                     <div class="col-md-6">
                         <form id="searchForm3" asp-controller="account" asp-action="orderhistory" method="get" class="row">
+                                <input name="searchtext" value="@ViewBag.searchtext" hidden />
+                                <input name="status" value="@ViewBag.status" hidden />
                             <div class="form-group col-md-5">
-
-                                <input type="date" id="startdate" name="startdate" class="form-control" placeholder="Từ ngày" value="@ViewBag.startdate">
-
+                                        <input type="date" id="startdate" name="startdate" class="form-control" placeholder="dd/mm/yyyy" value="@startdate">
+                            </div>
+                            <div style="padding-top:10px">
+                                <h5>đến</h5>
                             </div>
                             <div class="form-group col-md-5">
-
-                                <input type="date" id="enddate" name="enddate" class="form-control" placeholder="Đến ngày" value="@ViewBag.startdate">
+                                        <input type="date" id="enddate" name="enddate" class="form-control" placeholder="dd/mm/yyyy" value="@enddate">
                             </div>
                             <span class="input-group-append">
                                 <button type="submit" class="btn btn-info btn-flat">Lọc</button>
@@ -148,7 +167,7 @@
                                 <th>STT</th>
 @*                                 <th>Mã đơn hàng</th>
                                 <th>Tên khách hàng</th> *@
-                                <th>Số điện thoại </th>
+                                <th>Mã đơn hàng </th>
                                 <th>Tiền </th>
                                 <th>Hình thức thanh toán</th>
                                 <th>Trạng thái</th>
@@ -289,7 +308,7 @@
                     <div class="row">
                         <div class="col-12 d-flex justify-content-end" style="float:right">
                             <a href="#">
-                                @Html.PagedListPager(Model, page => Url.Action("orderhistory", new { page = page, sort = ViewBag.sort, searchtext = ViewBag.searchtext, status = ViewBag.status, startdate = ViewBag.startdate, enddate = ViewBag.enddate }), new PagedListRenderOptions()
+                                @Html.PagedListPager(Model, page => Url.Action("orderhistory", new { page = page, searchtext = ViewBag.searchtext, status = ViewBag.status, startdate = startdate, enddate = enddate }), new PagedListRenderOptions()
                        {
                            ActiveLiElementClass = "active",
                            PageClasses = new[] { "page-link" },

@@ -1,8 +1,20 @@
-﻿@model ShoeStore.Models.Order
+﻿@model IEnumerable<ShoeStore.Models.OrderDetail>
 @using System.Globalization;
+
+@using ShoeStore.Models
 @{
     ViewData["Title"] = "ViewOrder";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    List<ProductDetail> prd = ViewBag.Productdetail;
+    List<Product> products = ViewBag.Product;
+    List<Size> size = ViewBag.Size;
+    List<Color> color = ViewBag.Color;
+    List<Vouchers> voucher = ViewBag.Voucher;
+    Order order = ViewBag.order;
+    int stt = 0;
+    decimal tienhag = 0;
+    var date = $"Ngày {order.CreateAt.Value.Day} Tháng {order.CreateAt.Value.Month} Năm {order.CreateAt.Value.Year}";
+    int OrderId;
 }
 
 @section naviheader {
@@ -24,135 +36,229 @@
 <section class="content">
 
     <!-- Default box -->
+
     <div class="card">
+
         <div class="card-header">
             <h3 class="card-title">Chi tiết đơn hàng</h3>
+        </div>
+        <div class="row">
+            <div class="col-12">
+
+                <table class="table table-bordered m-0">
+
+                    <thead class="border-top">
+                        <tr>
+                            <th _msttexthash="1065948" _msthash="293">STT</th>
+                            <th _msttexthash="1065948" _msthash="293">Ảnh</th>
+                            <th _msttexthash="1065948" _msthash="293">Sản phẩm</th>
+                            <th _msttexthash="1065948" _msthash="293">Kích cỡ</th>
+                            <th _msttexthash="1065948" _msthash="293">Màu sắc</th>
+                            <th _msttexthash="1065948" _msthash="293">Số lượng</th>
+                            <th _msttexthash="1065948" _msthash="293">Giá tiền</th>
+                            <th _msttexthash="1065948" _msthash="293">Tổng tiền</th>
+
+                        </tr>
+                    </thead>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        @foreach (var itemorder in Model)
+                        {
+                            tienhag += itemorder.Price;
+                            OrderId = itemorder.Id;
+                            <tbody>
+                                <tr>
+                                    <td>@(stt += 1)</td>
+                                    <td><img src="@itemorder.ProductDetail.Image" width="150px" height="150px"/></td>
+                                    <td class="text-nowrap text-heading" _msttexthash="4094675" _msthash="298">
+
+                                        @foreach (var pr in products)
+                                        {
+                                            if (pr.Id == prd.FirstOrDefault(p => p.Id == itemorder.ProductDetailId).ProductId)
+                                            {
+                                                @pr.Name; break;
+                                            }
+                                        }
+                                    </td>
+                                    <td class="text-nowrap text-heading" _msttexthash="4094675" _msthash="298">
+                                        @foreach (var siz in size)
+                                        {
+                                            if (siz.Id == prd.FirstOrDefault(c => c.Id == itemorder.ProductDetailId).SizeId)
+                                            {
+                                                @siz.Name; break;
+                                            }
+                                        }
+                                    </td>
+                                    <td class="text-nowrap text-heading" _msttexthash="4094675" _msthash="298">
+                                        @foreach (var siz in color)
+                                        {
+                                            if (siz.Id == prd.FirstOrDefault(c => c.Id == itemorder.ProductDetailId).ColorId)
+                                            {
+                                                @siz.Name; break;
+                                            }
+                                        }
+                                    </td>
+                                    <td class="text-nowrap text-heading" _msttexthash="4094675" _msthash="298">
+                                        @itemorder.Quantity
+                                    </td>
+                                    <td class="text-nowrap text-heading" _msttexthash="4094675" _msthash="298">
+                                        @foreach (var pr in prd)
+                                        {
+                                            if (pr.Id == itemorder.ProductDetailId)
+                                            {
+                                                if (pr.PriceSale != null || pr.PriceSale > 0)
+                                                {
+                                                    @pr.PriceSale.Value.ToString("C0", new CultureInfo("vi-VN")); break;
+                                                }
+                                                else
+                                                {
+                                                    @pr.Price.ToString("C0", new CultureInfo("vi-VN"))
+                                                    ; break;
+                                                }
+                                            }
+                                                
+                                        }
+                                    </td>
+                                    <td>
+                                        @itemorder.Price.ToString("C0", new CultureInfo("vi-VN"))
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        }
+                    }
+
+                </table>
+            </div>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Mã đơn hàng</label>
-                        <p class="form-control">@Model.Code</p>
+                        <p class="form-control">@order.Code</p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Họ tên khách</label>
-                        <p class="form-control">@Model.CustomerName</p>
+                        <p class="form-control">@order.CustomerName</p>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6">
+                    
                     <div class="form-group">
-                        <label>Tổng tiền</label>
-                        <p class="form-control">@string.Format(new CultureInfo("vi-VN"),"0:C0",Model.TotalAmount)</p>
-                    </div>
+                        <label>Voucher</label>
+                        @{
+                            var vou = voucher.FirstOrDefault(v => v.Id == order.VoucherId);
+                            if (vou!= null)
+                            {
+                                <p class="form-control">@vou.Name</p>
+                            }
+                            else
+                            {
+                                <p class="form-control">Không có voucher áp dụng</p>
+                            }
+                           
+                        }
+                      
+                        </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Số điện thoại</label>
-                        <p class="form-control">@Model.Phone</p>
+                        <p class="form-control">@order.Phone</p>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>Ngày tạo</label>
-                        <p class="form-control">@Model.CreateAt.Value.ToString("dd/MM/yyyy")</p>
+                        <label>Phí Ship</label>
+                        <p class="form-control">@order.ShipFee.Value.ToString("C0", new CultureInfo("vi-VN"))</p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Email</label>
-                        <p class="form-control">@Model.Email</p>
+                        <p class="form-control">@order.Email</p>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6">
+                    
                     <div class="form-group">
-                        <label>Hình thức thanh toán</label>
-                        <p class="form-control">@Model.TypePayment</p>
+                        <label>Tổng tiền</label>
+                        <p class="form-control" style="color:red">@order.TotalAmount.Value.ToString("C0", new CultureInfo("vi-VN"))</p>
                     </div>
                 </div>
                 <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Địa chỉ</label>
+                        <p class="form-control">@order.Address</p>
+                    </div>
                 </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                   
+                    <div class="form-group">
+                        <label>Hình thức thanh toán</label>
+                        <p class="form-control">@order.TypePayment</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Ngày tạo</label>
+                        <p class="form-control">@order.CreateAt.Value.ToString("dd/MM/yyyy hh:mm")</p>
+                    </div>
+                </div>
+               
             </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Trạng thái</label>
-                        <p class="form-control">@(Model.StatusOrder == 1 ? "Chờ xác nhận" : "Đang vận chuyển")</p>
+                        <p class="form-control">@(order.StatusOrder == 1 ? "Chờ xác nhận" : "Đang vận chuyển")</p>
                     </div>
                 </div>
                 <div class="col-md-6">
+             </div>
+          @*   <div class="row">
+                <div class="col-md-6 mb-md-0 mb-3">
+                    <div>
+                        <p class="mb-2">
+                            <font _mstmutation="1" _msttexthash="904709" _msthash="318"><span class="me-1 text-heading" _mstmutation="1" _istranslated="1">Tên khách hàng:</span> <span _mstmutation="1" _istranslated="1">@order.CustomerName</span></font>
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <h2>Danh sách sản phẩm</h2>
+                <div class="col-md-6 d-flex justify-content-md-end mt-2">
+                    <div class="invoice-calculations">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="w-px-100" _msttexthash="2234193" _msthash="320">Tiền hàng:</span>
+                            <h6 class="mb-0 pt-1" _msttexthash="52780" _msthash="321">
+                                @string.Format(new CultureInfo("vi-VN"), "{0:C0}", order.TotalAmount - order.ShipFee)
+                            </h6>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="w-px-100" _msttexthash="1063673" _msthash="324">Tiền ship:</span>
+                            <h6 class="mb-0 pt-1" _msttexthash="42406" _msthash="325">
+                                @string.Format(new CultureInfo("vi-VN"), "{0:C0}", order.ShipFee)
+                            </h6>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <span class="w-px-100" _msttexthash="1980563" _msthash="326">Tổng tiền:</span>
+                            <h6 class="mb-0 pt-1" _msttexthash="52897" _msthash="327" style="color:red">
+                                @string.Format(new CultureInfo("vi-VN"), "{0:C0}", order.TotalAmount)
+                            </h6>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-12">
-                    
-                    @if (ViewBag.Orderdetail != null )
-                    {
-                        int i = 1;
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Tên sản phẩm</th>
-                                    <th>Size</th>
-                                    <th>Màu sắc</th>
-                                    <th>Giá</th>
-                                    <th>Số lượng</th>
-                                    <th>Thành tiền</th>
-                                </tr>
-
-                            </thead>
-                            <tbody>
-                                @foreach (var item in ViewBag.Orderdetail)
-                                {
-                                    <tr>
-                                        <td>@i</td>
-                                        @foreach (var pd in ViewBag.Productdetail)
-                                        {
-                                            @foreach(var p in ViewBag.Product)
-                                            {
-                                                if (p.Id == pd.ProductId)
-                                                {
-                                                    <td>@p.Name</td>
-                                                } 
-                                            }
-                                            @foreach (var s in ViewBag.Size)
-                                            {
-                                                if (s.Id == pd.SizeId)
-                                                {
-                                                    <td>@s.Name</td>
-                                                }
-                                            }
-                                            @foreach (var c in ViewBag.Color)
-                                            {
-                                                if (c.Id == pd.ColorId)
-                                                {
-                                                    <td>@c.Name</td>
-                                                }
-                                            }
-                                        }
-                                        <td>@item.Price</td>
-                                        <td>@item.Quantity</td>
-                                        <td>@ShoeStore.Common.Common.FormatNumber((item.Price * item.Quantity), 0)</td>
-                                    </tr>
-                                    i++;
-                                }
-                            </tbody>
-                        </table>
-                    }
-                </div>
-            </div>
+            </div> *@
         </div>
         <!-- /.card-body -->
         <div class="card-footer">

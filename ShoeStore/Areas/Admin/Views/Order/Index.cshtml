@@ -6,6 +6,16 @@
 @{
     ViewData["Title"] = "Danh sách đơn hàng";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var startdate = "";
+    var enddate = "";
+    if (ViewBag.startdate != null)
+    {
+        startdate = ViewBag.startdate.ToString("yyyy-MM-dd");
+    }
+    if (ViewBag.enddate != null)
+    {
+        enddate = ViewBag.enddate.ToString("yyyy-MM-dd");
+    }
 }
 @section naviheader {
     <!-- Left navbar links -->
@@ -14,7 +24,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+            <a href="/admin" class="nav-link">Trang chủ</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="#" class="nav-link">@ViewBag.Title</a>
@@ -45,39 +55,73 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">@ViewBag.Title</h3>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                  
-                         <div class="col-md-4">
-                             <form id="searchForm" asp-controller="order" asp-action="Index" method="get">
-                            <div class="input-group input-group-sm">
-                                <select id="statusFilter" name="status" class="form-control">
-                                    <option value="">Chọn trạng thái</option>
-                                    <option value="1" @(ViewBag.status == 1 ? "selected" : "")>Chờ xác nhận</option>
-                                    <option value="2" @(ViewBag.status == 2 ? "selected" : "")>Đã xác nhận</option>
-                                    <option value="3" @(ViewBag.status == 3 ? "selected" : "")>Đang giao hàng</option>
-                                    <option value="4" @(ViewBag.status == 4 ? "selected" : "")>Giao hàng thành công</option>
-                                    <option value="5" @(ViewBag.status == 5 ? "selected" : "")>Chờ hủy</option>
-                                    <option value="0" @(ViewBag.status == 0 ? "selected" : "")>Đơn đã hủy</option>
-                                </select>
-                            </div>
-                             </form>
-                        </div>
-                        <div class="col-4">
-                            <!-- Tìm kiếm  -->
-                    <form id="searchForm2" asp-controller="order" asp-action="Index" method="get">
-                            <div class="input-group input-group-sm">
-                                <input id="searchtext" type="text" name="searchtext" class="form-control" value="@ViewBag.searchtext" />
-                                <span class="input-group-append">
-                                    <button type="submit" class="btn btn-info btn-flat">Tìm kiếm</button>
-                                </span>
-                            </div>
-                            </form>
-                        </div>
-                    
-              
+            <div class="card-tools">
+                <div >
+                    <button id="btnExport" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
+                </div>
             </div>
+        </div>
+        
+        <div class="card-body">
+            <section>
+                 <div class="row">
+                <div class="col-md-3">
+                        <form id="searchForm" asp-controller="order" asp-action="index" method="get">
+                        <div class="input-group input-group-sm">
+                            <select id="statusFilter" name="status" class="form-control">
+                                <option value="">Chọn trạng thái</option>
+                                <!option value="1" @(ViewBag.status == 1 ? "selected" : "")>Chờ xác nhận</!option>
+                                <!option value="2" @(ViewBag.status == 2 ? "selected" : "")>Đã xác nhận</!option>
+                                <!option value="3" @(ViewBag.status == 3 ? "selected" : "")>Đang giao hàng</!option>
+                                <!option value="4" @(ViewBag.status == 4 ? "selected" : "")>Giao hàng thành công</!option>
+                                <!option value="5" @(ViewBag.status == 5 ? "selected" : "")>Chờ hủy</!option>
+                                <!option value="0" @(ViewBag.status == 0 ? "selected" : "")>Đơn đã hủy</!option>
+                            </select>
+                            <input name="searchtext" value="@ViewBag.searchtext" hidden />
+                            <input id="startdate" name="startdate" class="form-control" value="@ViewBag.startdate" hidden>
+                            <input name="enddate" class="form-control" value="@ViewBag.enddate" hidden>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-3">
+                    <!-- Tìm kiếm  -->
+                    <form id="searchForm2" asp-controller="order" asp-action="index" method="get">
+                        <div class="input-group input-group-sm">
+                            <input id="searchtext" type="text" name="searchtext" class="form-control" value="@ViewBag.searchtext" />
+                            <span class="input-group-append">
+                                <button type="submit" class="btn btn-info btn-flat">Tìm</button>
+                            </span>
+                            <input name="status" value="@ViewBag.status" hidden />
+                            <input id="startdate" name="startdate" class="form-control" value="@ViewBag.startdate" hidden>
+                            <input name="enddate" class="form-control" value="@ViewBag.enddate" hidden>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                        <form id="searchForm3" asp-controller="order" asp-action="index" method="get" class="row">
+                        <div class="input-group input-group-sm">
+                           
+                            <div class="col-md-5">
+                                <input type="date" id="startdate" name="startdate" class="form-control" placeholder="dd/mm/yyyy" value="@startdate">
+                            </div>
+                            <div style="padding-top:5px">
+                                <h5>đến</h5>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="date" id="enddate" name="enddate" class="form-control" placeholder="dd/mm/yyyy" value="@enddate">       
+                            </div>
+                            <span class="input-group-append">
+                                <button type="submit" class="btn btn-info btn-flat">Lọc</button>
+                            </span>
+                            <input name="searchtext" value="@ViewBag.searchtext" hidden />
+                            <input name="status" value="@ViewBag.status" hidden />
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+           </section>
             <div style="padding-top:10px">
                 <table class="table table-hover table-bordered">
                     <thead>
@@ -97,7 +141,6 @@
                         @if (Model != null && Model.Any())
                         {
                             var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
-
                             foreach (var item in Model)
                             {
                                 <tr id="trow_@item.Id">
@@ -153,6 +196,7 @@
                                                 <a data-itemid="@item.Id" href="@Url.Action("CancelOrder", new { id = item.Id })" class="dropdown-item delete-record">
                                                     <i class="mdi mdi-receipt-text-remove"></i>
                                                     <span>Hủy đơn</span>
+                                                    </a>
                                             </div>
                                         </div>
                                         </td>
@@ -161,7 +205,7 @@
                                     {
                                         <td>
                                             <span> Đang giao hàng </span>
-                                        <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
+                                            <td>@item.CreateAt.Value.ToString("dd/MM/yyyyy")</td>
                                         </td>
                                         <td>
                                             <div class="dropdown">
@@ -172,6 +216,10 @@
                                                     <a href=" @Url.Action("vieworder", new { id = item.Id })" class="dropdown-item ">
                                                         <i class="mdi mdi-eye-outline me-2"></i>
                                                         <span>Xem đơn hàng</span>
+                                                    </a>
+                                                    <a href=" @Url.Action("SuccessfulDelivery", new { id = item.Id })" class="dropdown-item ">
+                                                        <i class="mdi mdi-receipt-text-check-outline"></i>
+                                                        <span>Giao hàng thành công</span>
                                                     </a>
                                                 </div>
                                             </div>
@@ -264,7 +312,7 @@
                 <div class="row">
                     <div class="col-12 d-flex justify-content-end" style="float:right">
                         <a href="#">
-                            @Html.PagedListPager(Model, page => Url.Action("index", new { page = page, sort = ViewBag.sort, searchtext = ViewBag.searchtext, status = ViewBag.status }), new PagedListRenderOptions()
+                            @Html.PagedListPager(Model, page => Url.Action("index", new { page = page, searchtext = ViewBag.searchtext, status = ViewBag.status, startdate = startdate, enddate = enddate }), new PagedListRenderOptions()
                            {
                                ActiveLiElementClass = "active",
                                PageClasses = new[] { "page-link" },
@@ -272,7 +320,7 @@
                                UlElementClasses = new[] { "pagination", "justify-content-center", "mt-3", "size" },
                                LinkToNextPageFormat = "Tiếp",
                                LinkToPreviousPageFormat = "Trước",
-                               MaximumPageNumbersToDisplay = 15,
+                               MaximumPageNumbersToDisplay = 10,
                                DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
                                DisplayLinkToNextPage = PagedListDisplayMode.Always
                            })
@@ -291,30 +339,36 @@
     <!-- /.card -->
 
 </section>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var cancelButtons = document.querySelectorAll('.dropdown-item.delete-record');
+@section Scripts{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var cancelButtons = document.querySelectorAll('.dropdown-item.delete-record');
 
-        cancelButtons.forEach(function (cancelButton) {
-            cancelButton.addEventListener("click", function (event) {
-                event.preventDefault();
-                var itemId = this.getAttribute('data-itemid');
-                var confirmation = confirm("Bạn có chắc chắn muốn hủy đơn này không?");
+            cancelButtons.forEach(function (cancelButton) {
+                cancelButton.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    var itemId = this.getAttribute('data-itemid');
+                    var confirmation = confirm("Bạn có chắc chắn muốn hủy đơn này không?");
 
-                if (confirmation) {
-                    // Chuyển hướng đến action HuyDon nếu xác nhận
-                    window.location.href = '@Url.Action("CancelOrder", "Order")?id=' + itemId;
-                } else {
-                    // Không làm gì nếu hủy
-                }
+                    if (confirmation) {
+                        // Chuyển hướng đến action HuyDon nếu xác nhận
+                        window.location.href = '@Url.Action("CancelOrder", "Order")?id=' + itemId;
+                    } else {
+                        // Không làm gì nếu hủy
+                    }
+                });
             });
         });
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function(){
-            $('#statusFilter').change(function(){
+        document.addEventListener("DOMContentLoaded", function () {
+            $('#statusFilter').change(function () {
                 $('#searchForm').submit();
             })
-    })
-</script>
+        })
+        $(document).on('click', '#btnExport', function () {
+            var status = $('#statusFilter').val();
+            var searchtext = $('#searchtext').val();
+
+            location.href = `/admin/order/ExportToExcel?searchtext=${searchtext}&status=${status}`;
+        })
+    </script>
+}

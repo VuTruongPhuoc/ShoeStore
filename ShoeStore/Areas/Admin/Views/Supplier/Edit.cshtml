@@ -1,4 +1,5 @@
 ﻿@model ShoeStore.Models.Supplier
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Cập nhật nhà cung cấp";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -11,7 +12,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="/admin/homeadmin" class="nav-link">Trang chủ</a>
+            <a href="/admin" class="nav-link">Trang chủ</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="/admin/supplier/index" class="nav-link">Nhà cung cấp</a>
@@ -57,19 +58,19 @@
                         @Html.HiddenFor(x => x.Id)
                         <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                             <div class="form-group">
-                                <label name="Name" class="control-label">Tên nhà cung cấp</label>
-                                <input name="Name" class="form-control" value="@Model.Name" />
-                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                                <label asp-for="Name" class="control-label">Tên nhà cung cấp</label>
+                                <input asp-for="Name" class="form-control" value="@Model.Name" />
+                                <span asp-validation-for="Name" class="text-danger"></span>                               
                             </div>
                             <div class="form-group">
-                                <label name="PhoneNumber" class="control-label">Số điện thoại</label>
-                                <input name="PhoneNumber" class="form-control" value="@Model.PhoneNumber" />
-                                @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                                <label asp-for="PhoneNumber" class="control-label">Số điện thoại</label>
+                                <input asp-for="PhoneNumber" class="form-control" value="@Model.PhoneNumber" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label name="Address" class="control-label">Địa chỉ</label>
-                                <input name="Address" class="form-control" value="@Model.Address" />
-                                @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                                <label asp-for="Address" class="control-label">Địa chỉ</label>
+                                <input asp-for="Address" class="form-control" value="@Model.Address" />
+                                <span asp-validation-for="Address" class="text-danger"></span>
                             </div>
 
                             <div class="form-group">

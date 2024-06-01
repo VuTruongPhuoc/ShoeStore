@@ -9,9 +9,10 @@ namespace ShoeStore.Controllers
     {
         private readonly ShoeStoreContext db = new ShoeStoreContext();
         private readonly INotyfService _notyf;
-        public VoucherController(INotyfService notyf)
+        public VoucherController(INotyfService notyf, ShoeStoreContext db)
         {
             _notyf = notyf;
+            this.db = db;
         }
         public IActionResult Index()
         {
