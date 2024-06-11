@@ -58,12 +58,12 @@
                         @Html.HiddenFor(x => x.Id)
                         <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                             <div class="form-group">
-                                <label asp-for="Name" class="control-label">Tên sản phẩm</label>
+                                <label asp-for="Name" class="control-label">Tên sản phẩm *</label>
                                 <input asp-for="Name" class="form-control" value="@Model.Name" />
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="CategoryId" class="control-label">Loại sản phẩm</label>
+                                <label asp-for="CategoryId" class="control-label">Loại sản phẩm *</label>
                                 <select asp-for="CategoryId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
                                     @if (ViewBag.Category != null)
                                     {
@@ -76,7 +76,7 @@
                                 <span asp-validation-for="CategoryId" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="SupplierId" class="control-label">Nhà cung cấp</label>
+                                <label asp-for="SupplierId" class="control-label">Nhà cung cấp *</label>
                                 <select asp-for="SupplierId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
                                     @if (ViewBag.Supplier != null)
                                     {
@@ -90,12 +90,12 @@
                             </div>
                             <div class="form-group">
                                 <div>
-                                    <label asp-for="Code" class="control-label">Mã Code</label>
+                                    <label asp-for="Code" class="control-label">Mã sản phẩm</label>
                                     <input asp-for="Code" class="form-control" value="@Model.Code" readonly/>
                                     <span asp-validation-for="Code" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="Description" class="control-label">Mô tả</label>
+                                    <label asp-for="Description" class="control-label">Mô tả </label>
                                     <textarea asp-for="Description" class="form-control">@Model.Description</textarea>
                                     <span asp-validation-for="Description" class="text-danger"></span>
                                 </div>
@@ -106,7 +106,7 @@
                                 </div>
 
                             <div class="form-group">
-                                <label asp-for="Status" class="control-label">Hiển thị</label>
+                                <label asp-for="Status" class="control-label">Hiển thị *</label>
                                 @Html.CheckBoxFor(x => x.Status, new { @checked = "@checked" })
                             </div>
                             <div class="form-group">

@@ -10,13 +10,13 @@ public partial class Product
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-
+    [Required(ErrorMessage ="Vui lòng nhập tên sản phẩm")]
     public string Name { get; set; } = null!;
 
     public int? CategoryId { get; set; }
 
     public int? SupplierId { get; set; }
-
+    [Required(ErrorMessage = "Vui lòng nhập mã sản phẩm")]
     public string? Code { get; set; }
 
     public string? Description { get; set; }

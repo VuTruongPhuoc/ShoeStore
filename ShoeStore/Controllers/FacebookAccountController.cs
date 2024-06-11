@@ -80,7 +80,7 @@ namespace ShoeStore.Controllers
                     {
                         Username = name,
                         FullName = principal.FindFirst(ClaimTypes.Surname)?.Value + " " + principal.FindFirst(ClaimTypes.GivenName)?.Value,
-                        RoleId = 3,
+                        RoleId = 2,
                         PhoneNumber = principal.FindFirst(ClaimTypes.MobilePhone)?.Value,
                         Address = null,
                         Email = email,

@@ -51,7 +51,7 @@
                 <!-- Sắp xếp -->
                 <!-- Tìm kiếm -->
                 <div class="col-md-4">
-                    <form id="searchForm" asp-controller="productdetail" asp-action="Index" method="get">
+                    <form id="searchForm" asp-controller="statistics" asp-action="Index" method="get">
                         <div class="input-group input-group-sm">
                             <input id="searchText" type="text" name="searchtext" class="form-control" value="@ViewBag.searchtext" />
                             <span class="input-group-append">
@@ -64,11 +64,11 @@
                 </div>
                 <!-- Xuất ra excel -->
                 <div class="col-md-4" style="position: relative;">
-                    <form asp-controller="product" asp-action="ExportToExcel">
+                   @*  <form asp-controller="statistics" asp-action="ExportToExcel"> *@
                         <div style="position: absolute; right: 0;">
-                            <button id="exportBtn" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
+                        <button id="btnExport" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
                         </div>
-                    </form>
+                   @*  </form> *@
                 </div>
             </div>
             <div class="" style="padding-top:10px">
@@ -93,16 +93,16 @@
                             {
                                 <tr id="trow_@item.Id">
                                     <td>@i</td>
-                                    <td>@item.Product.Name</td>
+                                    <td>@item.Name</td>
                                     @{
                                         var size = sizes.FirstOrDefault(s => s.Id == item.SizeId);
-                                        <td>@size.Name</td>
+                                            <td>@size.Name</td>
                                         var color = colors.FirstOrDefault(c => c.Id == item.ColorId);
-                                        <td>@color.Name</td>
+                                            <td>@color.Name</td>
                                         var category = categories.FirstOrDefault(c => c.Id == item.Product.CategoryId);
-                                        <td>@category.Name</td>
+                                            <td>@category.Name</td>
                                         var supplier = suppliers.FirstOrDefault(s => s.Id == item.Product.SupplierId);
-                                        <td>@supplier.Name</td>
+                                            <td>@supplier.Name</td>
                                     }                                 
                                     <td>@item.Quantity</td>
                                 </tr>
@@ -125,7 +125,7 @@
                 <div class="row">
                     <div class="col-12 d-flex justify-content-end" style="float:right">
                         <a href="#">
-                            @Html.PagedListPager(Model, page => Url.Action("inventorystatistics", new { page = page, Searchtext = ViewBag.searchtext }), new PagedListRenderOptions()
+                            @Html.PagedListPager(Model, page => Url.Action("inventorystatistics", new { page = page, searchtext = ViewBag.searchtext }), new PagedListRenderOptions()
                            {
                                ActiveLiElementClass = "active",
                                PageClasses = new[] { "page-link" },
@@ -152,3 +152,14 @@
     <!-- /.card -->
 
 </section>
+@section Scripts {
+    <script>
+        $(document).on('click', '#btnExport', function () {
+            var searchtext = $('#searchText').val();
+            if (confirm("Tải về file Excel?")) {
+                location.href = `/admin/statistics/ExportDataToExcel?searchtext=${searchtext}`;
+            }
+           
+        });
+    </script>
+}

@@ -75,11 +75,11 @@
                                     <td >
                                         <div style="padding-left:20px">
                                             <div class="content-box">
-                                                <h4><a href="/shop/detail/@(item.ProductDetailId)" title="@productdt.Product.Name"></a></h4>
+                                                <h4><a href="/shop/detail/@(item.ProductDetailId)" title="@productdt.Name"></a></h4>
                                                 <div class="description-box">
                                                     @{
                                                         var product = products.FirstOrDefault(x => x.Id == productdt.ProductId);
-                                                        <p style="color:#000;font-size:19px;font-family:NunitoSanExtraBold">@product.Name</p>
+                                                        <p style="color:#000;font-size:19px;font-family:NunitoSanExtraBold">@productdt.Name</p>
                                                     }
                                                 </div>
                                                 <div>

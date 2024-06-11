@@ -87,6 +87,7 @@
                                 <th>Tên sản phẩm</th>
                                 <th>Số lượng</th>
                                 <th>Giá</th>
+                                <th>Giá khuyến mãi</th>
                                 <th>Kích cỡ</th>
                                 <th>Màu sắc</th>
                                 <th>Sử dụng</th>
@@ -108,6 +109,14 @@
                                         <td>@item.Name</td>
                                         <td>@item.Quantity</td>
                                         <td>@item.Price.ToString("N2")</td>
+                                        @if (item.PriceSale.HasValue)
+                                        {
+                                            <td>@item.PriceSale.Value.ToString("N2")</td>
+                                        }
+                                        else
+                                        {
+                                            <td>Không có</td>
+                                        }
                                         @foreach (var obj in ViewBag.Size)
                                         {
                                             if (item.SizeId == obj.Id)
@@ -222,6 +231,8 @@
                         success: function (rs) {
                             if (rs.success) {
                                 $('#trow_' + id).remove();
+                            } else {
+                                alert(rs.msg);
                             }
                         }
                     });
@@ -249,6 +260,13 @@
                 });
             });
         });
+
+        $(document).on('click', '#btnExport', function () {
+            var searchtext = $('#searchtext').val();
+            if(confirm("Tải về file Excel?")){
+                location.href = `/admin/productdetail/ExportDataToExecl?searchtext=${searchtext}`;
+            }    
+        })
     </script>
 }
 

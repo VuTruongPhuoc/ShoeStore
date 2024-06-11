@@ -28,54 +28,37 @@
 		</div>
 	</div>
 	<!-- Map Container -->
-	<div id='map' style='width: 100%; height: 400px;'></div>
-	<div id="language" class="mapboxgl-ctrl mapboxgl-ctrl-group">
-		<button class="mapboxgl-ctrl-icon mapboxgl-ctrl-language" aria-label="Language"></button>
-		<select id="language-select">
-			<option value="en">English</option>
-			<option value="vi">Tiếng Việt</option>
-			<option value="ru">Russian</option>
-			<option value="de">French</option>
-			<option value="es">Spanish</option>
-		</select>
+	@* <div id='map' style='width: 100%; height: 400px;'></div> *@
+	<div id="map" style="height: 400px;">
+		<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1316.674119944875!2d105.80377255773797!3d21.028012236702647!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab424a50fff9%3A0xbe3a7f3670c0a45f!2sUniversity%20of%20Transport%20and%20Communications!5e0!3m2!1sen!2s!4v1717651081736!5m2!1sen!2s" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 	</div>
 	<!-- Contact Us -->
-	<div class="row">
+	<div class="row" style="margin-top:50px">
 
 		<div class="col-lg-6 contact_col">
 			<div class="contact_contents">
-				<h1>Contact Us</h1>
-				<p>There are many ways to contact us. You may drop us a line, give us a call or send an email, choose what suits you the most.</p>
+				<h1>Liên hệ với chúng tôi</h1>
+				<p>Có nhiều cách để liên hệ với chúng tôi. Bạn có thể liên hệ với chúng tôi, gọi điện hoặc gửi email cho chúng tôi, chọn những gì phù hợp với bạn nhất.</p>
 				<div>
-					<p>(800) 686-6688</p>
-					<p>info.deercreative@gmail.com</p>
+					<p>Số điện thoại: 0396347668</p>
+					<p>Email: phuocvt1030@gmail.com</p>
 				</div>
-				<div>
+@* 				<div>
 					<p>mm</p>
-				</div>
-				<div>
-					<p>Open hours: 8.00-18.00 Mon-Fri</p>
-					<p>Sunday: Closed</p>
-				</div>
+				</div> *@
 			</div>
 
 			<!-- Follow Us -->
 
 			<div class="follow_us_contents">
-				<h1>Follow Us</h1>
-				<ul class="social d-flex flex-row">
-					<li><a href="#" style="background-color: #3a61c9"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-					<li><a href="#" style="background-color: #41a1f6"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-					<li><a href="#" style="background-color: #fb4343"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
-					<li><a href="#" style="background-color: #8f6247"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-				</ul>
+				
 			</div>
 
 		</div>
 
 		<div class="col-lg-6 get_in_touch_col">
 			<div class="get_in_touch_contents">
-				<h1>Get In Touch With Us!</h1>
+				@* <h1>Get In Touch With Us!</h1>
 				<p>Fill out the form below to recieve a free and confidential.</p>
 				<form action="post">
 					<div>
@@ -87,59 +70,16 @@
 					<div>
 						<button id="review_submit" type="submit" class="red_button message_submit_btn trans_300" value="Submit">send message</button>
 					</div>
-				</form>
+				</form> *@
+				<h1>Theo dõi chúng tôi</h1>
+				<ul class="social d-flex flex-row">
+					<li><a href="https://www.facebook.com/profile.php?id=61558885907337" style="background-color: #3a61c9"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+					@* <li><a href="#" style="background-color: #41a1f6"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+					<li><a href="#" style="background-color: #fb4343"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
+					<li><a href="#" style="background-color: #8f6247"><i class="fa fa-instagram" aria-hidden="true"></i></a></li> *@
+				</ul>
 			</div>
 		</div>
 
 	</div>
 </div>
-<script>
-	mapboxgl.accessToken = 'pk.eyJ1IjoicGh1b2NraXRhIiwiYSI6ImNsZnIxczFzYzA0NGMzd3J4aXYwb2UwY2kifQ.F9tcOUIiJJu6GiXH1g4yuw';
-	const map = new mapboxgl.Map({
-		container: 'map', // container ID
-		style: 'mapbox://styles/mapbox/streets-v12', // style URL
-		center: [105.80290, 21.02685], // starting position [lng, lat]
-		zoom: 13, // starting zoom
-
-	});
-	var marker = new mapboxgl.Marker({
-		color: "red", //Màu của Marker là đỏ
-		draggable: true,
-		anchor: 'bottom', //Nhãn Hà Nội nằm dưới Marker
-	}).setLngLat([105.85, 21.0]) //Thiết lập Marker tại hà Nội
-		.addTo(map);
-	map.addControl(new mapboxgl.NavigationControl());
-
-	// Thêm control GeolocateControl
-	map.addControl(new mapboxgl.GeolocateControl({
-		positionOptions: {
-			enableHighAccuracy: true
-		},
-		trackUserLocation: true
-	}));
-
-	// Thêm control FullscreenControl
-	map.addControl(new mapboxgl.FullscreenControl());
-
-
-	document.getElementById('language-select').addEventListener('change', function () {
-		var language = this.value;
-		map.setLayoutProperty('country-label', 'text-field', ['get', 'name_' + language]);
-	});
-
-	map.on('click', function (e) {
-		new mapboxgl.Marker({
-			color: 'blue',
-			draggable: true,
-
-		}).setLngLat([e.lngLat.lng, e.lngLat.lat])
-			.addTo(map);
-	});
-
-	map.addControl(
-		new MapboxDirections({
-			accessToken: mapboxgl.accessToken
-		}),
-		'top-left'
-	);
-</script>

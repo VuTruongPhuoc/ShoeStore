@@ -54,12 +54,12 @@
                     @Html.AntiForgeryToken()
                     <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                         <div class="form-group">
-                            <label asp-for="Name" class="control-label">Kích cỡ</label>
+                            <label asp-for="Name" class="control-label">Kích cỡ *</label>
                             <input asp-for="Name" class="form-control" />
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Status" class="control-label">Hiển thị</label>
+                            <label asp-for="Status" class="control-label">Hiển thị *</label>
                             @Html.CheckBoxFor(x => x.Status, new { @checked = "@checked" })
                         </div>
                         <div class="form-group">

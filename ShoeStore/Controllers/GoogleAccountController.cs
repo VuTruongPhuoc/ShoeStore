@@ -65,10 +65,10 @@ namespace ShoeStore.Controllers
                         return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/admin/index");
 
                     }
-                    else if (checkRoles.StartsWith("Emp"))
-                    {
-                        return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/admin/index");
-                    }
+                    //else if (checkRoles.StartsWith("Emp"))
+                    //{
+                    //    return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/admin/index");
+                    //}
                     else
                     {
                         return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/home/index");
@@ -81,7 +81,7 @@ namespace ShoeStore.Controllers
                     {
                         Username = name,
                         FullName = principal.FindFirst(ClaimTypes.Surname)?.Value + " " +principal.FindFirst(ClaimTypes.GivenName)?.Value,
-                        RoleId = 3,
+                        RoleId = 2,
                         PhoneNumber = principal.FindFirst(ClaimTypes.MobilePhone)?.Value,
                         Address = null,
                         Email = email,

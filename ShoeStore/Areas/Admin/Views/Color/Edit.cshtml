@@ -58,18 +58,18 @@
                         @Html.HiddenFor(x => x.Id)
                         <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                             <div class="form-group">
-                                <label asp-for="ColorCode" class="control-label">Mã màu</label>
+                                <label asp-for="ColorCode" class="control-label">Mã màu *</label>
                                 <input asp-for="ColorCode" class="form-control" value="@Model.ColorCode" />
                                 <span asp-validation-for="ColorCode" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="Name" class="control-label">Tên màu</label>
+                                <label asp-for="Name" class="control-label">Tên màu *</label>
                                 <input asp-for="Name" class="form-control" value="@Model.Name" />
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
 
                             <div class="form-group">
-                                <label asp-for="Status" class="control-label">Hiển thị</label>
+                                <label asp-for="Status" class="control-label">Hiển thị *</label>
                                 @Html.CheckBoxFor(x => x.Status)
                             </div>
                             <div class="form-group">

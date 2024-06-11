@@ -6,6 +6,7 @@ using ShoeStore.Models;
 using X.PagedList;
 using Microsoft.AspNetCore.Authorization;
 using ShoeStore.Services;
+using ShoeStore.ViewModels;
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
@@ -158,13 +159,55 @@ namespace ShoeStore.Areas.Admin.Controllers
             _notyf.Success("Đã xác nhận hủy đơn");
             return RedirectToAction("index");
         }
-        public async Task<IActionResult> ExportToExcel(string searchtext,int ? status)
+        public async Task<IActionResult> ExportDataToExecl(string searchtext,int ? status)
         {
             var items = GetOrders(searchtext,status).ToList(); // Gọi phương thức search đúng cách và chuyển kết quả thành một danh sách
 
-            var stream = await _excelHandler.Export(items); // Sử dụng phương thức Export của IExcelHandler
+            List<OrderVM_Excel> orderexcel = new List<OrderVM_Excel>();
 
-            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{DateTime.Now.Ticks}_Report_Data_Order.xlsx");
+            foreach (var item in items)
+            {
+                var voucher = db.Vouchers.FirstOrDefault(v=>v.Id == item.VoucherId);
+                var vouchername = "Không có voucher áp dụng";
+                if(voucher != null)
+                {
+                    vouchername = voucher.Name;
+                }
+                OrderVM_Excel excelitem = new OrderVM_Excel()
+                {
+                    Id = item.Id,
+                    Code = item.Code,
+                    CustomerName = item.CustomerName,
+                    Phone = item.Phone,
+                    Email = item.Email,
+                    Address = item.Address ?? "",      
+                    VoucherName = vouchername,
+                    ShipFee = item.ShipFee,
+                    TotalAmount = item.TotalAmount,
+                    TypePayment = item.TypePayment,
+                    StatusOrder = item.StatusOrder switch
+                    {
+                        0 => "Đơn đã hủy",
+                        1 => "Chờ xác nhận",
+                        2 => "Đã xác nhận đơn hàng",
+                        3 => "Đang giao hàng",
+                        4 => "Giao hàng thành công",
+                        5 => "Đơn chờ hủy",
+                        _ => item.StatusOrder.ToString()
+                    },
+                    Note = item.Note ?? "",
+                    CreateAt = item.CreateAt.HasValue ? item.CreateAt.Value.ToString("dd/MM/yyyy hh:mm:ss") : "",
+                    UpdateAt = item.UpdateAt.HasValue ? item.UpdateAt.Value.ToString("dd/MM/yyyy hh:mm:ss") : "",
+					PaymentDate = item.PaymentDate.HasValue ? item.PaymentDate.Value.ToString("dd/MM/yyyy hh:mm:ss") : ""
+
+
+				};
+                orderexcel.Add(excelitem);
+            }
+
+            var memoryStream = await _excelHandler.Export(orderexcel); // Sử dụng phương thức Export của IExcelHandler
+
+            return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Don_hang_Report_Data.xlsx");
         }
     }
 }

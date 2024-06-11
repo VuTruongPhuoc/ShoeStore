@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using OfficeOpenXml;
 using ShoeStore.Data;
 using ShoeStore.Models;
 using System.Net.Http;
-using OfficeOpenXml;
+
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
@@ -26,8 +28,8 @@ namespace ShoeStore.Areas.Admin.Controllers
             try
             {
                 var data = db.Orders
-                    .Where(b => b.CreateAt.HasValue && b.CreateAt.Value.Year == year && b.StatusOrder == 1)
-                    .GroupBy(b => b.CreateAt.Value.Month)  // Nhóm hóa đơn theo tháng
+                    .Where(b => b.PaymentDate.HasValue && b.PaymentDate.Value.Year == year && b.StatusOrder == 4)
+                    .GroupBy(b => b.PaymentDate.Value.Month) 
                     .Select(group => new
                     {
                         Month = group.Key,
@@ -35,8 +37,6 @@ namespace ShoeStore.Areas.Admin.Controllers
                     })
                     .OrderBy(item => item.Month)
                     .ToList();
-
-                // Chuyển đổi dữ liệu thành định dạng phù hợp cho biểu đồ
                 var chartData = new
                 {
                     labels = data.Select(item => item.Month),
@@ -58,8 +58,8 @@ namespace ShoeStore.Areas.Admin.Controllers
             try
             {
                 var data = db.Orders
-                    .Where(b => b.CreateAt.HasValue && b.CreateAt.Value.Year == year && b.CreateAt.Value.Month == month && b.StatusOrder == 1)
-                    .GroupBy(b => b.CreateAt.Value.Day)  // Nhóm hóa đơn theo tháng
+                    .Where(b => b.PaymentDate.HasValue && b.PaymentDate.Value.Year == year && b.PaymentDate.Value.Month == month && b.StatusOrder == 4)
+                    .GroupBy(b => b.PaymentDate.Value.Day)  // Nhóm hóa đơn theo tháng
                     .Select(group => new
                     {
                         Day = group.Key,
@@ -67,8 +67,8 @@ namespace ShoeStore.Areas.Admin.Controllers
                     })
                     .OrderBy(item => item.Day)
                     .ToList();
-
                 // Chuyển đổi dữ liệu thành định dạng phù hợp cho biểu đồ
+
                 var chartData = new
                 {
                     labels = data.Select(item => item.Day),
@@ -99,8 +99,8 @@ namespace ShoeStore.Areas.Admin.Controllers
 
                 // Lấy dữ liệu từ database cho doanh thu trong 1 tuần qua
                 var data = db.Orders
-                    .Where(b => b.CreateAt.HasValue && b.CreateAt.Value >= currentDate.AddDays(-7) && b.StatusOrder == 1)
-                    .GroupBy(b => b.CreateAt.Value.Date)  // Nhóm theo ngày
+                    .Where(b => b.PaymentDate.HasValue && b.PaymentDate.Value >= currentDate.AddDays(-7) && b.StatusOrder == 4)
+                    .GroupBy(b => b.PaymentDate.Value.Date)  // Nhóm theo ngày
                     .OrderBy(group => group.Key)
                     .Select(group => new
                     {
@@ -141,10 +141,10 @@ namespace ShoeStore.Areas.Admin.Controllers
             try
             {
                 var data = db.Orders
-                    .Where(b => b.CreateAt.HasValue &&
-                                (b.CreateAt.Value.Date >= startDate.Date && b.CreateAt.Value.Date <= endDate.Date) &&
-                                b.StatusOrder == 1)
-                    .GroupBy(b => b.CreateAt.Value.Date)
+                    .Where(b => b.PaymentDate.HasValue &&
+                                (b.PaymentDate.Value.Date >= startDate.Date && b.PaymentDate.Value.Date <= endDate.Date) &&
+                                b.StatusOrder == 4)
+                    .GroupBy(b => b.PaymentDate.Value.Date)
                     .Select(group => new
                     {
                         Dates = group.Key,
@@ -204,7 +204,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             public string Label { get; set; }
         }
         [HttpGet("ExportDataToExcel/{label}")]
-        public IActionResult ExportDataToExcel(string? month,string? currentyear, string label, DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult ExportDataToExcel(string? currentmonth,string? currentyear, string label, DateTime? startDate = null, DateTime? endDate = null)
         {
             try
             {
@@ -217,23 +217,23 @@ namespace ShoeStore.Areas.Admin.Controllers
 
                 if (label == "yearly")
                 {
-                    fileName = "_Doanh_thu_" + currentyear;
-                    apiData = GetDataFromApi($"https://localhost:7162/api/Chart/" + currentyear);
+                    fileName = "Doanh_thu_" + currentyear;
+                    apiData = GetDataFromApi($"https://localhost:7162/api/Chart/StatisticsByYear/" + currentyear);
                     worksheet.Cells["A1"].Value = "STT";
                     worksheet.Cells["B1"].Value = "Tháng";
                     worksheet.Cells["C1"].Value = "Doanh thu";
                 }
                 else if (label == "monthly")
                 {
-                    fileName = "_Doanh_thu_thang_" + month + "_nam_" + currentyear;
-                    apiData = GetDataFromApi($"https://localhost:7162/api/Chart/" + month + "/" + currentyear);
+                    fileName = "Doanh_thu_thang_" + currentmonth + "_nam_" + currentyear;
+                    apiData = GetDataFromApi($"https://localhost:7162/api/Chart/StatisticsByMonthOfTheYear/" + currentmonth + "/" + currentyear);
                     worksheet.Cells["A1"].Value = "STT";
                     worksheet.Cells["B1"].Value = "Ngày";
                     worksheet.Cells["C1"].Value = "Doanh thu";
                 }
                 else if (label == "weekly")
                 {
-                    fileName = "_7_ngay_gan_nhat";
+                    fileName = "7_ngay_gan_nhat";
                     apiData = GetDataFromApi($"https://localhost:7162/api/Chart/weekly");
                     worksheet.Cells["A1"].Value = "STT";
                     worksheet.Cells["B1"].Value = "Ngày";
@@ -241,7 +241,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                 }
                 else if (label == "DatePicker")
                 {
-                    fileName = "_Doanh_thu_datepicker";
+                    fileName = "Doanh_thu_tu_ngay_"+startDate+"_den_ngay_"+endDate;
                     apiData = GetDataFromApi($"https://localhost:7162/api/Chart/DatePicker?startDate={startDate}&endDate={endDate}");
                     worksheet.Cells["A1"].Value = "STT";
                     worksheet.Cells["B1"].Value = "Ngày";
@@ -264,10 +264,19 @@ namespace ShoeStore.Areas.Admin.Controllers
                     {
                         worksheet.Cells[i + 2, 2].Value = apiData.Labels[i];
                     }
+                    else if(label == "monthly")
+                    {
+                        worksheet.Cells[i + 2, 2].Value = apiData.Labels[i] + "/" + currentmonth +  "/" + currentyear;
+                    }
+                    else if(label == "yearly")
+                    {
+                        worksheet.Cells[i + 2, 2].Value = apiData.Labels[i] + "/" + currentyear;
+                    }
                     else
                     {
-                        worksheet.Cells[i + 2, 2].Value = apiData.Labels[i] + "/2024";
+                        worksheet.Cells[i + 2, 2].Value = apiData.Labels[i];
                     }
+                    
                     worksheet.Cells[i + 2, 3].Value = apiData.Values[i];
 
                 }
@@ -299,7 +308,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                                          join details in db.ProductDetails on products.Id equals details.ProductId
                                          join orderdetails in db.OrderDetails on details.Id equals orderdetails.ProductDetailId
                                          join orders in db.Orders on orderdetails.OrderId equals orders.Id                     
-                                         where orders.StatusOrder == 1 && orders.CreateAt.HasValue && orders.CreateAt.Value >= currentDate.AddDays(-30)
+                                         where orders.StatusOrder == 4 && orders.PaymentDate.HasValue && orders.PaymentDate.Value >= currentDate.AddDays(-30)
                                          group new { products, details, orderdetails, orders } by new { products.Name } into grouped
                                          select new
                                          {
@@ -365,7 +374,7 @@ namespace ShoeStore.Areas.Admin.Controllers
         {
             try
             {
-                var totalQuantity = db.Orders.Where(p => p.StatusOrder == 1).SelectMany(order => order.OrderDetails).Sum(orderDetail => orderDetail.Quantity);
+                var totalQuantity = db.Orders.Where(p => p.StatusOrder == 4).SelectMany(order => order.OrderDetails).Sum(orderDetail => orderDetail.Quantity);
                 string formattedQuantity;
 
                 if (totalQuantity > 1000000)
@@ -392,7 +401,7 @@ namespace ShoeStore.Areas.Admin.Controllers
         {
             try
             {
-                var totalRevenue = db.Orders.Where(p => p.StatusOrder == 1 && p.CreateAt != null).Sum(p => p.TotalAmount);
+                var totalRevenue = db.Orders.Where(p => p.StatusOrder == 4 && p.PaymentDate != null).Sum(p => p.TotalAmount);
                 string formatted;
                 if (totalRevenue > 1000000000)
                 {
@@ -423,7 +432,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             try
             {
                 var countorder = db.Orders
-                    .Where(a => a.StatusOrder == 1 && a.CreateAt != null)
+                    .Where(a => a.StatusOrder == 4 && a.PaymentDate != null)
                     .Count();
                 string formattedCount;
 
@@ -454,13 +463,13 @@ namespace ShoeStore.Areas.Admin.Controllers
                 var data = (from orders in db.Orders
                             join vouchers in db.Vouchers on orders.VoucherId equals vouchers.Id into voucherGroup
                             from voucher in voucherGroup.DefaultIfEmpty()
-                            where orders.CreateAt.HasValue && orders.CreateAt.Value.Year == year && orders.StatusOrder == 1 &&
-                                  (orders.CreateAt.HasValue || voucher != null)
+                            where orders.PaymentDate.HasValue && orders.PaymentDate.Value.Year == year && orders.StatusOrder == 4 &&
+                                  (orders.PaymentDate.HasValue || voucher != null)
                             select new
                             {
                                 OrderCode = orders.Code,
                                 OrderCreateAt = orders.CreateAt,
-                                OrderPaymentDate = orders.UpdateAt,
+                                OrderPaymentDate = orders.PaymentDate,
                                 OrderShipFee = orders.ShipFee,
                                 OrderVoucherName = voucher != null ? voucher.Name : null, // Handle NULL voucher.Name
                                 OrderTypePayment = orders.TypePayment,
@@ -482,13 +491,13 @@ namespace ShoeStore.Areas.Admin.Controllers
                 var data = (from orders in db.Orders
                             join vouchers in db.Vouchers on orders.VoucherId equals vouchers.Id into voucherGroup
                             from voucher in voucherGroup.DefaultIfEmpty()
-                            where orders.CreateAt.HasValue && orders.CreateAt.Value.Month == month && orders.CreateAt.Value.Year == year && orders.StatusOrder == 1 &&
-                                  (orders.CreateAt.HasValue || voucher != null)
+                            where orders.PaymentDate.HasValue && orders.PaymentDate.Value.Month == month && orders.PaymentDate.Value.Year == year && orders.StatusOrder == 4 &&
+                                  (orders.PaymentDate.HasValue || voucher != null)
                             select new
                             {
                                 OrderCode = orders.Code,
                                 OrderCreateAt = orders.CreateAt,
-                                OrderPaymentDate = orders.UpdateAt,
+                                OrderPaymentDate = orders.PaymentDate,
                                 OrderShipFee = orders.ShipFee,
                                 OrderVoucherName = voucher != null ? voucher.Name : null, // Handle NULL voucher.Name
                                 OrderTypePayment = orders.TypePayment,

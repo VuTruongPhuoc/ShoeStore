@@ -367,8 +367,9 @@
         $(document).on('click', '#btnExport', function () {
             var status = $('#statusFilter').val();
             var searchtext = $('#searchtext').val();
-
-            location.href = `/admin/order/ExportToExcel?searchtext=${searchtext}&status=${status}`;
+            if (confirm("Tải về file Excel")) {
+                location.href = `/admin/order/ExportDataToExecl?searchtext=${searchtext}&status=${status}`;
+            }          
         })
     </script>
 }

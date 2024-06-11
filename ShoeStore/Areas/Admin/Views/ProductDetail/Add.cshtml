@@ -32,7 +32,7 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">chi tiết sản phẩm</a></li>
+                    <li class="breadcrumb-item"><a href="#">Chi tiết sản phẩm</a></li>
                     <li class="breadcrumb-item active">Thêm mới</li>
                 </ol>
             </div>
@@ -87,12 +87,12 @@
                                             <span asp-validation-for="ProductId" class="text-danger"></span>
                                         </div>
                                         <div class="form-group">
-                                            <label asp-for="Quantity" class="control-label">Số lượng</label>
+                                            <label asp-for="Quantity" class="control-label">Số lượng *</label>
                                             <input asp-for="Quantity"  class="form-control" type="number" min="0" />
                                             <span asp-validation-for="Quantity" class="text-danger"></span>
                                         </div>                                      
                                         <div class="form-group">
-                                            <label asp-for="SizeId" class="control-label">Kích cỡ</label>
+                                            <label asp-for="SizeId" class="control-label">Kích cỡ *</label>
                                             <select asp-for="SizeId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
                                                 @if(ViewBag.Size != null) {
                                                     foreach (var item in ViewBag.Size)
@@ -104,7 +104,7 @@
                                             <span asp-validation-for="SizeId" class="text-danger"></span>
                                         </div>
                                         <div class="form-group">
-                                            <label asp-for="ColorId" class="control-label">Màu sắc</label>
+                                            <label asp-for="ColorId" class="control-label">Màu sắc *</label>
                                             <select asp-for="ColorId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
                                                 @if (ViewBag.Color != null)
                                                 {
@@ -117,7 +117,7 @@
                                             <span asp-validation-for="ColorId" class="text-danger"></span>
                                         </div>  
                                         <div class="form-group">
-                                            <label asp-for="Price" class="control-label">Giá</label>
+                                            <label asp-for="Price" class="control-label">Giá *</label>
                                             <input asp-for="Price" id="demoPrice" class="form-control auto" type="number" min="0" data-a-dec="." data-a-sep="," />
                                             <span asp-validation-for="Price" class="text-danger"></span>
                                         </div>
@@ -127,7 +127,7 @@
                                             <span asp-validation-for="PriceSale" class="text-danger"></span>
                                         </div>
                                         <div class="form-group">
-                                            <label asp-for="Status" class="control-label">Hiển thị</label>
+                                            <label asp-for="Status" class="control-label">Hiển thị *</label>
                                             @Html.CheckBoxFor(x => x.Status, new { @checked = "@checked" })
                                         </div>
                                     </div>
@@ -189,24 +189,7 @@
 @section  scripts {
     <script>
         $(document).ready(function () {
-            // $('.auto').autoNumeric('init');
-            // $('#demoPrice').bind('blur focusout keypress keyup', function () {
-            //     var demoGet = $('#demoPrice').autoNumeric('get');
-            //     $('#Price').val(demoGet);
-            //     $('#Price').autoNumeric('set', demoGet);
-            // });
-            // $('#demoPriceSale').bind('blur focusout keypress keyup', function () {
-            //     var demoGet = $('#demoPriceSale').autoNumeric('get');
-            //     $('#PriceSale').val(demoGet);
-            //     $('#PriceSale').autoNumeric('set', demoGet);
-            // });
-            // $('#demoOriginalPrice').bind('blur focusout keypress keyup', function () {
-            //     var demoGet = $('#demoOriginalPrice').autoNumeric('get');
-            //     $('#OriginalPrice').val(demoGet);
-            //     $('#OriginalPrice').autoNumeric('set', demoGet);
-            // });
            
-
             $('body').on('click', '.btnXoaAnh', function () {
                 var conf = confirm('Bạn có muốn xóa ảnh này không?');
                 if (conf === true) {

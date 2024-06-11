@@ -100,63 +100,7 @@ inputoff.onclick = function () {
     document.getElementById("pay").value = "shipCod"
 }
 // validate phonenumber and email
-document.addEventListener('DOMContentLoaded', function () {
-    //phone
-    var phoneNumberInput = document.getElementById('phone');
-    var phoneErrorSpan = document.getElementById('phoneError');
-    phoneNumberInput.addEventListener('input', function () {
-        var inputValue = phoneNumberInput.value;
-        var cleanedValue = inputValue.replace(/[^0-9+]/g, '');
-        cleanedValue = cleanedValue.slice(0, 10);
-        phoneNumberInput.value = cleanedValue;
-    });
 
-    phoneNumberInput.addEventListener('blur', function () {
-        validatePhoneNumber(phoneNumberInput.value);
-    });
-
-    function validatePhoneNumber(phoneNumber) {
-        var phoneRegex = /^\+?[0-9]{1,4}-?[0-9]{3,4}-?[0-9]{4,}$/;
-
-        if (phoneRegex.test(phoneNumber) && phoneNumber.startsWith('0')) {
-            // Nếu số điện thoại hợp lệ, ẩn thông báo và hiển thị nền trắng cho ô nhập
-            phoneErrorSpan.textContent = '';
-            phoneNumberInput.style.backgroundColor = 'white';
-        } else {
-            if (phoneNumber.length < 10) {
-                // Hiển thị thông báo trong thẻ span khi số điện thoại có ít hơn 10 kí tự
-                phoneErrorSpan.textContent = 'Số điện thoại phải có ít nhất 10 kí tự.';
-            } else if (!phoneNumber.startsWith('0')) {
-                // Hiển thị thông báo trong thẻ span khi số điện thoại không bắt đầu bằng số 0
-                phoneErrorSpan.textContent = 'Số điện thoại phải bắt đầu bằng số 0.';
-            } else {
-                // Hiển thị thông báo trong thẻ span khi số điện thoại không hợp lệ
-                phoneErrorSpan.textContent = 'Số điện thoại không hợp lệ.';
-            }
-
-
-        }
-    }
-    //email
-    var emailInput = document.getElementById('email');
-    var emailErrorSpan = document.getElementById('emailError');
-
-    emailInput.addEventListener('blur', function () {
-        validateEmail(emailInput.value);
-    });
-    function validateEmail(email) {
-        var emailRegex = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
-
-        if (emailRegex.test(email)) {
-            // Nếu địa chỉ email hợp lệ, ẩn thông báo và hiển thị nền trắng cho ô nhập
-            emailErrorSpan.textContent = '';
-            emailInput.style.backgroundColor = 'white';
-        } else {
-            // Hiển thị thông báo trong thẻ span khi địa chỉ email không hợp lệ
-            emailErrorSpan.textContent = 'Địa chỉ email không hợp lệ.';
-        }
-    }
-});
 //validate các trường
 function validateForm() {
     var fullName = document.getElementById('customername').value;

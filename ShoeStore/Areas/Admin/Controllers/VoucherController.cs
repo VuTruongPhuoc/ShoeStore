@@ -106,11 +106,11 @@ namespace ShoeStore.Areas.Admin.Controllers
             {
                 try
                 {
-                    if (model.StartDate.Date < DateTime.Now.Date)
-                    {
-                        _notyf.Warning("Ngày bắt đầu không được nhỏ hơn ngày hiện tại", 10);
-                        return View(model);
-                    }
+                    //if (model.StartDate.Date < DateTime.Now.Date)
+                    //{
+                    //    _notyf.Warning("Ngày bắt đầu không được nhỏ hơn ngày hiện tại", 10);
+                    //    return View(model);
+                    //}
                     if (model.EndDate.Date < model.StartDate.Date)
                     {
                         _notyf.Warning("Ngày kết thúc không được nhỏ hơn ngày bắt đầu",10);
@@ -130,11 +130,11 @@ namespace ShoeStore.Areas.Admin.Controllers
 				}
 				catch (Exception ex)
 				{
-					_notyf.Error("Có lỗi khi cập nhật dữ liệu " + ex.Message);
+					_notyf.Error("Đã xảy ra lỗi khi cập nhật dữ liệu " + ex.Message);
 					return View(model);
 				}
 			}
-			_notyf.Error("Có lỗi khi cập nhật dữ liệu");
+			_notyf.Error("Đã xảy ra lỗi khi cập nhật dữ liệu");
 			return View(model);
 		}
         public async Task<IActionResult> Delete(int id)

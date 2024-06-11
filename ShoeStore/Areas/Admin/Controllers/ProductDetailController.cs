@@ -4,6 +4,9 @@ using ShoeStore.Data;
 using ShoeStore.Models;
 using X.PagedList;
 using Microsoft.AspNetCore.Authorization;
+using ShoeStore.Services;
+using ShoeStore.ViewModels;
+using MailKit.Search;
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
@@ -14,14 +17,26 @@ namespace ShoeStore.Areas.Admin.Controllers
     [Authorize(Roles = "Admin, Employee")]
     public class ProductDetailController : Controller
     {
-        private ShoeStoreContext db = new ShoeStoreContext();
+        private readonly ShoeStoreContext db = new ShoeStoreContext();
         private readonly INotyfService _notyf;
-        public ProductDetailController(INotyfService notyf)
+        private readonly IExcelHandler _excelHandler;
+        public ProductDetailController(INotyfService notyf, ShoeStoreContext db, IExcelHandler excelHandler)
         {
             _notyf = notyf;
+            this.db = db;
+            _excelHandler = excelHandler;
         }
-        public IActionResult GetList(string Searchtext, int? page)
-        {
+		public IEnumerable<ProductDetail> search(string searchtext)
+		{
+			IEnumerable<ProductDetail> items = db.ProductDetails.OrderBy(x => x.Id);
+			if (!string.IsNullOrEmpty(searchtext))
+			{
+				items = items.Where(x => x.ProductId.ToString().Contains(searchtext) || x.ColorId.ToString().Contains(searchtext) && x.Status);
+			}
+			return items;
+		}
+		public IActionResult GetList(string Searchtext, int? page)
+		{
             ViewBag.Searchtext = Searchtext;
             ViewBag.Product = db.Products.ToList().OrderBy(x=>x.Name);
             ViewBag.Size = db.Sizes.ToList().OrderBy(x => x.Name);
@@ -55,11 +70,8 @@ namespace ShoeStore.Areas.Admin.Controllers
                 page = 1;
             }
             ViewBag.Searchtext = Searchtext;
-            IEnumerable<ProductDetail> items = db.ProductDetails.Where(x=>x.ProductId == id);
-            if (!string.IsNullOrEmpty(Searchtext))
-            {
-                items = items.Where(x => x.ProductId.ToString().Contains(Searchtext) || x.ColorId.ToString().Contains(Searchtext) && x.Status);
-            }
+            var items = search(Searchtext).Where(x=>x.ProductId == id);
+           
             var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
             items = items.ToPagedList(pageIndex, pageSize);
             ViewBag.PageSize = pageSize;
@@ -134,7 +146,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                         item.Quantity += model.Quantity;
                         await db.SaveChangesAsync();
                         _notyf.Success("Thêm dữ liệu thành công");
-                        return RedirectToAction("Index", "Product", new { area = "Admin" });
+                        return RedirectToAction("index", "product", new { area = "admin" });
                     }
                     db.ProductDetails.Add(model);
                     await db.SaveChangesAsync();
@@ -180,7 +192,17 @@ namespace ShoeStore.Areas.Admin.Controllers
                             db.SaveChanges();
                         }
                     }
-                    item.Name = model.Name;
+                    var product = db.Products.FirstOrDefault(p => p.Id == model.ProductId);
+                    var color = db.Colors.FirstOrDefault(s => s.Id == model.ColorId);
+                    var spl = model.Name.Split("-");
+                    if (spl.Length > 1)
+                    {
+                        item.Name = product.Name + " - " + color.ColorCode; 
+                    }
+                    else
+                    {
+                        item.Name = product.Name;
+                    }
                     item.Price = model.Price;
                     item.Quantity = model.Quantity;
                     item.SizeId = model.SizeId;
@@ -201,27 +223,33 @@ namespace ShoeStore.Areas.Admin.Controllers
             _notyf.Error("Có lỗi khi cập nhật dữ liệu");
             return View(model);
         }
-			[HttpPost]
+		[HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-
-            var item = await db.ProductDetails.FindAsync(id);
-            if (item != null)
+            try
             {
-                var checkImg = item.ProductImages.Where(x => x.ProductDetailId == item.Id);
-                if (checkImg != null)
+                var item = await db.ProductDetails.FindAsync(id);
+                if (item != null)
                 {
-                    foreach (var img in checkImg)
+                    var checkImg = item.ProductImages.Where(x => x.ProductDetailId == item.Id);
+                    if (checkImg != null)
                     {
-                        db.ProductImages.Remove(img);
-                        await db.SaveChangesAsync();
+                        foreach (var img in checkImg)
+                        {
+                            db.ProductImages.Remove(img);
+                            await db.SaveChangesAsync();
+                        }
                     }
+                    db.ProductDetails.Remove(item);
+                    await db.SaveChangesAsync();
+                    return Json(new { success = true });
                 }
-                db.ProductDetails.Remove(item);
-                await db.SaveChangesAsync();
-                return Json(new { success = true });
+                return Json(new { success = false, msg="Đã xảy ra lỗi khi xóa dữ liệu" });
             }
-            return Json(new { success = false });
+            catch(Exception ex)
+            {
+                return Json(new {success = false, msg = "Đã xảy ra lỗi khi xóa dữ liệu " + ex.Message});
+            }
 
         }
         [HttpPost]
@@ -236,5 +264,37 @@ namespace ShoeStore.Areas.Admin.Controllers
             }
             return Json(new { success = false });
         }
-    }
+
+		public async Task<IActionResult> ExportDataToExecl(string searchtext)
+		{
+			var items = search(searchtext).ToList(); // Gọi phương thức search đúng cách và chuyển kết quả thành một danh sách
+			List<ProductDetailVM_Excel> producdetailtexcel = new List<ProductDetailVM_Excel>();
+
+			foreach (var item in items)
+			{
+				var product = db.Products.FirstOrDefault(c => c.Id == item.ProductId);
+                var size = db.Sizes.FirstOrDefault(s => s.Id == item.SizeId);
+				var color = db.Colors.FirstOrDefault(c => c.Id == item.ColorId);
+                ProductDetailVM_Excel excelitem = new ProductDetailVM_Excel
+                {
+                    ProductDetailId = item.Id,
+                    ProductName = product.Name,
+					Quantity = item.Quantity,
+					SizeName = size.Name,
+					ColorName = color.Name,
+					ProductDetailName = item.Name,
+                    Price = item.Price,
+                    PriceSale = item.PriceSale,                   
+					Status = item.Status ? "Hiển thị" : "Không hiển thị",
+					CreateAt = item.CreateAt.HasValue ? item.CreateAt.Value.ToString("dd/MM/yyyy hh:mm:ss") : "",
+					UpdateAt = item.UpdateAt.HasValue ? item.UpdateAt.Value.ToString("dd/MM/yyyy hh:mm:ss") : ""
+				};
+
+				producdetailtexcel.Add(excelitem);
+			}
+			var memoryStream = await _excelHandler.Export(producdetailtexcel); // Sử dụng phương thức Export của IExcelHandler
+
+			return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"San_pham_chi_tiet_Report_Data.xlsx");
+		}
+	}
 }

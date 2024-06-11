@@ -205,7 +205,6 @@
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
                 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
-
                 <script>
                     let yearlyChart;
                     let monthlyChart;
@@ -215,7 +214,6 @@
                     var PickDateChart;
                     // Danh sách sản phẩm
                     $(document).ready(sortBy('quantity'));
-
                     function updateDateInputs() {
                         // var selectedYear = document.getElementById("monthDropdown").value;
                         var selectedYear = document.getElementById("yearDropdown").value;
@@ -245,7 +243,6 @@
                             endDateInput.setAttribute("max", endDateInput.value);
                         }
                     }
-
                     function sortBy(option) {
                         // Gọi API với tùy chọn sắp xếp tương ứng
                         var apiUrl = 'https://localhost:7162/api/Chart/SoldProductsByMonth?sortBy=' + option;
@@ -289,7 +286,6 @@
                             }
                         });
                     }
-
                     function fetchAndDrawChart() {
                         // Lấy giá trị từ ô input cho startDate và endDate
                         var startDate = document.getElementById('startDate').value;
@@ -342,7 +338,6 @@
                             })
                             .catch(error => console.error('Error:', error));
                     }
-
                     function validateAndFetch() {
                         // Lấy giá trị từ ô input
                         var startDateValue = document.getElementById("startDate").value;
@@ -361,7 +356,6 @@
                         // Nếu dữ liệu đủ, tiếp tục thực hiện fetchAndDrawChart hoặc hành động mong muốn
                         fetchAndDrawChart();
                     }
-
                     $(document).ready(function () {
                         
                         // Mặc định chọn năm hiện tại
@@ -514,7 +508,7 @@
                             else if (chartType === 'monthly') {
                                 // Giả sử data.labels là mảng các ngày trong tháng
                                 var daysInMonth = new Array(31).fill(0);
-
+                                var selectedMonth = $('#monthDropdown').val();
                                 // Ánh xạ dữ liệu từ API vào mảng đầy đủ của các ngày trong tháng
                                 data.values.forEach(function (value, index) {
                                     // Ngày được trả về từ API là 1-indexed, chuyển về 0-indexed
@@ -525,7 +519,7 @@
                                 monthlyChart = new Chart(ctx, {
                                     type: 'bar',
                                     data: {
-                                        labels: Array.from({ length: 31 }, (_, i) => `Ngày ${i + 1}`),
+                                        labels: Array.from({ length: 31 }, (_, i) => `${i + 1}/` + selectedMonth),
                                         datasets: [{
                                             label: data.label,
                                             data: daysInMonth,
@@ -545,21 +539,22 @@
                         // Hàm gọi API và vẽ biểu đồ cho năm được chọn
                         function DrawChartForYear(selectedYear) {
                             $.ajax({
-                                url: 'https://localhost:7162/api/Chart/' + selectedYear,
+                                url: 'https://localhost:7162/api/Chart/StatisticsByYear/' + selectedYear,
                                 method: 'GET',
                                 dataType: 'json',
                                 success: function (data) {
                                     if (data && data.values && data.label) {
                                         DrawChart(data,'yearly');
                                     } else {
-                                        console.error('Invalid data received from API');
+                                        console.error('Invalid data');
                                     }
                                 },
                                 error: function (error) {
-                                    console.error('Error fetching data:', error);
+                                    console.error('Error data:', error);
                                 }
                             });
                         }
+                        // Hàm gọi API và vẽ biểu đồ cho tháng được chọn
                         function DrawChartForMonthOfTheYear(selectedMonth,selectedYear) {
                             var linkapi = "";
                             var datatype = "";
@@ -579,11 +574,11 @@
                                     if (data && data.values && data.label) {
                                         DrawChart(data,datatype);
                                     } else {
-                                        console.error('Invalid data received from API');
+                                        console.error('Invalid data');
                                     }
                                 },
                                 error: function (error) {
-                                    console.error('Error fetching data:', error);
+                                    console.error('Error data:', error);
                                 }
                             });
                         }
@@ -700,7 +695,7 @@
                                     if (data && data.labels && data.values && data.label) {
                                         Last7DayChart(data);
                                     } else {
-                                        console.error('Invalid data received from API');
+                                        console.error('Invalid data');
                                     }
                                 },
                                 error: function (error) {
@@ -763,7 +758,6 @@
                         };
 
                     });
-
                     function exportToExcel() {
                         if (confirm("Tải về file Excel?")) {
                             var url = "https://localhost:7162/api/Chart/ExportDataToExcel/" + currentChart;
@@ -801,7 +795,6 @@
                             window.location.href = url;
                         }
                     }
-
                 </script>
             </div>
 

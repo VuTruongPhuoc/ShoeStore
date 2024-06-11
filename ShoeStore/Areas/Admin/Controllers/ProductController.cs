@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using ShoeStore.Services;
 using MailKit.Search;
 using System.IO;
+using ShoeStore.ViewModels;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.Globalization;
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
@@ -32,7 +35,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             IEnumerable<Product> items = db.Products.OrderBy(x => x.Id);
             if (!string.IsNullOrEmpty(searchtext))
             {
-                items = items.Where(x => x.Name.Contains(searchtext) || x.Code.Contains(searchtext) && x.Status);
+                items = items.Where(x => x.Name.ToLower().Contains(searchtext.ToLower()) || x.Code.ToLower().Contains(searchtext.ToLower()) && x.Status);
             }
             return items;
         }
@@ -145,15 +148,21 @@ namespace ShoeStore.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-
-            var item = await db.Products.FindAsync(id);
-            if (item != null)
+            try 
+            { 
+                var item = await db.Products.FindAsync(id);
+                if (item != null)
+                {
+                    db.Products.Remove(item);
+                    await db.SaveChangesAsync();
+                    return Json(new { success = true });
+                }
+			    return Json(new { success = false, msg = "Đã xảy ra lỗi khi xóa dữ liệu" });
+		    }
+            catch(Exception ex)
             {
-                db.Products.Remove(item);
-                await db.SaveChangesAsync();
-                return Json(new { success = true });
+                return Json(new {success = false, msg = "Đã xảy ra lỗi khi xóa dữ liệu " + ex.Message});
             }
-            return Json(new { success = false });
 
         }
         [HttpPost]
@@ -167,13 +176,34 @@ namespace ShoeStore.Areas.Admin.Controllers
             }
             return Json(new { success = false });
         }
-        public async Task<IActionResult> ExportToExcel(string searchtext)
+        public async Task<IActionResult> ExportDataToExecl(string searchtext)
         {
             var items = search(searchtext).ToList(); // Gọi phương thức search đúng cách và chuyển kết quả thành một danh sách
+			List<ProductVM_Excel> productexcel = new List<ProductVM_Excel>();
+            
+			foreach (var item in items)
+			{
+                var category = db.Categories.FirstOrDefault(c=>c.Id == item.CategoryId);
+				var supplier = db.Suppliers.FirstOrDefault(c => c.Id == item.SupplierId);
+                ProductVM_Excel excelitem = new ProductVM_Excel
+                {
+                    Id = item.Id,
+                    ProductName = item.Name,
+                    CategoryName = category.Name,
+                    SupplierName = supplier.Name,
+                    ProductCode = item.Code,
+                    Description = item.Description,
+                    ViewCount = item.ViewCount,
+                    Status = item.Status ? "Sử dụng" : "Không sử dụng",
+					CreateAt = item.CreateAt.HasValue ? item.CreateAt.Value.ToString("dd/MM/yyyy hh:mm:ss") : "",
+					UpdateAt = item.UpdateAt.HasValue ? item.UpdateAt.Value.ToString("dd/MM/yyyy hh:mm:ss") : ""
+				};
 
-            var stream = await _excelHandler.Export(items); // Sử dụng phương thức Export của IExcelHandler
+				productexcel.Add(excelitem);
+			}
+			var memoryStream = await _excelHandler.Export(productexcel); // Sử dụng phương thức Export của IExcelHandler
 
-            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{DateTime.Now.Ticks}_Report_Data_Product.xlsx");
+            return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"San_pham_Report_Data.xlsx");
         }
     }
 }

@@ -236,7 +236,9 @@
 
         $(document).on('click', '#btnExport', function () {
             var searchtext = $('#searchText').val();
-            location.href = `/admin/product/ExportToExcel?searchtext=${searchtext}`;
+            if(confirm("Tải về file Excel?")){
+                location.href = `/admin/product/ExportDataToExecl?searchtext=${searchtext}`;
+            }
         });
     </script>
 }

@@ -75,7 +75,7 @@
                     </div>
 
                     <!-- Button to export data to Excel -->
-                    <button id="exportBtn" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
+                    <button id="btnExport" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
                 </div>
             </div>
             <div class="card-body">
@@ -102,7 +102,7 @@
                                         <tr>
                                             <th>Mã đơn</th>
                                             <th>Ngày đặt</th>
-                                            <th>Ngày cập nhật</th>
+                                            <th>Ngày thanh toán</th>
                                             <th>Phí Ship</th>
                                             <th>Voucher</th>
                                             <th>Hình thức</th>
@@ -128,6 +128,7 @@
 @section Scripts {
     <script>           
         // Gọi hàm validateAndFetch khi trang đã được tải
+        var currentChart = "yearly";
         $(document).ready(function () {
             validateAndFetch();
             $('#yearDropdown').on('change', function () {
@@ -179,7 +180,7 @@
                             var orderShipFee = parseFloat(order.orderShipFee).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                             var orderVoucherName = order.orderVoucherName;
                             var orderTypePayment = order.orderTypePayment;
-                            var orderStatus = order.orderStatus === 1 ? "Chờ xác nhận" : "Khác";
+                            var orderStatus = order.orderStatus === 4 ? "Giao hàng thành công" : "Khác";
                             var orderTotalAmount = parseFloat(order.orderTotalAmount);
 
                             totalEarnings += orderTotalAmount;
@@ -212,35 +213,13 @@
                     }
                 });
             }
-        function exportToExcel() {
-            if (confirm("Tải về file Excel?")) {
-                var url = "https://localhost:7162/api/Chart/ExportDataToExcel/" + currentChart;
-                var selectedyear = document.getElementById("yearDropdown").value;
-                console.log(selectedyear)
-                // Kiểm tra nếu là DatePicker thì lấy giá trị startDate và endDate từ các phần tử HTML
-                if (currentChart === "DatePicker") {
-                    var startDateElement = document.getElementById("startDate");
-                    var endDateElement = document.getElementById("endDate");
 
-                    // Kiểm tra xem phần tử có tồn tại không
-                    if (startDateElement && endDateElement) {
-                        var startDateValue = startDateElement.value;
-                        var endDateValue = endDateElement.value;
-
-                        // Thêm tham số startDate và endDate vào đường dẫn
-                        url += `?startDate=${encodeURIComponent(startDateValue)}&endDate=${encodeURIComponent(endDateValue)}`;
-                    }
-                    else {
-                        console.error("Không tìm thấy phần tử HTML");
-                        return;
-                    }
-                } else if (currentChart === "yearly") {
-                    url += `?currentyear=${encodeURIComponent(selectedyear)}`;
-                }
-
-                // Chuyển hướng đến đường dẫn đã tạo
-                window.location.href = url;
+        $(document).on('click', '#btnExport', function(){
+            var currentmonth = document.getElementById("monthDropdown").value;
+            var currentyear = document.getElementById("yearDropdown").value;
+            if(confirm("Tải về file Excel?")){
+                location.href = `/admin/statistics/ExportDataToExeclForRevenueList?currentmonth=${currentmonth}&currentyear=${currentyear}`;
             }
-        }
+        })
     </script>
 }

@@ -35,8 +35,8 @@ namespace ShoeStore.Controllers
 			_notyf = notyf;
 			this.db = db;
 		}
-		public List<ShoppingCartItem> Cart => HttpContext.Session.Get<List<ShoppingCartItem>>(MySetting.CART_KEY) ?? new List<ShoppingCartItem>();
-		public IActionResult Index()
+        public List<ShoppingCartItem> Cart => HttpContext.Session.Get<List<ShoppingCartItem>>(MySetting.CART_KEY) ?? new List<ShoppingCartItem>();
+        public IActionResult Index()
 		{
 			var cart = Cart;
 			if (cart != null)
@@ -107,12 +107,9 @@ namespace ShoeStore.Controllers
                             _notyf.Warning("Vui lòng cập nhật địa chỉ trong tài khoản của bạn");
                             return RedirectToAction("profile", "account", new { id = userid });
                         }
-                    }
-                    
+                    }                   
 					order.CustomerName = ordervm.CustomerName ?? customer.FullName;
-					order.AccountId = userid;
-					
-
+					order.AccountId = userid;					
                     if (ordervm.Address != null)
 					{
 						order.Address = ordervm.Address + " , " + ordervm.Ward + " - " + ordervm.District + " - " + ordervm.City;
@@ -120,6 +117,7 @@ namespace ShoeStore.Controllers
 					else {
 						order.Address = customer.Address;
                     }
+                    order.Phone = ordervm.Phone ?? customer.PhoneNumber;
 					order.Email = ordervm.Email ?? customer.Email;
 					order.Note = ordervm.Note;
 					order.TotalAmount = ordervm.totalAmount;
@@ -140,10 +138,10 @@ namespace ShoeStore.Controllers
 					}
 					Random rd = new Random();
 					var date = DateTime.Now;
-					order.Code = "DH" + date.Year.ToString() + date.Month.ToString() + date.Day.ToString() + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9);
+					order.Code = "DH" + date.Year.ToString() + date.Month.ToString() + date.Day.ToString() + rd.Next(0, 9) + rd.Next(0, 9) 
+						+ rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9);
 					order.CreateAt = DateTime.Now;
 					order.UpdateAt = DateTime.Now;
-
 					db.Orders.Add(order);
 					await db.SaveChangesAsync();
 					var orderdetail = new List<OrderDetail>();
@@ -173,15 +171,7 @@ namespace ShoeStore.Controllers
 						strSanPham += "</tr>";
 						thanhtien += sp.Price * sp.Quantity;
 					}
-					var checkvoucher = "";
-                    if (voucher != null)
-                    {
-                        checkvoucher =  voucher.Name;
-                    }
-                    else
-                    {
-                        checkvoucher = "Không có voucher áp dụng";
-                    }
+					var checkvoucher = voucher?.Name ?? "Không có voucher áp dụng";
 					var sendemailord = new SendEmailOrderVM()
 					{
 						OrderID = order.Id,
@@ -203,59 +193,6 @@ namespace ShoeStore.Controllers
                         return await Payment(sendemailord);
                     }
                     SendEmailOrder(sendemailord);
-                    /*
-     //               string contentCustomer;
-					//string filePath = Path.Combine(_env.WebRootPath, "assets", "templates", "customersend.html");
-					//if (System.IO.File.Exists(filePath))
-					//{
-					//	contentCustomer = System.IO.File.ReadAllText(filePath);
-					//	contentCustomer = contentCustomer.Replace("{{MaDon}}", order.Code);
-					//	contentCustomer = contentCustomer.Replace("{{SanPham}}", strSanPham);
-					//	contentCustomer = contentCustomer.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
-					//	contentCustomer = contentCustomer.Replace("{{TenKhachHang}}", order.CustomerName);
-					//	contentCustomer = contentCustomer.Replace("{{Phone}}", order.Phone);
-					//	contentCustomer = contentCustomer.Replace("{{Email}}", ordervm.Email ?? customer.Email);
-					//	contentCustomer = contentCustomer.Replace("{{DiaChiNhanHang}}", order.Address);
-					//	contentCustomer = contentCustomer.Replace("{{ThanhTien}}", ShoeStore.Common.Common.FormatNumber(thanhtien, 0));
-					//	contentCustomer = contentCustomer.Replace("{{GiamGia}}", ShoeStore.Common.Common.FormatNumber(ordervm.discountValue, 0));
-					//	if(voucher != null)
-					//	{
-     //                       contentCustomer = contentCustomer.Replace("{{Voucher}}", voucher.Name);
-					//	}
-					//	else
-					//	{
-     //                       contentCustomer = contentCustomer.Replace("{{Voucher}}", "Không có voucher áp dụng");
-     //                   }
-					//	contentCustomer = contentCustomer.Replace("{{PhiShip}}", ShoeStore.Common.Common.FormatNumber(ordervm.ShipFee, 0));
-					//	contentCustomer = contentCustomer.Replace("{{TongTien}}", ShoeStore.Common.Common.FormatNumber(TongTien, 0));
-					//	_sendEmail.SendEmailAsync(ordervm.Email, "Đơn hàng #" + order.Code, contentCustomer.ToString());
-					//}
-					//string filePath2 = Path.Combine(_env.WebRootPath, "assets", "templates", "adminsend.html");
-					//if (System.IO.File.Exists(filePath2))
-					//{
-					//	contentCustomer = System.IO.File.ReadAllText(filePath2);
-					//	contentCustomer = contentCustomer.Replace("{{MaDon}}", order.Code);
-					//	contentCustomer = contentCustomer.Replace("{{SanPham}}", strSanPham);
-					//	contentCustomer = contentCustomer.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
-					//	contentCustomer = contentCustomer.Replace("{{TenKhachHang}}", order.CustomerName);
-					//	contentCustomer = contentCustomer.Replace("{{Phone}}", order.Phone);
-					//	contentCustomer = contentCustomer.Replace("{{Email}}", ordervm.Email ?? customer.Email);
-					//	contentCustomer = contentCustomer.Replace("{{DiaChiNhanHang}}", order.Address);
-					//	contentCustomer = contentCustomer.Replace("{{ThanhTien}}", ShoeStore.Common.Common.FormatNumber(thanhtien, 0));
-					//	contentCustomer = contentCustomer.Replace("{{GiamGia}}", ShoeStore.Common.Common.FormatNumber(ordervm.discountValue, 0));
-					//	if(voucher != null)
-					//	{
-     //                       contentCustomer = contentCustomer.Replace("{{Voucher}}", voucher.Name);
-					//	}
-					//	else
-					//	{
-     //                       contentCustomer = contentCustomer.Replace("{{Voucher}}", "Không có voucher áp dụng");
-     //                   }
-					//	contentCustomer = contentCustomer.Replace("{{PhiShip}}", ShoeStore.Common.Common.FormatNumber(ordervm.ShipFee, 0));
-					//	contentCustomer = contentCustomer.Replace("{{TongTien}}", ShoeStore.Common.Common.FormatNumber(TongTien, 0));
-					//	_sendEmail.SendEmailAsync(_config.GetValue<string>("SendEmail:Email"), "Đơn hàng #" + order.Code, contentCustomer.ToString());
-					//}
-                    */
                     HttpContext.Session.Set<List<ShoppingCartItem>>(MySetting.CART_KEY, new List<ShoppingCartItem>());
                     _notyf.Success("Đặt hàng thành công");
 					return RedirectToAction("Success", "ShoppingCart");
@@ -499,12 +436,11 @@ namespace ShoeStore.Controllers
 
 		}
         #endregion
-        #region checkcart
+        #region checkcart     
         [HttpPost]
 		public async Task<ActionResult> AddToCart(int id, string size,int colorid, int quantity = 1)
 		{
 			var code = new { success = false, msg = "", code = -1, count = 0 };
-			var db = new ShoeStoreContext();
 			var cart = Cart;
 			var item = cart.SingleOrDefault(p => p.ProductId == id && p.Size == size);
 			if (item == null)
@@ -516,17 +452,16 @@ namespace ShoeStore.Controllers
 							   join c in db.Categories on p.CategoryId equals c.Id
 							   where p.Id == productid && pd.Size.Name == size && pd.ColorId == colorid
 							   select new { ProductDetail = pd, Product = p, Category = c })
-			  .SingleOrDefault();
+			    .SingleOrDefault();
 
 				if (product == null)
 				{
 					return Json(new { success = true, msg = "Sản phẩm không tồn tại!", code = 1, count = cart.Count });
-					//cart = new List<ShoppingCartItem>();
 				}
 				item = new ShoppingCartItem
 				{
 					ProductId = product.ProductDetail.Id,
-					ProductName = product.Product.Name,
+					ProductName = checkproduct.Name,
 					CategoryName = product.Category.Name,
 					Size = size,
 					Quantity = quantity
@@ -693,39 +628,29 @@ namespace ShoeStore.Controllers
             {
                 return Json(new { success = false, message = "Vui lòng đăng nhập để sử dụng mã giảm giá!" });
             }
-
-            var voucher = db.Vouchers.FirstOrDefault(v => v.Code == selectedVoucher && v.Status && v.EndDate > DateTime.Now);
-
+            var voucher = db.Vouchers
+                .FirstOrDefault(v => v.Code == selectedVoucher && v.Status && v.EndDate > DateTime.Now);
 			var userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
 			//var userid = int.Parse(((System.Security.Claims.ClaimsIdentity)User.Identity).FindFirst("Id").Value);
-			if(voucher != null)
-			{
-                var voucherforaccstatus = db.VoucherForAccs.FirstOrDefault(v => v.Code == voucher.Code && !v.Status && v.IdAccount == userid);
-                if (voucherforaccstatus != null)
-                {
-                    ViewData["ErrorMessage"] = "Voucher không tồn tại hoặc đã được sử dụng";
-                    return Json(new { success = false, message = "Voucher không tồn tại hoặc đã được sử dụng" });
-                }
-            }
-			
             var cart = Cart.ToList();
-
             if (voucher != null)
             {
-                var totalMoney = decimal.Zero;
-
+				var voucherforaccstatus = db.VoucherForAccs
+                    .FirstOrDefault(v => v.Code == voucher.Code && !v.Status && v.IdAccount == userid);
+				if (voucherforaccstatus != null)
+				{
+					return Json(new { success = false, message = "Voucher không tồn tại hoặc đã được sử dụng" });
+				}
+				var totalMoney = decimal.Zero;
                 foreach (var item in cart)
                 {
                     totalMoney += (item.Quantity * item.Price);
                 }
-
                 var discountRate = (decimal)voucher.Value / 100;
                 var discountValue = totalMoney * discountRate;
                 discountValue = Math.Max(discountValue, 0);
                 discountValue = Math.Min(discountValue, voucher.DiscountAmount);
-
                 var total = totalMoney - discountValue;
-
                 return Json(new { success = true, discountValue = discountValue, total = total });
             }
             else

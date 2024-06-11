@@ -80,9 +80,8 @@ namespace ShoeStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                var IdUser = ((System.Security.Claims.ClaimsIdentity)User.Identity).FindFirst("Id");
-                string Id_userValue = IdUser?.Value;
-                model.UserId = int.Parse(Id_userValue);
+                var userid = ((System.Security.Claims.ClaimsIdentity)User.Identity).FindFirst("Id");
+                model.UserId = int.Parse(userid?.Value);
 
                 var user = await db.Accounts.FirstOrDefaultAsync(c => c.Id == model.UserId);
                 if (user != null)
@@ -138,27 +137,18 @@ namespace ShoeStore.Controllers
                             new Claim(ClaimTypes.Name, result.Username),
                             new Claim(ClaimTypes.Email, result.Email)
                         };
-
                         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         var principal = new ClaimsPrincipal(identity);
 
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-                       
-
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);                     
                         if (role.Name.StartsWith("Adm"))
                         {
-                            return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/Admin/Index");
-
-                        }
-                        else if (role.Name.StartsWith("Emp"))
-                        {
-                            return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/Admin/Index");
+                            return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/admin/index");
                         }
                         else
                         {
-                            return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/Home/Index");
+                            return Redirect(!string.IsNullOrEmpty(ViewData["ReturnUrl"]?.ToString()) ? ViewData["ReturnUrl"].ToString() : "~/home/index");
                         }
-                        //return RedirectToAction("index", "homeadmin", new { area = "admin" });
                     }
                     else
                     {
@@ -181,13 +171,12 @@ namespace ShoeStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVM model)
         {
-
             var checkEmail = await db.Accounts.FirstOrDefaultAsync(c => c.Email == model.Email);
             var checkPhone = await db.Accounts.FirstOrDefaultAsync(c => c.PhoneNumber == model.PhoneNumber);
             if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.FullName) || string.IsNullOrEmpty(model.ConfirmPassword))
             {
 
-                ViewData["ErrorMessage"] = "Vui lòng nhập số tài khoản.";
+                ViewData["ErrorMessage"] = "Vui lòng nhập đủ thông tin.";
                 return View("Register", model);
 
             }
@@ -350,7 +339,7 @@ namespace ShoeStore.Controllers
                 items = items.Where(o => o.StatusOrder == status).ToList();
             }
             var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
-            var pageSize = 5;
+            var pageSize = 10;
             ViewBag.PageSize = pageSize;
             ViewBag.Page = page;
             items = items.OrderByDescending(x => x.CreateAt).ToList();

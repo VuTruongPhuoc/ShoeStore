@@ -48,7 +48,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _notyf.Error("Đã xảy ra lỗi khi thêm dữ liệu" + ex.Message);
+                    _notyf.Error("Đã xảy ra lỗi khi thêm dữ liệu " + ex.Message);
                     return View(role);
                 }
             }

@@ -53,42 +53,42 @@
                     @Html.AntiForgeryToken()
                     <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                         <div class="form-group">
-                            <label asp-for="Name" class="control-label">Tên voucher</label>
+                            <label asp-for="Name" class="control-label">Tên voucher *</label>
                             <input asp-for="Name" class="form-control"  placeholder="Nhập tên voucher"/>
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Value" class="control-label">Nhập %</label>
+                            <label asp-for="Value" class="control-label">Nhập % *</label>
                             <input asp-for="Value" type="number" class="form-control" placeholder="Nhập giá trị là số nguyên"/>
                             <span asp-validation-for="Value" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Code" class="control-label">Nhập mã</label>
+                            <label asp-for="Code" class="control-label">Nhập mã *</label>
                             <input asp-for="Code" class="form-control" placeholder="Nhập mã voucher"/>
                             <span asp-validation-for="Code" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="DiscountAmount" class="control-label">Giảm tối đa</label>
+                            <label asp-for="DiscountAmount" class="control-label">Giảm tối đa *</label>
                             <input type="text" class="form-control" asp-for="DiscountAmount" placeholder="Nhập giảm tối đa"/>
                             <span asp-validation-for="DiscountAmount" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Quantity" class="control-label">Số lượng</label>
+                            <label asp-for="Quantity" class="control-label">Số lượng *</label>
                             <input type="number" class="form-control" asp-for="Quantity" placeholder="Nhập số lượng" />
                             <span asp-validation-for="Quantity" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="StartDate" class="control-label">Ngày bắt đầu</label>
+                            <label asp-for="StartDate" class="control-label">Ngày bắt đầu *</label>
                             <input type="date" class="form-control" asp-for="StartDate" placeholder="Nhập ngày bắt đầu" />
                             <span asp-validation-for="StartDate" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="EndDate" class="control-label">Ngày kết thúc</label>
+                            <label asp-for="EndDate" class="control-label">Ngày kết thúc *</label>
                             <input type="date" class="form-control" asp-for="EndDate" placeholder="Nhập ngày kết thúc"  />
                             <span asp-validation-for="EndDate" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Status" class="control-label">Hiển thị</label>
+                            <label asp-for="Status" class="control-label">Hiển thị *</label>
                             @Html.CheckBoxFor(x => x.Status,new { @checked = "@checked" })
                         </div>
 

@@ -22,7 +22,7 @@ namespace ShoeStore.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class AccountController : Controller
     {
-        private readonly ShoeStoreContext db;
+        private readonly ShoeStoreContext db = new ShoeStoreContext();
         private readonly INotyfService _notyf;
         public AccountController(INotyfService notyf, ShoeStoreContext db)
         {
@@ -33,7 +33,7 @@ namespace ShoeStore.Areas.Admin.Controllers
         public IActionResult Index(string searchtext, int? page)
         {
             ViewBag.Role = db.Roles.ToList();
-            var pageSize = 5;
+            var pageSize = 10;
             if (page == null)
             {
                 page = 1;
@@ -55,7 +55,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             ViewBag.Role = db.Roles.ToList();
             return View();
         }
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Account model)
         {
@@ -102,12 +102,11 @@ namespace ShoeStore.Areas.Admin.Controllers
             var item = db.Accounts.Find(id);
             return View(item);
         }
-        [HttpPost, Authorize(Roles = "Admin,Employee")]
+        [HttpPost, Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Account model)
         {
             var item = await db.Accounts.FindAsync(model.Id);
-
             if (ModelState.IsValid && item is not null)
             {
                 try
@@ -116,6 +115,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                     item.RoleId = model.RoleId;
                     item.FullName = model.FullName;
                     item.Email = model.Email;
+                    item.Password = model.Password;
                     item.PhoneNumber = model.PhoneNumber;
                     item.UpdateAt = DateTime.Now;
                     await db.SaveChangesAsync();
@@ -135,14 +135,22 @@ namespace ShoeStore.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            var item = await db.Accounts.FindAsync(id);
-            if (item != null)
+            try
             {
-                db.Accounts.Remove(item);
-                await db.SaveChangesAsync();
-                return Json(new { success = true });
+				var item = await db.Accounts.FindAsync(id);
+				if (item != null)
+				{
+					db.Accounts.Remove(item);
+					await db.SaveChangesAsync();
+					return Json(new { success = true });
+				}
+				return Json(new { success = false , msg = "Đã xảy ra lỗi khi xóa dữ liệu" });
             }
-            return Json(new { success = false });
+            catch(Exception ex)
+            {
+				return Json(new { success = false , msg = "Đã xảy ra lỗi khi xóa dữ liệu " + ex.Message });
+			}
+          
         }
         public ActionResult Login(string returnUrl)
         {

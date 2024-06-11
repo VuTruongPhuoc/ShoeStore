@@ -58,17 +58,17 @@
                         @Html.HiddenFor(x => x.Id)
                         <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                             <div class="form-group">
-                                <label asp-for="Name" class="control-label">Tên nhà cung cấp</label>
+                                <label asp-for="Name" class="control-label">Tên nhà cung cấp *</label>
                                 <input asp-for="Name" class="form-control" value="@Model.Name" />
                                 <span asp-validation-for="Name" class="text-danger"></span>                               
                             </div>
                             <div class="form-group">
-                                <label asp-for="PhoneNumber" class="control-label">Số điện thoại</label>
+                                <label asp-for="PhoneNumber" class="control-label">Số điện thoại *</label>
                                 <input asp-for="PhoneNumber" class="form-control" value="@Model.PhoneNumber" />
                                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="Address" class="control-label">Địa chỉ</label>
+                                <label asp-for="Address" class="control-label">Địa chỉ *</label>
                                 <input asp-for="Address" class="form-control" value="@Model.Address" />
                                 <span asp-validation-for="Address" class="text-danger"></span>
                             </div>

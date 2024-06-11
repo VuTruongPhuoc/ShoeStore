@@ -52,27 +52,27 @@
                     @Html.AntiForgeryToken()
                     <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                         <div class="form-group">
-                            <label asp-for="Username" class="Username">Tên tài khoản</label>
+                            <label asp-for="Username" class="Username">Tên tài khoản *</label>
                             <input asp-for="Username" class="form-control" />
                             <span asp-validation-for="Username" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="FullName" class="FullName">Tên đầy đủ</label>
+                            <label asp-for="FullName" class="FullName">Tên đầy đủ *</label>
                             <input asp-for="FullName" class="form-control" />
                             <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Email" class="control-label">Email</label>
+                            <label asp-for="Email" class="control-label">Email *</label>
                             <input asp-for="Email" class="form-control" type="text" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="PhoneNumber" class="control-label">Số điện thoại</label>
+                            <label asp-for="PhoneNumber" class="control-label">Số điện thoại *</label>
                             <input asp-for="PhoneNumber" class="form-control" type="number"></input>
                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label for="Password" class="control-label">Mật khẩu</label>
+                            <label for="Password" class="control-label">Mật khẩu *</label>
                             <div class="input-group">
                                 <input asp-for="Password" class="form-control" id="txtPassword" type="password">
                                 <div class="input-group-append">
@@ -85,7 +85,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label asp-for="RoleId" class="control-label">Chọn quyền</label>
+                            <label asp-for="RoleId" class="control-label">Chọn quyền *</label>
                             <select asp-for="RoleId" class="selectpicker form-control" aria-label="size 3 select example" onchange="addToList()">
                                 @if (ViewBag.Role != null)
                                 {

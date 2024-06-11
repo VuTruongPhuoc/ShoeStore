@@ -11,6 +11,7 @@ public partial class Size
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
+    [Required(ErrorMessage = "Vui lòng nhập kích cỡ")]
     public string? Name { get; set; }
 
     public bool Status { get; set; }

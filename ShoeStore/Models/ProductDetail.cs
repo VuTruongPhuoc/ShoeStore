@@ -11,12 +11,13 @@ public partial class ProductDetail
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public int? ProductId { get; set; }
-    
-    [DisplayFormat(DataFormatString = "{0:#,###.00}", ApplyFormatInEditMode = true)]
+
+    [Required(ErrorMessage = "Vui lòng nhập giá")]
     public decimal Price { get; set; }
     public decimal? PriceSale { get; set; }
     public string? Name { get; set; }
     public string? Image { get; set; }
+    [Required(ErrorMessage = "Vui lòng nhập số lượng")]
     public int Quantity { get; set; }
     public int? SizeId { get; set; }
     public int? ColorId { get; set; }
@@ -28,6 +29,5 @@ public partial class ProductDetail
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
     public virtual ICollection<WishList> WishLists { get; set; } = new List<WishList>();
     public virtual Product? Product { get; set; }
-
     public virtual Size? Size { get; set; }
 }

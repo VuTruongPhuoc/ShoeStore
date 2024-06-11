@@ -10045,6 +10045,10 @@
       "PackagePath": "staticwebassets\\assets\\images\\icons8-twitter.svg"
     },
     {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\assets\\images\\loginlogout.jpg",
+      "PackagePath": "staticwebassets\\assets\\images\\loginlogout.jpg"
+    },
+    {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\assets\\images\\map_marker.png",
       "PackagePath": "staticwebassets\\assets\\images\\map_marker.png"
     },
@@ -10425,6 +10429,10 @@
       "PackagePath": "staticwebassets\\files\\images\\news\\djokovic.jpg"
     },
     {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\bongroliningLiren3_black.webp",
+      "PackagePath": "staticwebassets\\files\\images\\product\\bongroliningLiren3_black.webp"
+    },
+    {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\card.jpg",
       "PackagePath": "staticwebassets\\files\\images\\product\\card.jpg"
     },
@@ -10433,12 +10441,40 @@
       "PackagePath": "staticwebassets\\files\\images\\product\\giaybongda.jpg"
     },
     {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\giaybongdamizuno_den.webp",
+      "PackagePath": "staticwebassets\\files\\images\\product\\giaybongdamizuno_den.webp"
+    },
+    {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\giaybongro.jpg",
       "PackagePath": "staticwebassets\\files\\images\\product\\giaybongro.jpg"
     },
     {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\giaybongro_04_den.jpeg",
+      "PackagePath": "staticwebassets\\files\\images\\product\\giaybongro_04_den.jpeg"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\giaybongro_04_trang.jpeg",
+      "PackagePath": "staticwebassets\\files\\images\\product\\giaybongro_04_trang.jpeg"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\giaybongrodep.webp",
+      "PackagePath": "staticwebassets\\files\\images\\product\\giaybongrodep.webp"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\giaybongroliningliren3_black.webp",
+      "PackagePath": "staticwebassets\\files\\images\\product\\giaybongroliningliren3_black.webp"
+    },
+    {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\giaychaybo.jpg",
       "PackagePath": "staticwebassets\\files\\images\\product\\giaychaybo.jpg"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\giaychaybo_1.webp",
+      "PackagePath": "staticwebassets\\files\\images\\product\\giaychaybo_1.webp"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\giaychaybo_trang.webp",
+      "PackagePath": "staticwebassets\\files\\images\\product\\giaychaybo_trang.webp"
     },
     {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\lining-blue.jpeg",
@@ -10447,6 +10483,10 @@
     {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\lining-white.jpeg",
       "PackagePath": "staticwebassets\\files\\images\\product\\lining-white.jpeg"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\liningblue_1.webp",
+      "PackagePath": "staticwebassets\\files\\images\\product\\liningblue_1.webp"
     },
     {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\maugiay.jpg",
@@ -10463,6 +10503,18 @@
     {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\mizuno-trang.jpg",
       "PackagePath": "staticwebassets\\files\\images\\product\\mizuno-trang.jpg"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\mizunodo2.webp",
+      "PackagePath": "staticwebassets\\files\\images\\product\\mizunodo2.webp"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\mizunodo3.webp",
+      "PackagePath": "staticwebassets\\files\\images\\product\\mizunodo3.webp"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\mizunodo4.webp",
+      "PackagePath": "staticwebassets\\files\\images\\product\\mizunodo4.webp"
     },
     {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\rashford.jpg",

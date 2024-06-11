@@ -71,14 +71,7 @@
                                     <td>@(stt += 1)</td>
                                     <td><img src="@itemorder.ProductDetail.Image" width="150px" height="150px"/></td>
                                     <td class="text-nowrap text-heading" _msttexthash="4094675" _msthash="298">
-
-                                        @foreach (var pr in products)
-                                        {
-                                            if (pr.Id == prd.FirstOrDefault(p => p.Id == itemorder.ProductDetailId).ProductId)
-                                            {
-                                                @pr.Name; break;
-                                            }
-                                        }
+                                        @prd.FirstOrDefault(p => p.Id == itemorder.ProductDetailId).Name
                                     </td>
                                     <td class="text-nowrap text-heading" _msttexthash="4094675" _msthash="298">
                                         @foreach (var siz in size)
@@ -226,7 +219,11 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-             </div>
+                    <div class="form-group">
+                        <label>Ngày thanh toán</label>
+                        <p class="form-control">@(order.PaymentDate.HasValue ? order.PaymentDate.Value.ToString("dd/MM/yyyy hh:mm") : "")</p>
+                    </div>
+                </div>
           @*   <div class="row">
                 <div class="col-md-6 mb-md-0 mb-3">
                     <div>

@@ -18,7 +18,6 @@ namespace ShoeStore.Controllers
 	{
 		private readonly INotyfService _notyf;
 		ShoeStoreContext db = new ShoeStoreContext();
-
 		public ShopController(INotyfService notyf, ShoeStoreContext db)
 		{
 			_notyf = notyf;
@@ -67,16 +66,13 @@ namespace ShoeStore.Controllers
 					return BadRequest("Invalid filter data");
 				}
 				var filterresults = (from pd in db.ProductDetails
-							   join p in db.Products on pd.ProductId equals p.Id
-							   join c in db.Categories on p.CategoryId equals c.Id
-							   where p.Id == pd.ProductId && c.Id == p.CategoryId 
-							   select new { productdetail = pd, product = p, category = c }).ToList();
-
-				filterresults = filterresults.Where(p=>p.productdetail.Status).GroupBy(p => new { p.productdetail.ProductId, p.productdetail.ColorId }).Select(group=>group.First()).ToList();
-				//var filterresults = db.ProductDetails.ToList();
-
-				// Áp dụng bộ lọc
-				if (filter.Categories != null && filter.Categories.Count > 0 && !filter.Categories.Contains("all"))
+									 join p in db.Products on pd.ProductId equals p.Id
+									 join c in db.Categories on p.CategoryId equals c.Id
+									 where pd.Status == true && p.Status == true
+                                     select new { productdetail = pd, product = p, category = c }).ToList();
+                //var filterresults = db.ProductDetails.ToList();
+                // Áp dụng bộ lọc
+                if (filter.Categories != null && filter.Categories.Count > 0 && !filter.Categories.Contains("all"))
 				{
 
 					filterresults = filterresults.Where(p => filter.Categories.Contains(p.product.CategoryId.ToString())).ToList();
@@ -87,13 +83,11 @@ namespace ShoeStore.Controllers
 					filterresults = filterresults.Where(p => filter.Colors.Contains(p.productdetail.ColorId.ToString())).ToList();
 
 				}
-
 				if (filter.Sizes != null && filter.Sizes.Count > 0 && !filter.Sizes.Contains("all"))
 				{
 					filterresults = filterresults.Where(p => filter.Sizes.Contains(p.productdetail.SizeId.ToString())).ToList();
 
 				}
-
 				if (filter.PriceRanges != null && filter.PriceRanges.Count > 0 && !filter.PriceRanges.Contains("all"))
 				{
 					List<PriceRange> priceRanges = new List<PriceRange>();
@@ -122,8 +116,11 @@ namespace ShoeStore.Controllers
 					}
 
 				}
-
-				ViewBag.Productlists = filterresults;
+                filterresults = filterresults
+                     .GroupBy(p => new { p.productdetail.ProductId, p.productdetail.ColorId })
+                     .Select(group => group.First()) 
+                     .ToList();
+                ViewBag.Productlists = filterresults;
 				ViewBag.Product = db.Products.ToList();
 				ViewBag.Color = db.Colors.ToList();
                 ViewBag.wishlist = db.WishLists.ToList();
@@ -132,8 +129,7 @@ namespace ShoeStore.Controllers
                 return PartialView("_ReturnProducts", filterresults);
 			}
 			catch (Exception ex)
-			{
-				
+			{				
 				return StatusCode(500, new { error = "Internal Server Error", message = ex.Message });
 			}
 
@@ -145,13 +141,19 @@ namespace ShoeStore.Controllers
 			ViewBag.Category = db.Categories.ToList();
 			ViewBag.ProductImage = db.ProductImages.ToList();
 			ViewBag.Size = db.Sizes.OrderBy(x => x.Name).ToList();
+			ViewBag.ProductDetail = db.ProductDetails.ToList();
 			ViewBag.wishlist = db.WishLists.ToList();
 			var item = await db.ProductDetails.FindAsync(id);
 			ViewBag.productdetaillist = db.ProductDetails.Where(c => c.ProductId == item.ProductId).OrderBy(x=>x.SizeId);
 			ViewBag.productid = item.ProductId;
             var reviews = await db.Reviews.Where(r => r.ProductId == item.ProductId).ToListAsync();
 			ViewBag.count = reviews.Count;
-
+			var productitem = await db.Products.FindAsync(item.ProductId);
+			if(productitem != null)
+			{
+				productitem.ViewCount = productitem.ViewCount + 1;
+				await db.SaveChangesAsync();
+			}
 			var productdtandreview = new ProductDetailandReviewVM()
 			{
 				Id = item.Id,
@@ -166,11 +168,6 @@ namespace ShoeStore.Controllers
 				Status = item.Status,
 				Product = item.Product,
 				ProductDetailId = item.Id,
-				//Username = review.Username ?? "",
-				//Email = review.Email ?? "",
-				//Content = review.Content ?? "",
-				//ProductDetailId = review.ProductId ?? 0,
-				//Rate = review.Rate ?? 0,
 				Reviews = reviews,
 				
 			};
@@ -215,15 +212,14 @@ namespace ShoeStore.Controllers
 			}
 			return Json(new {success = false });
 		}
-
 		public async Task<IActionResult> GetNumberOfProductDetail(int id,int sizeid,int colorid)
 		{
 			var product = await db.ProductDetails.FindAsync(id);
 			var productid = db.Products.FirstOrDefault(p => p.Id == product.ProductId).Id;
-			var item = db.ProductDetails.FirstOrDefault(x => x.ProductId == productid && x.SizeId == sizeid && x.ColorId == colorid && x.Status) ;
+			var item = db.ProductDetails.FirstOrDefault(x => x.ProductId == productid && x.SizeId == sizeid && x.ColorId == colorid && x.Status);
 			if(item != null)
 			{
-				return Json(new { success = true, quantity = item.Quantity });
+				return Json(new { success = true, quantity = item.Quantity , productdetailid = item.Id});
 			}
 			return Json(new { success = false });
 		}

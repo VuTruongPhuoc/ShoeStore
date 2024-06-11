@@ -59,12 +59,12 @@
                         @Html.HiddenFor(x => x.CreateAt)
                         <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
                             <div class="form-group">
-                                <label asp-for="Title" class="control-label">Tiêu đề</label>
+                                <label asp-for="Title" class="control-label">Tiêu đề *</label>
                                 <input asp-for="Title" class="form-control" value="@Model.Title"/>
                                 <span asp-validation-for="Title" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="Image" class="control-label">Ảnh đại diện</label>
+                                <label asp-for="Image" class="control-label">Ảnh đại diện *</label>
                                 <input asp-for="Image" class="form-control" id="txtImage" value="@Model.Image" />
                                 <div>
                                     <img src="@Model.Image" id="ImageView" width="100" />
@@ -73,18 +73,18 @@
                                 <span asp-validation-for="Image" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="Description" class="control-label">Mô tả</label>
+                                <label asp-for="Description" class="control-label">Mô tả *</label>
                                 <textarea asp-for="Description" class="form-control">@Model.Description</textarea>
                                 <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="Detail" class="control-label">Chi tiết</label>
+                                <label asp-for="Detail" class="control-label">Chi tiết *</label>
                                 <textarea asp-for="Detail" class="form-control" id="txtDetail">@Model.Detail</textarea>
                                 <span asp-validation-for="Detail" class="text-danger"></span>
                             </div>
 
                             <div class="form-group">
-                                <label asp-for="Status" class="control-label">Hiển thị</label>
+                                <label asp-for="Status" class="control-label">Hiển thị *</label>
                                 @Html.CheckBoxFor(x=>x.Status)
                             </div>
 

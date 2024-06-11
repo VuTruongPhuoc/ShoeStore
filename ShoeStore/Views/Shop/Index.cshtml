@@ -74,10 +74,6 @@
 								<label for="price-all">Tất cả giá</label>
 							</li>
 							<li class="filter-list">
-								<input class="pixel-radio" type="checkbox" id="price-1" value="0-100000" name="price">
-								<label for="price-1">Dưới 100k</label>
-							</li>
-							<li class="filter-list">
 								<input class="pixel-radio" type="checkbox" id="price-2" value="100000-300000" name="price">
 								<label for="price-2">100k - 300k</label>
 							</li>
@@ -108,8 +104,8 @@
 						<h5>Kích cỡ</h5>
 					</div>
 					<form id="size-filter-form">
-						<ul class="checkboxes">
-							@if (ViewBag.Size != null && ViewBag.Size.Count > 0)
+						<ul>
+							@if (sizes != null && sizes.Count > 0)
 							{
 								<li class="filter-list">
 									<input class="pixel-radio" type="checkbox" id="size-all" value="all" name="size">

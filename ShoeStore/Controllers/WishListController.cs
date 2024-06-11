@@ -15,7 +15,6 @@ namespace ShoeStore.Controllers
         {
             this.db = db;
         }
-
         public async  Task<IActionResult> Index(int? page)
         {
             ViewBag.product = db.Products.ToList();

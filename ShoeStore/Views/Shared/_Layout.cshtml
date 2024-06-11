@@ -53,22 +53,22 @@
 										{
 											@* var userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id")); *@
 											var userid = ((System.Security.Claims.ClaimsIdentity)User.Identity).FindFirst("Id");
-											string Id_userValue = userid?.Value;
+											string UserIdValue = userid?.Value;
 											<a href="#">
 												Chào mừng: @User.Identity.Name
 												<i class="fa fa-angle-down"></i>
 											</a>
 											<ul class="account_selection">
-												<li><a asp-controller="account" asp-action="profile" asp-route-id="@Id_userValue"><i class="fa fa-user-circle" aria-hidden="true"></i>Thông tin</a></li>
-												<li><a asp-controller="account" asp-action="changepassword" asp-route-id="@Id_userValue"><i class="fa fa-user-plus" aria-hidden="true"></i>Đổi mật khẩu</a></li>
+												<li><a asp-controller="account" asp-action="profile" asp-route-id="@UserIdValue"><i class="fa fa-user-circle" aria-hidden="true"></i>Thông tin</a></li>
+												<li><a asp-controller="account" asp-action="changepassword" asp-route-id="@UserIdValue"><i class="fa fa-user-plus" aria-hidden="true"></i>Đổi mật khẩu</a></li>
 												@if (User.IsInRole("Customer"))
 												{
-													<li><a asp-controller="account" asp-action="orderhistory" asp-route-id="@Id_userValue"><i class="fa fa-history" aria-hidden="true"></i>Lịch sử đơn hàng</a></li>
+													<li><a asp-controller="account" asp-action="orderhistory" asp-route-id="@UserIdValue"><i class="fa fa-history" aria-hidden="true"></i>Lịch sử đơn hàng</a></li>
 													<li><a asp-controller="voucher" asp-action="yourvouchers"><i class="fa fa-vimeo" aria-hidden="true"></i>Voucher của bạn</a></li>
 												}
 												@if(User.IsInRole("Admin") || User.IsInRole("Employee"))
 												{
-													<li><a asp-controller="admin" asp-action="index" asp-route-id="@Id_userValue"><i class="fa fa-history" aria-hidden="true"></i>Trang quản trị</a></li>
+													<li><a asp-controller="admin" asp-action="index" asp-route-id="@UserIdValue"><i class="fa fa-history" aria-hidden="true"></i>Trang quản trị</a></li>
 												}
 												<li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-in" aria-hidden="true"></i> Đăng xuất</a></li>
 											</ul>
@@ -115,7 +115,7 @@
 									<li><a asp-controller="introduce" asp-action="index">Giới thiệu</a></li>
 									<li><a asp-controller="news" asp-action="index">Tin tức</a></li>
 									<li><a asp-controller="voucher" asp-action="index">Khuyến mãi</a></li>
-									@* <li><a asp-controller="contact" asp-action="index">Liên hệ</a></li> *@
+									<li><a asp-controller="contact" asp-action="index">Liên hệ</a></li>
 								</ul>
 								<ul class="navbar_user">
 									<li>
@@ -159,18 +159,22 @@
 						{
 							@* var userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id")); *@
 							var userid = ((System.Security.Claims.ClaimsIdentity)User.Identity).FindFirst("Id");
-							string Id_userValue = userid?.Value;
+							string UserIdValue = userid?.Value;
 							<a href="#">
 								Chào mừng: @User.Identity.Name
 								<i class="fa fa-angle-down"></i>
 							</a>
 							<ul class="menu_selection">
-								<li><a asp-controller="account" asp-action="profile" asp-route-id="@Id_userValue"><i class="fa fa-user-circle" aria-hidden="true"></i>Thông tin</a></li>
-								<li><a asp-controller="account" asp-action="changepassword" asp-route-id="@Id_userValue"><i class="fa fa-user-plus" aria-hidden="true"></i>Đổi mật khẩu</a></li>
+								<li><a asp-controller="account" asp-action="profile" asp-route-id="@UserIdValue"><i class="fa fa-user-circle" aria-hidden="true"></i>Thông tin</a></li>
+								<li><a asp-controller="account" asp-action="changepassword" asp-route-id="@UserIdValue"><i class="fa fa-user-plus" aria-hidden="true"></i>Đổi mật khẩu</a></li>
 								@if (User.IsInRole("Customer"))
 								{
-									<li><a asp-controller="account" asp-action="orderhistory" asp-route-id="@Id_userValue"><i class="fa fa-history" aria-hidden="true"></i>Lịch sử đơn hàng</a></li>
+									<li><a asp-controller="account" asp-action="orderhistory" asp-route-id="@UserIdValue"><i class="fa fa-history" aria-hidden="true"></i>Lịch sử đơn hàng</a></li>
 									<li><a asp-controller="voucher" asp-action="yourvouchers"><i class="fa fa-vimeo" aria-hidden="true"></i>Voucher của bạn</a></li>
+								}
+								@if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+								{
+									<li><a asp-controller="admin" asp-action="index" asp-route-id="@UserIdValue"><i class="fa fa-history" aria-hidden="true"></i>Trang quản trị</a></li>
 								}
 								<li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-in" aria-hidden="true"></i> Đăng xuất</a></li>
 							</ul>
@@ -181,7 +185,7 @@
 								Tài khoản của tôi
 								<i class="fa fa-angle-down"></i>
 							</a>
-							<ul class="account_selection">
+							<ul class="menu_selection">
 								<li><a href="~/account/login"><i class="fa fa-sign-in" aria-hidden="true"></i>Đăng nhập</a></li>
 								<li><a href="~/account/register"><i class="fa fa-user-plus" aria-hidden="true"></i>Đăng ký</a></li>
 							</ul>
@@ -247,7 +251,7 @@
 						<div class="benefit_item d-flex flex-row align-items-center">
 							<div class="benefit_icon"><i class="fa fa-truck" aria-hidden="true"></i></div>
 							<div class="benefit_content">
-								<h6>Miễn phí vận chuyển</h6>
+								<h6>Giao hàng nhanh chóng</h6>
 								<p>Bị thay đổi dưới một số hình thức</p>
 							</div>
 						</div>
@@ -266,7 +270,7 @@
 							<div class="benefit_icon"><i class="fa fa-undo" aria-hidden="true"></i></div>
 							<div class="benefit_content">
 								<h6>Hoàn trả trong vòng 45 ngày</h6>
-								<p>Làm cho nó trông dễ đọc</p>
+								<p>Thuận tiện mua hàng</p>
 							</div>
 						</div>
 					</div>
@@ -293,14 +297,14 @@
 					<div class="col-lg-6">
 						<div class="newsletter_text d-flex flex-column justify-content-center align-items-lg-start align-items-md-center text-center">
 							<h4>Bản tin</h4>
-							<p>Đăng ký bản tin của chúng tôi để biết thêm thông tin mới nhất về cửa hàng</p>
+							<p>Xem tin tức mới nhất tại đây.</p>
 						</div>
 					</div>
 					<div class="col-lg-6">
 						<form action="post">
 							<div class="newsletter_form d-flex flex-md-row flex-column flex-xs-column align-items-center justify-content-lg-end justify-content-center">
-								<input id="newsletter_email" type="email" placeholder="email của bạn" required="required" data-error="Valid email is required.">
-								<button id="newsletter_submit" type="submit" class="newsletter_submit_btn trans_300" value="Submit">Đăng ký</button>
+								@* <input id="newsletter_email" type="email" placeholder="email của bạn" required="required" data-error="Valid email is required."> *@
+								<button id="newsletter_submit" type="submit" class="newsletter_submit_btn trans_300" value="Submit" asp-action="index" asp-controller="news">Tin tức</button>
 							</div>
 						</form>
 					</div>
@@ -322,11 +326,11 @@
 	@* <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCIwF204lFZg1y4kPSIhKaHEXMLYxxuMhA"></script> *@
     <script src="~/assets/js/contact_custom.js"></script>  
 	<script src="~/js/jsShopping.js"></script>
-	<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+	@* <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
 	<df-messenger intent="WELCOME"
 				  chat-title="PShop_AI"
 				  agent-id="2f08cd4b-b2e7-499d-85d0-c3162b2b2757"
-				  language-code="en"></df-messenger>
+				  language-code="en"></df-messenger> *@
 	<script>
 		const myModal = document.getElementById('myModal')
 		const searchModal = document.getElementById('searchModal')
