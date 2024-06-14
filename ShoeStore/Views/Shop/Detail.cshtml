@@ -1,5 +1,6 @@
 ﻿@using System.Net
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Globalization;
 @model ShoeStore.ViewModels.ProductDetailandReviewVM 
 @{
 	ViewData["Title"] = "Chi tiết sản phẩm";
@@ -149,19 +150,17 @@
 							</div>
 								<span id="numberofproducts" style="font-size:16px"></span>
 							@* <div class="free_delivery d-flex flex-row align-items-center justify-content-center">
-							 	<span class="ti-truck"></span><span>free delivery</span> 
-									
+							 	<span class="ti-truck"></span><span>free delivery</span> 									
 							</div> *@
-
 								@if (Model.PriceSale > 0)
 								{
-									<div class="original_price">@ShoeStore.Common.Common.FormatNumber(Model.Price, 0) đ</div>
-									<div class="product_price">@ShoeStore.Common.Common.FormatNumber(Model.PriceSale, 0) đ</div>
+									<div class="original_price">@Model.Price?.ToString("C0", new CultureInfo("vi-VN"))</div>
+									<div class="product_price">@Model.PriceSale?.ToString("C0", new CultureInfo("vi-VN"))</div>
 								}
 								else
 								{
-									<div class="original_price">@ShoeStore.Common.Common.FormatNumber(Model.Price, 0) đ</div>
-									<div class="product_price">@ShoeStore.Common.Common.FormatNumber(Model.Price, 0) đ</div>
+									<div class="original_price">@Model.Price?.ToString("C0", new CultureInfo("vi-VN"))</div>
+									<div class="product_price">@Model.Price?.ToString("C0", new CultureInfo("vi-VN"))</div>
 								}
 								int totaRating = 0;
 								foreach (var rev in Model.Reviews)
@@ -247,12 +246,14 @@
 
 				<div id="tab_2" class="tab_container">
 					<div class="row">
-						<div class="col additional_info_col">
+							<div class="col additional_info_col" style="text-align:center">
 							<div class="tab_title additional_info_title">
-								<h4>Additional Information</h4>
+								<h4>Hướng dẫn chọn size giày</h4>
 							</div>
-							<p>COLOR:<span>Gold, Red</span></p>
-							<p>SIZE:<span>L,M,XL</span></p>
+							<div>
+									<img src="https://image.hsv-tech.io/reebok/common/17d9e538-2122-4440-a178-fe659c417188.webp" />
+							</div>
+						
 						</div>
 					</div>
 				</div>
@@ -408,6 +409,16 @@
 							$('.btnAddToCart').removeClass('disabled');
 							$('.btnAddToCart').attr("data-id", response.productdetailid);
 							$('.add_to_cart_button1').removeClass('disabled-button');
+							$('.original_price').text(response.price.toLocaleString('vi-VN', {
+								style: 'currency',
+								currency: 'VND'
+							}));
+
+							$('.product_price').text(response.pricesale.toLocaleString('vi-VN', {
+								style: 'currency',
+								currency: 'VND'
+							}));
+
 						} else {
 							$('#numberofproducts').text('Sản phẩm hiện đã hết hàng');
 							$('.btnAddToCart').prop('disabled', true);

@@ -66,7 +66,7 @@ namespace ShoeStore.Areas.Admin.Controllers
 		{
 			var items = search(searchtext).OrderBy(p => p.Name).ThenBy(p => p.SizeId).ToList(); ; // Gọi phương thức search đúng cách và chuyển kết quả thành một danh sách
 			List<Inventory_Excel> inventoryexcel = new List<Inventory_Excel>();
-
+            var stt = 1;
 			foreach (var item in items)
 			{
 				var product = db.Products.FirstOrDefault(c => c.Id == item.ProductId);
@@ -74,8 +74,9 @@ namespace ShoeStore.Areas.Admin.Controllers
 				var supplier = db.Suppliers.FirstOrDefault(s => s.Id == product.SupplierId);
 				var size = db.Sizes.FirstOrDefault(c => c.Id == item.SizeId);
 				var color = db.Colors.FirstOrDefault(c => c.Id == item.ColorId);
-				Inventory_Excel excelitem = new Inventory_Excel
-				{
+                Inventory_Excel excelitem = new Inventory_Excel
+                {
+                    STT = stt++,
 					Quantity = item.Quantity,
 					SizeName = size.Name,
 					ColorName = color.Name,
@@ -105,7 +106,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                 items = items.Where(o => o.PaymentDate.HasValue && o.PaymentDate.Value.Year.ToString() == currentyear).ToList();
             }
             List<RevenueListVM_Excel> revenuelistexcel = new List<RevenueListVM_Excel>();
-
+            var stt = 1;
             foreach (var item in items)
             {
                 var voucher = db.Vouchers.FirstOrDefault(v => v.Id == item.VoucherId);
@@ -116,6 +117,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                 }
                 RevenueListVM_Excel excelitem = new RevenueListVM_Excel()
                 {
+                    STT = stt++,
                     Code = item.Code,
                     VoucherName = vouchername,
                     ShipFee = item.ShipFee,

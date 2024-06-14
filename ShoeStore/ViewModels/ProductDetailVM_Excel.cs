@@ -4,7 +4,8 @@ namespace ShoeStore.ViewModels
 {
 	public class ProductDetailVM_Excel
 	{
-		public int ProductDetailId { get; set; }
+        public int STT { get; set; }
+        public int ProductDetailId { get; set; }
 		public string? ProductName { get; set; }
 		public decimal Price { get; set; }
 		public decimal? PriceSale { get; set; }

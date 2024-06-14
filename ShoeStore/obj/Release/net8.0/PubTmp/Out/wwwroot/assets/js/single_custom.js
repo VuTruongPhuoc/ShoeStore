@@ -179,26 +179,64 @@ jQuery(document).ready(function($)
 
 	*/
 
-	function initThumbnail()
-	{
-		if($('.single_product_thumbnails ul li').length)
-		{
-			var thumbs = $('.single_product_thumbnails ul li');
-			var singleImage = $('.single_product_image_background');
+	//function initThumbnail()
+	//{
+	//	if($('.single_product_thumbnails ul li').length)
+	//	{
+	//		var thumbs = $('.single_product_thumbnails ul li');
+	//		var singleImage = $('.single_product_image_background');
 
-			thumbs.each(function()
-			{
-				var item = $(this);
-				item.on('click', function()
-				{
-					thumbs.removeClass('active');
-					item.addClass('active');
-					var img = item.find('img').data('image');
-					singleImage.css('background-image', 'url(' + img + ')');
-				});
-			});
-		}	
+	//		thumbs.each(function()
+	//		{
+	//			var item = $(this);
+	//			item.on('click', function()
+	//			{
+	//				thumbs.removeClass('active');
+	//				item.addClass('active');
+	//				var img = item.find('img').data('image');
+	//				singleImage.css('background-image', 'url(' + img + ')');
+	//			});
+	//		});
+	//	}	
+	//}
+	function initThumbnail() {
+		var thumbs = $('.single_product_thumbnails ul li');
+		var singleImage = $('.single_product_image_background');
+
+		thumbs.on('click', function () {
+			thumbs.removeClass('active');
+			$(this).addClass('active');
+			var img = $(this).find('img').data('image');
+			singleImage.css('background-image', 'url(' + img + ')');
+		});
+
+		toggleArrows();
 	}
+
+	function toggleArrows() {
+		var thumbnailsList = $('.single_product_thumbnails ul');
+		var thumbnailsContainer = $('.single_product_thumbnails');
+
+		thumbnailsList.scroll(function () {
+			var showPrevArrow = thumbnailsList.scrollLeft() > 0;
+			var showNextArrow = thumbnailsList.scrollLeft() < thumbnailsList.prop('scrollWidth') - thumbnailsList.width();
+
+			if (showPrevArrow || showNextArrow) {
+				thumbnailsContainer.addClass('show-arrows');
+			} else {
+				thumbnailsContainer.removeClass('show-arrows');
+			}
+		});
+	}
+
+	$(document).ready(function () {
+		initThumbnail();
+	});
+
+
+	$(document).ready(function () {
+		initThumbnail();
+	});
 
 	/* 
 

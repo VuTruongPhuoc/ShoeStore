@@ -269,7 +269,7 @@ namespace ShoeStore.Areas.Admin.Controllers
 		{
 			var items = search(searchtext).ToList(); // Gọi phương thức search đúng cách và chuyển kết quả thành một danh sách
 			List<ProductDetailVM_Excel> producdetailtexcel = new List<ProductDetailVM_Excel>();
-
+            var stt = 1;
 			foreach (var item in items)
 			{
 				var product = db.Products.FirstOrDefault(c => c.Id == item.ProductId);
@@ -277,6 +277,7 @@ namespace ShoeStore.Areas.Admin.Controllers
 				var color = db.Colors.FirstOrDefault(c => c.Id == item.ColorId);
                 ProductDetailVM_Excel excelitem = new ProductDetailVM_Excel
                 {
+                    STT = stt++,
                     ProductDetailId = item.Id,
                     ProductName = product.Name,
 					Quantity = item.Quantity,

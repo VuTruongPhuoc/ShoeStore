@@ -393,7 +393,11 @@
                             } else if(selectedChartType === 'monthly'){
                                 var selectedMonth = $('#monthDropdown').val();
                                 var selectedYear = $('#yearDropdown').val();
+                               
                                 currentChart = "monthly";
+                                if(selectedMonth === "0"){
+                                    currentChart = "yearly";
+                                }
                                 console.log(currentChart);
                                 DrawChartForMonthOfTheYear(selectedMonth, selectedYear);
                             } else if (selectedChartType === 'weekly') {
@@ -760,6 +764,8 @@
                     });
                     function exportToExcel() {
                         if (confirm("Tải về file Excel?")) {
+                            currentChart = document.getElementById("chartTypeDropdown").value
+
                             var url = "https://localhost:7162/api/Chart/ExportDataToExcel/" + currentChart;
                             var selectedmonth = document.getElementById("monthDropdown").value;
                             var selectedyear = document.getElementById("yearDropdown").value;
@@ -783,11 +789,10 @@
                                     return;
                                 }
                             } else if (currentChart === "monthly"){
-                                url += `?month=${encodeURIComponent(selectedmonth)}&currentyear=${encodeURIComponent(selectedyear)}`;
-
+                                url += `?currentmonth=${encodeURIComponent(selectedmonth)}&currentyear=${encodeURIComponent(selectedyear)}`;
 
                             }
-                            else if (currentChart === "yearly") {
+                            else if (currentChart === "yearly" ) {
                                 url += `?currentyear=${encodeURIComponent(selectedyear)}`;
                             }
 

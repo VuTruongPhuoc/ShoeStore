@@ -2,7 +2,8 @@
 {
 	public class Inventory_Excel
 	{
-		public string? ProductDetailName { get; set; }
+        public int STT { get; set; }
+        public string? ProductDetailName { get; set; }
 		
 		public string? SizeName { get; set; }
 		public string? ColorName { get; set; }

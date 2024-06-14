@@ -2,19 +2,13 @@
 {
 	public class OrderVM_Excel
     {
-		public int Id { get; set; }
-		
+		public int STT { get; set; }
 		public string CustomerName { get; set; }
 		public string Phone { get; set; }
 		public string Email { get; set; }
-
 		public string? Code { get; set; }
-
-		
 		public string? VoucherName { get; set; }
-
 		public decimal? ShipFee { get; set; }
-
 		public decimal? TotalAmount { get; set; }
 		public string? StatusOrder { get; set; }
 		public string? Address { get; set; }

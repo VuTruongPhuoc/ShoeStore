@@ -1,9 +1,39 @@
 ﻿@model ShoeStore.ViewModels.LoginVM
 @{
     ViewData["Title"] = "Đăng nhập";
-    Layout = null;
+    Layout = "~/Views/Shared/_LayoutLoginRegister.cshtml";
 }
-<!DOCTYPE html>
+
+<div class="containerlogin_register">
+    <h1>Đăng nhập</h1>
+    <div>
+        @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+        {
+            <div class="alert alert-warning alert-dismissible" role="alert" style="font-size: 14px">
+                @ViewData["ErrorMessage"]
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(ViewData["Sucsess"] as string))
+        {
+            <div class="alert alert-success" role="alert" style="font-size: 14px">
+                @ViewData["Sucsess"]
+            </div>
+        }
+    </div>
+
+    <form asp-action="login" asp-controller="account" method="post">
+        <input type="hidden" name="ReturnUrl" value="@ViewData["ReturnUrl"]" />
+        <input asp-for="@Model.Email" type="text" id="email" name="email" placeholder="Nhập địa chỉ email"> <br>
+        <input asp-for="@Model.Password" type="Password" id="Password" placeholder="Nhập mật khẩu của bạn"> <br>
+        <a href="~/account/forgotpassword" class="link forgot">Quên mật khẩu?</a> <br>
+        <input type="submit" value="Đăng nhập" class="btn-submit"> <br>
+        <label for="">Bạn chưa có tài khoản?</label><a href="~/account/register" class="link ">Đăng ký</a> <br>
+        <span class="line left"></span><span class="center">or</span><span class="line right"></span> <br>
+        @*  <a href="~/facebook/login" class="btn face">Đăng nhập bằng Facebook</a> <br> *@
+        <a href="~/google/login" class="btn google">Đăng nhập bằng Google</a>
+    </form>
+</div>
+@* <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -40,12 +70,12 @@
             <input type="submit" value="Đăng nhập" class="btn-submit"> <br>
             <label for="">Bạn chưa có tài khoản?</label><a href="~/account/register" class="link ">Đăng ký</a> <br>
             <span class="line left"></span><span class="center">or</span><span class="line right"></span> <br>
-           @*  <a href="~/facebook/login" class="btn face">Đăng nhập bằng Facebook</a> <br> *@
+           @* <a href="~/facebook/login" class="btn face">Đăng nhập bằng Facebook</a> <br> 
             <a href="~/google/login" class="btn google">Đăng nhập bằng Google</a>
         </form>
     </div>
     <script src="~/assets/styles/bootstrap4/bootstrap.min.js"></script>
     @await Component.InvokeAsync("Notyf")
 </body>
-</html>
+</html> *@
 

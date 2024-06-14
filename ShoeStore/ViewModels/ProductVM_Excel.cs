@@ -4,6 +4,7 @@ namespace ShoeStore.ViewModels
 {
 	public class ProductVM_Excel
 	{
+		public int STT {  get; set; }
 		public int Id { get; set; }
 
 		[Display(Name= "Tên sản phẩm")]

@@ -1,6 +1,7 @@
 ﻿@using X.PagedList;
 @using X.PagedList.Mvc.Core;
 @using X.PagedList.Web.Common;
+@using System.Globalization;
 @model X.PagedList.PagedList<ShoeStore.Models.ProductDetail>
 @{
     ViewData["Title"] = "Danh sách chi tiết sản phẩm";
@@ -86,7 +87,7 @@
                                 <th>Hình ảnh</th>
                                 <th>Tên sản phẩm</th>
                                 <th>Số lượng</th>
-                                <th>Giá</th>
+                                <th>Giá sản phẩm</th>
                                 <th>Giá khuyến mãi</th>
                                 <th>Kích cỡ</th>
                                 <th>Màu sắc</th>
@@ -108,10 +109,10 @@
                                         <td><img class="imgproduct" src="@item.Image" data-id="@item.Id" width="60" /></td>
                                         <td>@item.Name</td>
                                         <td>@item.Quantity</td>
-                                        <td>@item.Price.ToString("N2")</td>
+                                        <td>@item.Price.ToString("C0", new CultureInfo("vi-VN"))</td>
                                         @if (item.PriceSale.HasValue)
                                         {
-                                            <td>@item.PriceSale.Value.ToString("N2")</td>
+                                            <td>@item.PriceSale.Value.ToString("C0", new CultureInfo("vi-VN"))</td>
                                         }
                                         else
                                         {

@@ -128,12 +128,13 @@ namespace ShoeStore.Controllers
 					if(voucher != null)
 					{
                         order.VoucherId = voucher.Id;
+                        voucher.Quantity = voucher.Quantity - 1;
+                        await db.SaveChangesAsync();
                     }
-					var voucherforacc = db.VoucherForAccs.FirstOrDefault(x => x.Code == ordervm.VoucherCode);
+					var voucherforacc = db.VoucherForAccs.FirstOrDefault(x => x.Code == ordervm.VoucherCode && x.IdAccount == userid);
 					if (voucherforacc != null)
 					{
 						voucherforacc.Status = false;
-						db.Update(voucherforacc);
 						await db.SaveChangesAsync();
 					}
 					Random rd = new Random();
@@ -230,7 +231,7 @@ namespace ShoeStore.Controllers
             //string returnUrl = $"https://phshop.azurewebsites.net/shoppingcart/paymentconfirm?id={sendemailord.OrderID}&email={sendemailord.Email}&voucher={sendemailord.Voucher}&discountamount={sendemailord.GiamGia}";
 
             string returnUrl = $"https://localhost:{7162}/shoppingcart/paymentconfirm?id={sendemailord.OrderID}&email={sendemailord.Email}&voucher={sendemailord.Voucher}&discountamount={sendemailord.GiamGia}";
-			string hostName = System.Net.Dns.GetHostName();
+            string hostName = System.Net.Dns.GetHostName();
             string clientIPAddress = System.Net.Dns.GetHostAddresses(hostName).GetValue(0).ToString();
             PayLib pay = new PayLib();
 
@@ -288,67 +289,66 @@ namespace ShoeStore.Controllers
                             var orderdt = db.OrderDetails.Where(c => c.OrderId == id).ToList();
                             foreach (var item in orderdt)
                             {
-                                var prddt = db.ProductDetails.FirstOrDefault(c => c.Id == item.ProductDetailId);
-                                var sl = prddt.Quantity = prddt.Quantity - item.Quantity;
+                                var productdt = db.ProductDetails.FirstOrDefault(c => c.Id == item.ProductDetailId);
+                                var quantity = productdt.Quantity = productdt.Quantity - item.Quantity;
 
-                                if (sl < 0)
+                                if (quantity < 0)
                                 {
                                     _notyf.Warning("Mặt hàng này trong kho không đủ");
                                     return RedirectToAction("index");
                                 }
                                 else
                                 {
-									var thanhtien = decimal.Zero;
-                                    var strSanPham = "";
-									var cart = Cart;
-                                    foreach (var sp in cart.ToList())
-                                    {
-                                        strSanPham += "<tr>";
-                                        strSanPham += "<td>" + sp.ProductName + "</td>";
-                                        strSanPham += "<td>" + sp.Size + "</td>";
-                                        strSanPham += "<td>" + sp.Quantity + "</td>";
-                                        strSanPham += "<td>" + ShoeStore.Common.Common.FormatNumber(sp.TotalPrice, 0) + "</td>";
-                                        strSanPham += "</tr>";
-                                        thanhtien += sp.Price * sp.Quantity;
-                                    }
-                                    prddt.Quantity = sl;
-                                    await db.SaveChangesAsync();
-                                    order.Code = orderId.ToString();
-                                    order.StatusOrder = 2;
-                                    order.TypePayment = "Online - Đã thanh toán";
-                                    order.CreateAt = DateTime.Now;
-                                    order.UpdateAt = DateTime.Now;
-                                    await db.SaveChangesAsync();
-                                    
-                                    var sendemailord = new SendEmailOrderVM()
-                                    {
-                                        OrderID = order.Id,
-                                        OrderCode = order.Code,
-                                        strSanPham = strSanPham,
-                                        TenKhachHang = order.CustomerName,
-                                        Phone = order.Phone,
-                                        Email = email,
-                                        DiaChiNhanHang = order.Address,
-                                        ThanhTien = thanhtien,
-                                        GiamGia = decimal.Parse(discountamount),
-                                        Voucher = voucher,
-                                        PhiShip = order.ShipFee ?? 0,
-                                        TongTien = order.TotalAmount ?? 0,
-                                        HinhThucThanhToan = "Thanh toán toán online"
-                                    };
-                                    SendEmailOrder(sendemailord);
-                                    HttpContext.Session.Set<List<ShoppingCartItem>>(MySetting.CART_KEY, new List<ShoppingCartItem>());
-                                    _notyf.Success("Đặt hàng thành công");
-                                    ViewData["Success"] = "Thanh toán thành công hóa đơn " + orderId + " | Mã giao dịch: " + vnpayTranId;
-                                    if (!User.Identity.IsAuthenticated)
-                                    {
-                                        return RedirectToAction("Index");
-                                    }
-                                    var userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
-                                    return RedirectToAction("orderhistory", "account", new { id = userid });
+                                    productdt.Quantity = quantity; 
                                 }
+                               
                             }
-                            return RedirectToAction("checkout", "shoppingcart");
+                            var thanhtien = decimal.Zero;
+                            var strSanPham = "";
+                            var cart = Cart;
+                            foreach (var sp in cart.ToList())
+                            {
+                                strSanPham += "<tr>";
+                                strSanPham += "<td>" + sp.ProductName + "</td>";
+                                strSanPham += "<td>" + sp.Size + "</td>";
+                                strSanPham += "<td>" + sp.Quantity + "</td>";
+                                strSanPham += "<td>" + ShoeStore.Common.Common.FormatNumber(sp.TotalPrice, 0) + "</td>";
+                                strSanPham += "</tr>";
+                                thanhtien += sp.Price * sp.Quantity;
+                            }
+                            order.Code = orderId.ToString();
+                            order.StatusOrder = 2;
+                            order.TypePayment = "Online - Đã thanh toán";
+                            order.CreateAt = DateTime.Now;
+                            order.UpdateAt = DateTime.Now;
+                            await db.SaveChangesAsync();
+
+                            var sendemailord = new SendEmailOrderVM()
+                            {
+                                OrderID = order.Id,
+                                OrderCode = order.Code,
+                                strSanPham = strSanPham,
+                                TenKhachHang = order.CustomerName,
+                                Phone = order.Phone,
+                                Email = email,
+                                DiaChiNhanHang = order.Address,
+                                ThanhTien = thanhtien,
+                                GiamGia = decimal.Parse(discountamount),
+                                Voucher = voucher,
+                                PhiShip = order.ShipFee ?? 0,
+                                TongTien = order.TotalAmount ?? 0,
+                                HinhThucThanhToan = "Thanh toán online"
+                            };
+                            SendEmailOrder(sendemailord);
+                            HttpContext.Session.Set<List<ShoppingCartItem>>(MySetting.CART_KEY, new List<ShoppingCartItem>());
+                            _notyf.Success("Đặt hàng thành công");
+                            ViewData["Success"] = "Thanh toán thành công hóa đơn " + orderId + " | Mã giao dịch: " + vnpayTranId;
+                            if (!User.Identity.IsAuthenticated)
+                            {
+                                return RedirectToAction("Index");
+                            }
+                            var userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
+                            return RedirectToAction("orderhistory", "account", new { id = userid });
                         }
                     }
                     else
@@ -631,13 +631,13 @@ namespace ShoeStore.Controllers
             var voucher = db.Vouchers
                 .FirstOrDefault(v => v.Code == selectedVoucher && v.Status && v.EndDate > DateTime.Now);
 			var userid = int.Parse(User.Claims.FirstOrDefault(u => u.Type == "Id").Value);
-			//var userid = int.Parse(((System.Security.Claims.ClaimsIdentity)User.Identity).FindFirst("Id").Value);
+
             var cart = Cart.ToList();
             if (voucher != null)
             {
 				var voucherforaccstatus = db.VoucherForAccs
-                    .FirstOrDefault(v => v.Code == voucher.Code && !v.Status && v.IdAccount == userid);
-				if (voucherforaccstatus != null)
+                    .FirstOrDefault(v => v.Code == voucher.Code && v.Status && v.IdAccount == userid && v.EndDate > DateTime.Now);
+				if (voucherforaccstatus == null)
 				{
 					return Json(new { success = false, message = "Voucher không tồn tại hoặc đã được sử dụng" });
 				}

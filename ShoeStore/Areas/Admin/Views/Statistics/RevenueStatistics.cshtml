@@ -156,6 +156,13 @@
            
         });
         function validateAndFetch() {
+            var options = {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
                 var month = document.getElementById("monthDropdown").value;
                 var year = document.getElementById("yearDropdown").value;
                 var apiUrl = "";
@@ -166,6 +173,7 @@
                     apiUrl = "https://localhost:7162/api/Chart/ListsStatistics/" + month + "/" + year;
                     $('#chartTypeDropdown').val('monthly')
                 }
+
                 $.ajax({
                     url: apiUrl,
                     method: "GET",
@@ -175,8 +183,8 @@
                         var totalEarnings = parseFloat("0");
                         $.each(data, function (index, order) {
                             var orderCode = order.orderCode;
-                            var orderCreateAt = new Date(order.orderCreateAt).toLocaleString('vi-VN');
-                            var orderPaymentDate = new Date(order.orderPaymentDate).toLocaleString('vi-VN');
+                            var orderCreateAt = new Date(order.orderCreateAt).toLocaleString('vi-VN', options);
+                            var orderPaymentDate = new Date(order.orderPaymentDate).toLocaleString('vi-VN', options);
                             var orderShipFee = parseFloat(order.orderShipFee).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                             var orderVoucherName = order.orderVoucherName;
                             var orderTypePayment = order.orderTypePayment;

@@ -16,7 +16,7 @@ namespace ShoeStore.ViewModels
         public string? FullName { get; set; }
         [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
         [MaxLength(24, ErrorMessage = "Tối đa 24 ký tự")]
-        [RegularExpression(@"0[9875]\d{8}", ErrorMessage = "Chưa đúng định dạng số điện thoại")]
+        [RegularExpression(@"0[987654321]\d{8}", ErrorMessage = "Chưa đúng định dạng số điện thoại")]
         public string? PhoneNumber { get; set; }
         public string? SpecificAddress { get; set; }
         public string? Ward { get; set; }

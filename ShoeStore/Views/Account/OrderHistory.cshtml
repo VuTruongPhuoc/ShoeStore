@@ -201,8 +201,6 @@
                                                     </a>
                                                 </div>
 
-
-
                                             </td>
                                         }
                                         else if (item.StatusOrder == 2)
@@ -264,8 +262,7 @@
                                             </td>
                                             <td>
                                                 <div class="btn btn-sm btn-info">
-                                                    <a href=" @Url.Action("orderhistorydetail", new { orderid = item.Id })">
-
+                                                    <a href="@Url.Action("orderhistorydetail", new { orderid = item.Id }) " style="text-decoration: none; color: white;>
                                                         <span>Xem đơn hàng</span>
                                                     </a>
                                                 </div>

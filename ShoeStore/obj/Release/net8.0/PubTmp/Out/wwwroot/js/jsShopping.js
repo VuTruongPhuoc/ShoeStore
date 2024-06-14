@@ -7,7 +7,7 @@ $(document).ready(function () {
     });
     $('body').on('click', '.btnAddToCart', function (e) {
         e.preventDefault();
-        var id = $(this).data('id');
+        var id = $('.btnAddToCart').attr('data-id');
         var colorid = $(this).data('colorid')
         var quantity = 1;
         var size = sizea;

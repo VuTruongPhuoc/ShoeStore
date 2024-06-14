@@ -84,33 +84,28 @@ namespace ShoeStore.Areas.Admin.Controllers
 		}
         public async Task<IActionResult> Confirm(int id)
         {
-            var x = await db.Orders.FindAsync(id);
+            var order = await db.Orders.FindAsync(id);
 
             var orderdt = db.OrderDetails.Where(c => c.OrderId == id).ToList();
             foreach (var item in orderdt)
             {
-                var prdct = db.ProductDetails.FirstOrDefault(c => c.Id == item.ProductDetailId);
-                var sl = prdct.Quantity = prdct.Quantity - item.Quantity;
+                var productdt = db.ProductDetails.FirstOrDefault(c => c.Id == item.ProductDetailId);
+                var quantity = productdt.Quantity = productdt.Quantity - item.Quantity;
 
-                if (sl < 0)
+                if (quantity < 0)
                 {
                     _notyf.Warning("Mặt hàng này trong kho không đủ");
                     return RedirectToAction("index");
                 }
                 else
-                {
-                   
-                    prdct.Quantity = sl;
-                    db.SaveChanges();
-                    x.StatusOrder = 2;
-                    x.UpdateAt = DateTime.Now;
-                    _notyf.Success("Đã xác nhận đơn hàng!");
-                    db.SaveChanges();
-                    return RedirectToAction("index");
-
+                {         
+                    productdt.Quantity = quantity;             
                 }
             }
-
+            order.StatusOrder = 2;
+            order.UpdateAt = DateTime.Now;
+            await db.SaveChangesAsync();
+            _notyf.Success("Đã xác nhận đơn hàng!");
             return RedirectToAction("index");
         }
         public async Task<IActionResult> Delivery(int id)
@@ -124,17 +119,17 @@ namespace ShoeStore.Areas.Admin.Controllers
         }
         public async Task<IActionResult> SuccessfulDelivery(int id)
         {
-            var x = await db.Orders.FindAsync(id);
-            x.StatusOrder = 4;
-            x.UpdateAt = DateTime.Now;
-            x.PaymentDate = DateTime.Now;
-            if(x.TypePayment.ToLower().Trim() == "Online - Chưa thanh toán".ToLower().Trim() || x.TypePayment.ToLower().Trim() == "Online - Đã thanh toán".ToLower().Trim())
+            var order = await db.Orders.FindAsync(id);
+            order.StatusOrder = 4;
+            order.UpdateAt = DateTime.Now;
+            order.PaymentDate = DateTime.Now;
+            if(order.TypePayment.ToLower().Trim() == "Online - Chưa thanh toán".ToLower().Trim() || order.TypePayment.ToLower().Trim() == "Online - Đã thanh toán".ToLower().Trim())
             {
-                x.TypePayment = "Online - Đã thanh toán";
+                order.TypePayment = "Online - Đã thanh toán";
             }
             else
             {
-                x.TypePayment = "shipCod - Đã thanh toán";
+                order.TypePayment = "shipCod - Đã thanh toán";
             }            
             await db.SaveChangesAsync();
             _notyf.Success("Đã giao hàng thành công");
@@ -142,19 +137,19 @@ namespace ShoeStore.Areas.Admin.Controllers
         }
         public async Task<IActionResult> CancelOrder(int id)
         {
-            var x = await db.Orders.FindAsync(id);
-            var y = db.OrderDetails.Where(c => c.OrderId == id).ToList();
-            if (x.StatusOrder == 5)
+            var order = await db.Orders.FindAsync(id);
+            var orderdt = db.OrderDetails.Where(c => c.OrderId == id).ToList();
+            if (order.StatusOrder == 5)
             {
-                foreach (var item in y)
+                foreach (var item in orderdt)
                 {
                     var prdt = await db.ProductDetails.FindAsync(item.ProductDetailId);
                     prdt.Quantity += item.Quantity;
                     await db.SaveChangesAsync();
                 }
             }
-            x.StatusOrder = 0;
-            x.UpdateAt = DateTime.Now;
+            order.StatusOrder = 0;
+            order.UpdateAt = DateTime.Now;
             await db.SaveChangesAsync();
             _notyf.Success("Đã xác nhận hủy đơn");
             return RedirectToAction("index");
@@ -165,6 +160,7 @@ namespace ShoeStore.Areas.Admin.Controllers
 
             List<OrderVM_Excel> orderexcel = new List<OrderVM_Excel>();
 
+            var stt = 1;
             foreach (var item in items)
             {
                 var voucher = db.Vouchers.FirstOrDefault(v=>v.Id == item.VoucherId);
@@ -175,7 +171,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                 }
                 OrderVM_Excel excelitem = new OrderVM_Excel()
                 {
-                    Id = item.Id,
+                    STT = stt++,
                     Code = item.Code,
                     CustomerName = item.CustomerName,
                     Phone = item.Phone,

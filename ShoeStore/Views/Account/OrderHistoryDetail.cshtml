@@ -117,7 +117,7 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th scope="col">#</th>
+                                <th scope="col">Hình ảnh</th>
                                 <th scope="col">Tên sản phẩm</th>
                                 <th scope="col">Số lượng</th>
                                 <th scope="col">Size</th>
@@ -130,19 +130,15 @@
                         <tbody>
                             @foreach (var ord in userorderct)
                             {
-                                var pct = prdct.FirstOrDefault(c => c.Id == ord.ProductDetailId);
-                                var pro = prd.FirstOrDefault(c => c.Id == pct.ProductId);
-                                var siz = size.FirstOrDefault(c => c.Id == pct.SizeId);
-                                var colo = color.FirstOrDefault(c => c.Id == pct.ColorId);
-                                var img = image.FirstOrDefault(c => c.ProductDetailId == pct.Id);
+                                var pdt = prdct.FirstOrDefault(c => c.Id == ord.ProductDetailId);
+                                var pro = prd.FirstOrDefault(c => c.Id == pdt.ProductId);
+                                var siz = size.FirstOrDefault(c => c.Id == pdt.SizeId);
+                                var colo = color.FirstOrDefault(c => c.Id == pdt.ColorId);
+                                var img = image.FirstOrDefault(c => c.ProductDetailId == pdt.Id);
 
                                 <tr>
                                     <td>
-                                        @if (@img.Image != null)
-                                        {
-                                            <img src="@img.Image" style="width: 100px; height:auto" alt="">
-                                        }
-
+                                        <img src="@pdt.Image" style="width: 100px; height:auto" alt="">
                                     </td>
                                     <td style="200px">
                                         <p><h5>@pro.Name<h5></p>

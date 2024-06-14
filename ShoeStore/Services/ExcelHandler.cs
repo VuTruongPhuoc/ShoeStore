@@ -39,7 +39,7 @@ namespace ShoeStore.Services
                     workbook.Cells[1, i + 1].Value = properties[i].Name switch
 					{
                         //order
-						"Id" => "Mã định danh", // Thay đổi tiêu đề cột từ "Id" sang "Mã đơn hàng"
+						"Id" => "Mã", // Thay đổi tiêu đề cột từ "Id" sang "Mã"
                         "CustomerName" => "Tên khách hàng",
                         "Phone" => "Số điện thoại",
                         "Code" => "Mã đơn hàng",

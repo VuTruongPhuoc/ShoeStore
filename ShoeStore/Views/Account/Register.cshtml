@@ -1,9 +1,41 @@
 ﻿@model ShoeStore.ViewModels.RegisterVM
 @{
     ViewData["Title"] = "Đăng ký";
-    Layout = null;
+    Layout = "~/Views/Shared/_LayoutLoginRegister.cshtml";
 }
-<!DOCTYPE html>
+
+
+<div class="containerlogin_register">
+    <h1>Đăng ký</h1>
+    <div>
+        @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+        {
+            <div class="alert alert-warning alert-dismissible" role="alert" style="font-size: 14px">
+                @ViewData["ErrorMessage"]
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(ViewData["Sucsess"] as string))
+        {
+            <div class="alert alert-success" role="alert" style="font-size: 14px">
+                @ViewData["Sucsess"]
+            </div>
+        }
+    </div>
+    <form asp-action="register" asp-controller="account" method="post">
+        <!-- <label for="email">Email</label> <br> -->
+        <input asp-for="@Model.Username" type="text" id="Username" placeholder="Nhập tên đăng nhập của bạn *"> <br>
+        <input asp-for="@Model.FullName" type="text" id="FullName" placeholder="Nhập tên đầy đủ của bạn *"> <br>
+        <input asp-for="@Model.Email" type="Email" id="Email" placeholder="Nhập địa chỉ email của bạn *"> <br>
+        <input asp-for="@Model.PhoneNumber" type="number" id="PhoneNumber" placeholder="Nhập số điện thoại của bạn *"> <br>
+        <!-- <label for="password">Password</label> <br> -->
+        <input asp-for="@Model.Password" type="Password" id="Password" placeholder="Nhập mật khẩu của bạn *"> <br>
+        <input asp-for="@Model.ConfirmPassword" type="password" id="ConfirmPassword" placeholder="Xác nhận lại mật khẩu của bạn *"> <br>
+        <input type="submit" value="Đăng ký" class="btn-submit"> <br>
+        <label for="">Bạn đã có tài khoản?</label><a href="~/account/login" class="link ">Đăng nhập</a> <br>
+    </form>
+</div>
+
+@* <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -32,13 +64,13 @@
         </div>
         <form asp-action="register" asp-controller="account" method="post">
             <!-- <label for="email">Email</label> <br> -->
-            <input asp-for="@Model.Username" type="text" id="Username" placeholder="Nhập tên đăng nhập của bạn"> <br>
-            <input asp-for="@Model.FullName" type="text" id="FullName" placeholder="Nhập tên đầy đủ của bạn"> <br>
-            <input asp-for="@Model.Email" type="Email" id="Email" placeholder="Nhập địa chỉ email của bạn"> <br>
-            <input asp-for="@Model.PhoneNumber" type="number" id="PhoneNumber" placeholder="Nhập số điện thoại của bạn"> <br>
+            <input asp-for="@Model.Username" type="text" id="Username" placeholder="Nhập tên đăng nhập của bạn *"> <br>
+            <input asp-for="@Model.FullName" type="text" id="FullName" placeholder="Nhập tên đầy đủ của bạn *"> <br>
+            <input asp-for="@Model.Email" type="Email" id="Email" placeholder="Nhập địa chỉ email của bạn *"> <br>
+            <input asp-for="@Model.PhoneNumber" type="number" id="PhoneNumber" placeholder="Nhập số điện thoại của bạn *"> <br>
             <!-- <label for="password">Password</label> <br> -->
-            <input asp-for="@Model.Password" type="Password" id="Password" placeholder="Nhập mật khẩu của bạn"> <br>
-            <input asp-for="@Model.ConfirmPassword" type="password" id="ConfirmPassword" placeholder="Xác nhận lại mật khẩu của bạn"> <br>
+            <input asp-for="@Model.Password" type="Password" id="Password" placeholder="Nhập mật khẩu của bạn *"> <br>
+            <input asp-for="@Model.ConfirmPassword" type="password" id="ConfirmPassword" placeholder="Xác nhận lại mật khẩu của bạn *"> <br>
             <input type="submit" value="Đăng ký" class="btn-submit"> <br>
             <label for="">Bạn đã có tài khoản?</label><a href="~/account/login" class="link ">Đăng nhập</a> <br>
         </form>
@@ -46,4 +78,4 @@
     <script src="~/assets/styles/bootstrap4/bootstrap.min.js"></script>
     @await Component.InvokeAsync("Notyf")
 </body>
-</html>
+</html> *@

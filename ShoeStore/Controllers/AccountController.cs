@@ -17,6 +17,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using AspNetCoreHero.ToastNotification.Abstractions;
 using MailKit.Search;
 using X.PagedList;
+using System.Text.RegularExpressions;
 using Microsoft.IdentityModel.Tokens;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -24,8 +25,8 @@ namespace ShoeStore.Controllers
 {
     public class AccountController : Controller
     {
-        private INotyfService _notyf;
-        private ISendEmail _sendEmail;
+        private readonly INotyfService _notyf;
+        private readonly ISendEmail _sendEmail;
         private readonly ShoeStoreContext db;
         public AccountController(ISendEmail sendEmail, ShoeStoreContext db, INotyfService notyf)
         {
@@ -46,6 +47,35 @@ namespace ShoeStore.Controllers
             var user = await db.Accounts.FindAsync(model.Id);
             if(user != null)
             {
+                if (string.IsNullOrEmpty(model.PhoneNumber))
+                {
+                    _notyf.Warning("Vui lòng nhập thông tin số điện thoại");
+                    return View(model);
+                }
+                var checkUsername = await db.Accounts.FirstOrDefaultAsync(c => c.Username.ToLower() == model.Username.ToLower());
+                var checkEmail = await db.Accounts.FirstOrDefaultAsync(c => c.Email.ToLower() == model.Email.ToLower());
+                var checkPhone = await db.Accounts.FirstOrDefaultAsync(c => c.PhoneNumber == model.PhoneNumber);
+
+                // Kiểm tra username đã tồn tại hay chưa
+                if (checkUsername != null)
+                {
+                    _notyf.Warning("Username này đã được đăng ký, vui lòng thử lại!");
+                    return View( model);
+                }
+
+                // Kiểm tra email đã tồn tại hay chưa
+                if (checkEmail != null)
+                {
+                    _notyf.Warning("Email này đã được đăng ký, vui lòng thử lại!");
+                    return View(model);
+                }
+
+                // Kiểm tra số điện thoại đã tồn tại hay chưa
+                if (checkPhone != null)
+                {
+                    _notyf.Warning("Số điện thoại này đã được đăng ký, vui lòng thử lại!");
+                    return View(model);
+                }
                 if (ModelState.IsValid)
                 {
                     try
@@ -171,36 +201,70 @@ namespace ShoeStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVM model)
         {
-            var checkEmail = await db.Accounts.FirstOrDefaultAsync(c => c.Email == model.Email);
-            var checkPhone = await db.Accounts.FirstOrDefaultAsync(c => c.PhoneNumber == model.PhoneNumber);
-            if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.FullName) || string.IsNullOrEmpty(model.ConfirmPassword))
+            // Kiểm tra xem có thông tin bị thiếu không
+            if (string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.FullName) || string.IsNullOrEmpty(model.PhoneNumber)
+                || string.IsNullOrEmpty(model.Password) || string.IsNullOrEmpty(model.ConfirmPassword))
             {
-
+              
                 ViewData["ErrorMessage"] = "Vui lòng nhập đủ thông tin.";
+                _notyf.Warning("Vui lòng nhập đủ thông tin.");
                 return View("Register", model);
-
             }
+
+            // Kiểm tra xác nhận mật khẩu
             if (model.Password != model.ConfirmPassword)
             {
-                ViewData["ErrorMessage"] = "Mật khẩu xác nhận và mật khẩu không khớp nhau,hãy thử lại!";
+                ViewData["ErrorMessage"] = "Mật khẩu xác nhận và mật khẩu không khớp nhau, vui lòng thử lại!";               
                 return View("Register", model);
             }
-            else if (checkEmail != null)
+
+            // Kiểm tra định dạng email
+            if (!Regex.IsMatch(model.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
             {
-                ViewData["ErrorMessage"] = "Email này đã được đăng ký, hãy tạo tài khoản bằng email khác để đăng kí!";
+                ViewData["ErrorMessage"] = "Định dạng email không hợp lệ, vui lòng nhập lại!";
                 return View("Register", model);
             }
-            else if (checkPhone != null)
+
+            // Kiểm tra định dạng số điện thoại
+            if (!Regex.IsMatch(model.PhoneNumber, @"0[987654321]\d{8}"))
             {
-                ViewData["ErrorMessage"] = "Số điện thoại này đã được đăng ký !";
+                ViewData["ErrorMessage"] = "Định dạng số điện thoại không hợp lệ, vui lòng nhập lại!";
                 return View("Register", model);
             }
+
+            // Kiểm tra xem username, email, số điện thoại đã tồn tại chưa
+            var checkUsername = await db.Accounts.FirstOrDefaultAsync(c => c.Username.ToLower() == model.Username.ToLower());
+            var checkEmail = await db.Accounts.FirstOrDefaultAsync(c => c.Email.ToLower() == model.Email.ToLower());
+            var checkPhone = await db.Accounts.FirstOrDefaultAsync(c => c.PhoneNumber == model.PhoneNumber);
+
+            // Kiểm tra username đã tồn tại hay chưa
+            if (checkUsername != null)
+            {
+                ViewData["ErrorMessage"] = "Username này đã được đăng ký, vui lòng thử lại!";
+                return View("Register", model);
+            }
+
+            // Kiểm tra email đã tồn tại hay chưa
+            if (checkEmail != null)
+            {
+                ViewData["ErrorMessage"] = "Email này đã được đăng ký, vui lòng thử lại!";
+                return View("Register", model);
+            }
+
+            // Kiểm tra số điện thoại đã tồn tại hay chưa
+            if (checkPhone != null)
+            {
+                ViewData["ErrorMessage"] = "Số điện thoại này đã được đăng ký, vui lòng thử lại!";
+                return View("Register", model);
+            }
+
+            // Nếu tất cả đều hợp lệ, thì thêm tài khoản mới vào cơ sở dữ liệu và chuyển hướng đến trang đăng nhập
             var randomkey = MyUtil.GenerateRandomKey();
             var acc = new Account()
             {
                 Username = model.Username,
                 FullName = model.FullName,
-                RoleId = 2,  // nếu chạy lại cơ sở dữ liệu thì sẽ là số id mà bạn thêm vào thứ bao nhiêu với customer
+                RoleId = 2,
                 PhoneNumber = model.PhoneNumber,
                 Address = model.Address,
                 Email = model.Email,
@@ -212,8 +276,9 @@ namespace ShoeStore.Controllers
             };
             db.Accounts.Add(acc);
             await db.SaveChangesAsync();
+            ViewData["Success"] = "Đăng ký tài khoản thành công";
             _notyf.Success("Đăng ký tài khoản thành công");
-            return View("Login");
+            return RedirectToAction("Login","Account");
         }
         #endregion
         #region forgotpassword
@@ -377,26 +442,25 @@ namespace ShoeStore.Controllers
         public async Task<IActionResult> Received(int id)
         {
             var userid = int.Parse(User.Claims.FirstOrDefault(u=>u.Type == "Id").Value);
-            var x = await db.Orders.FindAsync(id);
-            x.UpdateAt = DateTime.Now;
+            var order = await db.Orders.FindAsync(id);
+            order.UpdateAt = DateTime.Now;
             _notyf.Success("Đã xác nhận nhận hàng");
             await db.SaveChangesAsync();
             return RedirectToAction("orderhistorydetail","account", new {orderid = id});
         }
         public async Task<IActionResult> CancelOrder(int id)
         {
-            var x = await db.Orders.FindAsync(id);
-            if(x.StatusOrder == 1)
+            var order = await db.Orders.FindAsync(id);
+            if(order.StatusOrder == 1)
             {
-                x.StatusOrder = 0;
-                x.UpdateAt = DateTime.Now;
-                await db.SaveChangesAsync();
-            }else if(x.StatusOrder == 2)
+                order.StatusOrder = 0;
+                order.UpdateAt = DateTime.Now;
+            }else if(order.StatusOrder == 2)
             {
-                x.StatusOrder = 5;
-                x.UpdateAt = DateTime.Now;
+                order.StatusOrder = 5;
+                order.UpdateAt = DateTime.Now;
             }
-           
+            await db.SaveChangesAsync();
             _notyf.Success("Đã xác nhận hủy đơn");
             return RedirectToAction("orderhistorydetail", "account", new { orderid = id});
         }

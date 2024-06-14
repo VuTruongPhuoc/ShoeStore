@@ -26,7 +26,7 @@ namespace ShoeStore.Controllers
 	            .Where(x => x.Status)
 	            .GroupBy(x => new { x.ColorId, x.ProductId }) // Nhóm theo  màu s?c và ID s?n ph?m
 	            .Select(group => group.First()) // Ch?n m?t m?c t? m?i nhóm
-	            .Take(10) 
+	            //.Take(10) 
 	            .ToList();
 			return View(items);
         }

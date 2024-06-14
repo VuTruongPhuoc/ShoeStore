@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using Newtonsoft.Json;
 using OfficeOpenXml;
 using ShoeStore.Data;
 using ShoeStore.Models;
+using System.Drawing;
 using System.Net.Http;
 
 
@@ -278,6 +280,18 @@ namespace ShoeStore.Areas.Admin.Controllers
                     }
                     
                     worksheet.Cells[i + 2, 3].Value = apiData.Values[i];
+                    worksheet.Column(i + 1).AutoFit();
+                    var y = 0;
+                    while(y < 3)
+                    {
+                        worksheet.Cells[1, y + 1].Style.Font.Bold = true;
+                        worksheet.Cells[1, y + 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        worksheet.Cells[1, y + 1].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml("#F5F5DC"));
+                        y++;
+                    }
+                    // Màu cho hàng đầu tiên
+                   
+
 
                 }
 
@@ -309,7 +323,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                                          join orderdetails in db.OrderDetails on details.Id equals orderdetails.ProductDetailId
                                          join orders in db.Orders on orderdetails.OrderId equals orders.Id                     
                                          where orders.StatusOrder == 4 && orders.PaymentDate.HasValue && orders.PaymentDate.Value >= currentDate.AddDays(-30)
-                                         group new { products, details, orderdetails, orders } by new { products.Name } into grouped
+                                         group new { products, details, orderdetails, orders } by new { details.Name } into grouped
                                          select new
                                          {
                                              ProductName = grouped.Key.Name,

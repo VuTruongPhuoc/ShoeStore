@@ -2,6 +2,7 @@
 {
     public class RevenueListVM_Excel
     {
+        public int STT { get; set; }
         public string? Code { get; set; }
         public string? CreateAt { get; set; }
         public string? PaymentDate { get; set; }

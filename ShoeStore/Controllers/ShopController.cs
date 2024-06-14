@@ -49,7 +49,6 @@ namespace ShoeStore.Controllers
 				.Where(x => x.Status)
 				.GroupBy(x => new { x.ColorId, x.ProductId }) // Nhóm theo  màu và productid
 				.Select(group => group.First()) // Chọn 1 mục tiêu mỗi nhóm
-				.Take(10)
 				.ToList();
 			var pageIndex = page.HasValue && page > 0 ? Convert.ToInt32(page) : 1;
 			var pageNumber = 12;
@@ -74,7 +73,6 @@ namespace ShoeStore.Controllers
                 // Áp dụng bộ lọc
                 if (filter.Categories != null && filter.Categories.Count > 0 && !filter.Categories.Contains("all"))
 				{
-
 					filterresults = filterresults.Where(p => filter.Categories.Contains(p.product.CategoryId.ToString())).ToList();
 
 				} 
@@ -219,7 +217,7 @@ namespace ShoeStore.Controllers
 			var item = db.ProductDetails.FirstOrDefault(x => x.ProductId == productid && x.SizeId == sizeid && x.ColorId == colorid && x.Status);
 			if(item != null)
 			{
-				return Json(new { success = true, quantity = item.Quantity , productdetailid = item.Id});
+				return Json(new { success = true, quantity = item.Quantity , productdetailid = item.Id , price = item.Price, pricesale = item.PriceSale != null && item.PriceSale != 0 ? item.PriceSale : item.Price});
 			}
 			return Json(new { success = false });
 		}

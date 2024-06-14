@@ -12,11 +12,9 @@ namespace ShoeStore.ViewModels
         public string? Address { get; set; }
         public string? City { get; set; }
         public string? District { get; set; }
-        public string? Ward { get; set; }
-       
+        public string? Ward { get; set; }       
         public string? TypePayment { get; set; }
         public string? Note { get; set; }
-
         public decimal ? ShipFee { get; set; }
         public decimal ? discountValue { get; set; }
         public string ? VoucherCode { get; set; }

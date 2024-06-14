@@ -180,13 +180,14 @@ namespace ShoeStore.Areas.Admin.Controllers
         {
             var items = search(searchtext).ToList(); // Gọi phương thức search đúng cách và chuyển kết quả thành một danh sách
 			List<ProductVM_Excel> productexcel = new List<ProductVM_Excel>();
-            
+            var stt = 1;
 			foreach (var item in items)
 			{
                 var category = db.Categories.FirstOrDefault(c=>c.Id == item.CategoryId);
 				var supplier = db.Suppliers.FirstOrDefault(c => c.Id == item.SupplierId);
                 ProductVM_Excel excelitem = new ProductVM_Excel
                 {
+                    STT = stt++,
                     Id = item.Id,
                     ProductName = item.Name,
                     CategoryName = category.Name,

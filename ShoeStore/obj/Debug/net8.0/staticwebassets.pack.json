@@ -10429,6 +10429,18 @@
       "PackagePath": "staticwebassets\\files\\images\\news\\djokovic.jpg"
     },
     {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\news\\luisviton.jpg",
+      "PackagePath": "staticwebassets\\files\\images\\news\\luisviton.jpg"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\news\\news3.png",
+      "PackagePath": "staticwebassets\\files\\images\\news\\news3.png"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\news\\ronaldonews.png",
+      "PackagePath": "staticwebassets\\files\\images\\news\\ronaldonews.png"
+    },
+    {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\bongroliningLiren3_black.webp",
       "PackagePath": "staticwebassets\\files\\images\\product\\bongroliningLiren3_black.webp"
     },
@@ -10519,6 +10531,10 @@
     {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\rashford.jpg",
       "PackagePath": "staticwebassets\\files\\images\\product\\rashford.jpg"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\files\\images\\product\\tecton_blue.webp",
+      "PackagePath": "staticwebassets\\files\\images\\product\\tecton_blue.webp"
     },
     {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\icon\\Iconsmind-Outline-Skate-Shoes.512.ico",

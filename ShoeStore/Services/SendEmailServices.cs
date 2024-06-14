@@ -26,7 +26,6 @@ namespace ShoeStore.Services
 		{
 			_sendEmail = options.Value;
 		}
-
 		public async Task SendEmailAsync(string email, string subject, string Htmlmessage)
 		{
 			var message = new MimeKit.MimeMessage();
