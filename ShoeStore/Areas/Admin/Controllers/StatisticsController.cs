@@ -141,6 +141,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             var totalRevenue = revenuelistexcel.Sum(item => item.TotalAmount);
             RevenueListVM_Excel totalRevenueItem = new RevenueListVM_Excel()
             {
+                STT = stt++,
                 Code = "Tổng doanh thu:",
                 TotalAmount = totalRevenue
             };

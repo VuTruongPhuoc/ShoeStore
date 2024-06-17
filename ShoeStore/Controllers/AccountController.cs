@@ -52,9 +52,9 @@ namespace ShoeStore.Controllers
                     _notyf.Warning("Vui lòng nhập thông tin số điện thoại");
                     return View(model);
                 }
-                var checkUsername = await db.Accounts.FirstOrDefaultAsync(c => c.Username.ToLower() == model.Username.ToLower());
-                var checkEmail = await db.Accounts.FirstOrDefaultAsync(c => c.Email.ToLower() == model.Email.ToLower());
-                var checkPhone = await db.Accounts.FirstOrDefaultAsync(c => c.PhoneNumber == model.PhoneNumber);
+                var checkUsername = await db.Accounts.FirstOrDefaultAsync(c => c.Username.ToLower() == model.Username.ToLower() && c.Id != model.Id);
+                var checkEmail = await db.Accounts.FirstOrDefaultAsync(c => c.Email.ToLower() == model.Email.ToLower() && c.Id != model.Id);
+                var checkPhone = await db.Accounts.FirstOrDefaultAsync(c => c.PhoneNumber == model.PhoneNumber && c.Id != model.Id);
 
                 // Kiểm tra username đã tồn tại hay chưa
                 if (checkUsername != null)

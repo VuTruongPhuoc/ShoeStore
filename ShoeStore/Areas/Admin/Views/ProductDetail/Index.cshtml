@@ -60,7 +60,7 @@
                 <div class="col-md-4">
                     <form id="searchForm" asp-controller="productdetail" asp-action="Index" method="get">
                         <div class="input-group input-group-sm">
-                            <input id="searchText" type="text" name="Searchtext" class="form-control" value="@ViewBag.Searchtext" />
+                            <input id="searchtext" type="text" name="searchtext" class="form-control" value="@ViewBag.searchtext" />
                             <span class="input-group-append">
                                 <button type="submit" class="btn btn-info btn-flat">Tìm kiếm</button>
                             </span>
@@ -72,11 +72,11 @@
                 </div>
                 <!-- Xuất ra excel -->
                 <div class="col-md-4" style="position: relative;">
-                    <form asp-controller="product" asp-action="ExportToExcel">
+                   @*  <form asp-controller="productdetail" asp-action="ExportDataToExcel"> *@
                         <div style="position: absolute; right: 0;">
-                            <button id="exportBtn" class="btn btn-primary ml-2" onclick="exportToExcel()">Xuất File Excel</button>
+                            <button id="btnExport" class="btn btn-primary ml-2" onclick="exportToExcel()" data-productid="@ViewBag.ProductId">Xuất File Excel</button>
                         </div>
-                    </form>
+                   @*  </form> *@
                 </div>
             </div>
             <div class="" style="padding-top:10px">
@@ -167,7 +167,7 @@
                 <div class="row">
                     <div class="col-12 d-flex justify-content-end" style="float:right">
                         <a href="#">
-                                @Html.PagedListPager(Model, page => Url.Action("index", new { page = page, sort = ViewBag.sort, Searchtext = ViewBag.Searchtext }), new PagedListRenderOptions()
+                            @Html.PagedListPager(Model, page => Url.Action("index", new { page = page, sort = ViewBag.sort, searchtext = ViewBag.searchtext }), new PagedListRenderOptions()
                        {
                            ActiveLiElementClass = "active",
                            PageClasses = new[] { "page-link" },
@@ -264,8 +264,9 @@
 
         $(document).on('click', '#btnExport', function () {
             var searchtext = $('#searchtext').val();
+            var productid = $(this).data('productid');
             if(confirm("Tải về file Excel?")){
-                location.href = `/admin/productdetail/ExportDataToExecl?searchtext=${searchtext}`;
+                location.href = `/admin/productdetail/ExportDataToExcel?searchtext=${searchtext}&productid=${productid}`;
             }    
         })
     </script>

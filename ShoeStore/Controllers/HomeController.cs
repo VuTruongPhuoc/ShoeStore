@@ -23,7 +23,7 @@ namespace ShoeStore.Controllers
             ViewBag.Category = db.Categories.ToList();
 			// Nhóm các s?n ph?m theo kích th??c và l?y m?t m?c t? m?i nhóm
 			var items = db.ProductDetails
-	            .Where(x => x.Status)
+	            .Where(x => x.Status && x.Color.Status && x.Size.Status && x.Product.Category.Status)
 	            .GroupBy(x => new { x.ColorId, x.ProductId }) // Nhóm theo  màu s?c và ID s?n ph?m
 	            .Select(group => group.First()) // Ch?n m?t m?c t? m?i nhóm
 	            //.Take(10) 

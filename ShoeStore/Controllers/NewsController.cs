@@ -20,7 +20,7 @@ namespace ShoeStore.Controllers
             {
                 page = 1;
             }
-            IEnumerable<News> items = db.News.OrderByDescending(x => x.CreateAt);
+            IEnumerable<News> items = db.News.OrderByDescending(x => x.CreateAt).Where(n=>n.Status);
             var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
             items = items.ToPagedList(pageIndex, pageSize);
             ViewBag.PageSize = pageSize;

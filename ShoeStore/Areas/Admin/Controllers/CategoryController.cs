@@ -1,6 +1,7 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ShoeStore.Data;
 using ShoeStore.Models;
 using X.PagedList;
@@ -48,7 +49,14 @@ namespace ShoeStore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Category model)
         {
-            if (ModelState.IsValid)
+			var checkname = await db.Categories.FirstOrDefaultAsync(c => c.Name.ToLower() == model.Name.ToLower());
+			// Kiểm tra username đã tồn tại hay chưa
+			if (checkname != null)
+			{
+				_notyf.Warning("Tên danh mục này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (ModelState.IsValid)
             {
                 try
                 {
@@ -77,8 +85,14 @@ namespace ShoeStore.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Category model)
         {
             var item = await db.Categories.FindAsync(model.Id);
-
-            if (ModelState.IsValid && item is not null)
+			var checkname = await db.Categories.FirstOrDefaultAsync(c => c.Name.ToLower() == model.Name.ToLower() && c.Id != model.Id);
+			// Kiểm tra username đã tồn tại hay chưa
+			if (checkname != null)
+			{
+				_notyf.Warning("Tên danh mục này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (ModelState.IsValid && item is not null)
             {
                 try
                 {

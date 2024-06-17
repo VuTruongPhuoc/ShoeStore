@@ -1,6 +1,7 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using ShoeStore.Data;
 using ShoeStore.Models;
@@ -46,7 +47,7 @@ namespace ShoeStore.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(Vouchers model)
         {
-            if (ModelState.IsValid)
+			if (ModelState.IsValid)
             {
                 try
                 {
@@ -65,24 +66,23 @@ namespace ShoeStore.Areas.Admin.Controllers
                         {
 						    if (model.Code == voucher.Code && model.Value != voucher.Value)
 						    {
-							    _notyf.Warning("Hiện tại đã có mã giảm giá này rồi vui lòng chọn mã khác", 10);
+							    _notyf.Warning("Hiện tại đã có mã voucher này rồi vui lòng chọn mã khác", 10);
 							    return View(model);
 						    }
 						    if (model.Code == voucher.Code && model.Value == voucher.Value)
 						    {
 							    voucher.Quantity += model.Quantity;
-							    db.Vouchers.Add(voucher);
 							    await db.SaveChangesAsync();
 							    _notyf.Success("Thêm số lượng của voucher thành công");
 							    return RedirectToAction("index", "voucher", new { area = "admin" });
 						    }
                         }					                                 
-                    model.CreateAt = DateTime.Now;
-					model.UpdateAt = DateTime.Now;
-					db.Vouchers.Add(model);
-					await db.SaveChangesAsync();
-					_notyf.Success("Thêm dữ liệu thành công");
-					return RedirectToAction("index", "voucher", new { area = "admin" });
+                        model.CreateAt = DateTime.Now;
+					    model.UpdateAt = DateTime.Now;
+					    db.Vouchers.Add(model);
+					    await db.SaveChangesAsync();
+					    _notyf.Success("Thêm dữ liệu thành công");
+					    return RedirectToAction("index", "voucher", new { area = "admin" });
 				}catch (Exception ex)
                 {
 					_notyf.Error("Có lỗi khi thêm dữ liệu " + ex.Message);
@@ -102,7 +102,14 @@ namespace ShoeStore.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Vouchers model)
         {
             var item = await db.Vouchers.FindAsync(model.Id);
-            if(ModelState.IsValid && item is not null)
+			var checkcode = await db.Vouchers.FirstOrDefaultAsync(c => c.Code.ToLower() == model.Code.ToLower() && c.Id != model.Id);
+			// Kiểm tra username đã tồn tại hay chưa
+			if (checkcode != null)
+			{
+				_notyf.Warning("Mã voucher này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (ModelState.IsValid && item is not null)
             {
                 try
                 {

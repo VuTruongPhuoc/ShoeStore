@@ -46,7 +46,7 @@ namespace ShoeStore.Controllers
 				items = items.Where(x=>x.Product.CategoryId == id).ToList();
 			}
 			items = items
-				.Where(x => x.Status)
+				.Where(x => x.Status && x.Color.Status && x.Size.Status && x.Product.Category.Status)
 				.GroupBy(x => new { x.ColorId, x.ProductId }) // Nhóm theo  màu và productid
 				.Select(group => group.First()) // Chọn 1 mục tiêu mỗi nhóm
 				.ToList();

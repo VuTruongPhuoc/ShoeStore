@@ -162,16 +162,15 @@
 									<div class="original_price">@Model.Price?.ToString("C0", new CultureInfo("vi-VN"))</div>
 									<div class="product_price">@Model.Price?.ToString("C0", new CultureInfo("vi-VN"))</div>
 								}
-								int totaRating = 0;
+								int totalRating = 0;
 								foreach (var rev in Model.Reviews)
 								{
-									totaRating += rev.Rate ?? 0;
-
+									totalRating += rev.Rate ?? 0;
 								}
 								var y = ViewBag.count == 0 ? 1 : ViewBag.count;
-								totaRating = totaRating / y;
+								totalRating = (int)Math.Ceiling((double)totalRating / y);
 								<ul class="star_rating">
-									@Html.Raw((ShoeStore.Common.Common.HtmlRate(totaRating)) )
+									@Html.Raw((ShoeStore.Common.Common.HtmlRate(totalRating)))
 									</ul>
 							<div class="product_size">
 								<span style="padding-bottom:5px">Chọn size:</span>

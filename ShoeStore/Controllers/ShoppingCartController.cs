@@ -128,9 +128,9 @@ namespace ShoeStore.Controllers
 					if(voucher != null)
 					{
                         order.VoucherId = voucher.Id;
-                        voucher.Quantity = voucher.Quantity - 1;
                         await db.SaveChangesAsync();
                     }
+                    
 					var voucherforacc = db.VoucherForAccs.FirstOrDefault(x => x.Code == ordervm.VoucherCode && x.IdAccount == userid);
 					if (voucherforacc != null)
 					{

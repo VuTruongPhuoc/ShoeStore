@@ -4,6 +4,7 @@ using ShoeStore.Data;
 using ShoeStore.Models;
 using X.PagedList;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
@@ -47,7 +48,14 @@ namespace ShoeStore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Size model)
         {
-            if (ModelState.IsValid)
+			var checkname = await db.Sizes.FirstOrDefaultAsync(c => c.Name.ToLower() == model.Name.ToLower());
+			// Kiểm tra username đã tồn tại hay chưa
+			if (checkname != null)
+			{
+				_notyf.Warning("Tên size này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (ModelState.IsValid)
             {
                 try
                 {
@@ -76,8 +84,14 @@ namespace ShoeStore.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Size model)
         {
             var item = await db.Sizes.FindAsync(model.Id);
-
-            if (ModelState.IsValid && item is not null)
+			var checkname = await db.Sizes.FirstOrDefaultAsync(c => c.Name.ToLower() == model.Name.ToLower() && c.Id != model.Id);
+			// Kiểm tra username đã tồn tại hay chưa
+			if (checkname != null)
+			{
+				_notyf.Warning("Tên size này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (ModelState.IsValid && item is not null)
             {
                 try
                 {

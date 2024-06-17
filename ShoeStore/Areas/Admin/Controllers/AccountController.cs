@@ -59,9 +59,31 @@ namespace ShoeStore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Account model)
         {
+			var checkUsername = await db.Accounts.FirstOrDefaultAsync(c => c.Username.ToLower() == model.Username.ToLower());
+			var checkEmail = await db.Accounts.FirstOrDefaultAsync(c => c.Email.ToLower() == model.Email.ToLower() );
+			var checkPhone = await db.Accounts.FirstOrDefaultAsync(c => c.PhoneNumber == model.PhoneNumber);
+			ViewBag.Role = db.Roles.ToList();
+			// Kiểm tra username đã tồn tại hay chưa
+			if (checkUsername != null)
+			{
+				_notyf.Warning("Username này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
 
-            ViewBag.Role = db.Roles.ToList();
-            if (ModelState.IsValid)
+			// Kiểm tra email đã tồn tại hay chưa
+			if (checkEmail != null)
+			{
+				_notyf.Warning("Email này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+
+			// Kiểm tra số điện thoại đã tồn tại hay chưa
+			if (checkPhone != null)
+			{
+				_notyf.Warning("Số điện thoại này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (ModelState.IsValid)
             {
                 try
                 {
@@ -107,7 +129,31 @@ namespace ShoeStore.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Account model)
         {
             var item = await db.Accounts.FindAsync(model.Id);
-            if (ModelState.IsValid && item is not null)
+			var checkUsername = await db.Accounts.FirstOrDefaultAsync(c => c.Username.ToLower() == model.Username.ToLower() && c.Id != model.Id);
+			var checkEmail = await db.Accounts.FirstOrDefaultAsync(c => c.Email.ToLower() == model.Email.ToLower() && c.Id != model.Id);
+			var checkPhone = await db.Accounts.FirstOrDefaultAsync(c => c.PhoneNumber == model.PhoneNumber && c.Id != model.Id);
+			ViewBag.Role = db.Roles.ToList();
+			// Kiểm tra username đã tồn tại hay chưa
+			if (checkUsername != null)
+			{
+				_notyf.Warning("Username này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+
+			// Kiểm tra email đã tồn tại hay chưa
+			if (checkEmail != null)
+			{
+				_notyf.Warning("Email này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+
+			// Kiểm tra số điện thoại đã tồn tại hay chưa
+			if (checkPhone != null)
+			{
+				_notyf.Warning("Số điện thoại này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (ModelState.IsValid && item is not null)
             {
                 try
                 {
@@ -128,7 +174,7 @@ namespace ShoeStore.Areas.Admin.Controllers
                     return View(model);
                 }
             }
-            ViewBag.Role = db.Roles.ToList();
+            
             _notyf.Error("Có lỗi khi cập nhật dữ liệu");
             return View(model);
         }

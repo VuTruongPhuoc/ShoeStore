@@ -11,6 +11,7 @@ using System.IO;
 using ShoeStore.ViewModels;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Globalization;
+using Microsoft.EntityFrameworkCore;
 
 namespace ShoeStore.Areas.Admin.Controllers
 {
@@ -30,7 +31,7 @@ namespace ShoeStore.Areas.Admin.Controllers
             _notyf = notyf;
             _excelHandler = excelHandler;
         }
-        public IEnumerable<Product> search(string searchtext)
+        public IEnumerable<Product> search(string? searchtext)
         {
             IEnumerable<Product> items = db.Products.OrderBy(x => x.Id);
             if (!string.IsNullOrEmpty(searchtext))
@@ -70,7 +71,14 @@ namespace ShoeStore.Areas.Admin.Controllers
         {
             ViewBag.Category = db.Categories.ToList().OrderByDescending(x => x.Id);
             ViewBag.Supplier = db.Suppliers.ToList().OrderByDescending(x => x.Id);
-            if (ModelState.IsValid)
+			var checkname = await db.Products.FirstOrDefaultAsync(c => c.Name.ToLower() == model.Name.ToLower());
+			// Kiểm tra username đã tồn tại hay chưa
+			if (checkname != null)
+			{
+				_notyf.Warning("Tên sản phẩm này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (ModelState.IsValid)
             {
                 try
                 {
@@ -106,8 +114,14 @@ namespace ShoeStore.Areas.Admin.Controllers
             ViewBag.Category = db.Categories.ToList().OrderByDescending(x => x.Id);
             ViewBag.Supplier = db.Suppliers.ToList().OrderByDescending(x => x.Id);
             var item = await db.Products.FindAsync(model.Id);
-           
-            if (ModelState.IsValid && item is not null)
+			var checkname = await db.Products.FirstOrDefaultAsync(c => c.Name.ToLower() == model.Name.ToLower() && c.Id != model.Id);
+			// Kiểm tra username đã tồn tại hay chưa
+			if (checkname != null)
+			{
+				_notyf.Warning("Tên sản phẩm này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (ModelState.IsValid && item is not null)
             {
                 try
                 {

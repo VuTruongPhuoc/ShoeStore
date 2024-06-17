@@ -10121,8 +10121,16 @@
       "PackagePath": "staticwebassets\\assets\\images\\slider_1.jpg"
     },
     {
-      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\assets\\images\\slider_2.jpg",
-      "PackagePath": "staticwebassets\\assets\\images\\slider_2.jpg"
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\assets\\images\\slider_2.png",
+      "PackagePath": "staticwebassets\\assets\\images\\slider_2.png"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\assets\\images\\slider_3.jpg",
+      "PackagePath": "staticwebassets\\assets\\images\\slider_3.jpg"
+    },
+    {
+      "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\assets\\images\\test222.jpg",
+      "PackagePath": "staticwebassets\\assets\\images\\test222.jpg"
     },
     {
       "Id": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\wwwroot\\assets\\js\\categories_customs.js",

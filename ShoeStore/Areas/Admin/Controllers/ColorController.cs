@@ -1,6 +1,7 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using ShoeStore.Data;
 using ShoeStore.Models;
@@ -48,6 +49,19 @@ namespace ShoeStore.Areas.Admin.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Add(Color model)
 		{
+			var checkname = await db.Colors.FirstOrDefaultAsync(c => c.Name.ToLower() == model.Name.ToLower());
+			var checkcode = await db.Colors.FirstOrDefaultAsync(c => c.ColorCode.ToLower() == model.ColorCode.ToLower());
+			// Kiểm tra username đã tồn tại hay chưa
+			if (checkname != null)
+			{
+				_notyf.Warning("Tên Màu này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (checkcode != null)
+			{
+				_notyf.Warning("Tên mã màu này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
 			if (ModelState.IsValid)
 			{
 				try
@@ -77,8 +91,20 @@ namespace ShoeStore.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Color model)
         {
             var item = await db.Colors.FindAsync(model.Id);
-
-            if (ModelState.IsValid && item is not null)
+			var checkname = await db.Colors.FirstOrDefaultAsync(c => c.Name.ToLower() == model.Name.ToLower() && c.Id != model.Id);
+			var checkcode = await db.Colors.FirstOrDefaultAsync(c => c.ColorCode.ToLower() == model.ColorCode.ToLower() && c.Id != model.Id);
+			// Kiểm tra username đã tồn tại hay chưa
+			if (checkname != null)
+			{
+				_notyf.Warning("Tên Màu này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (checkcode != null)
+			{
+				_notyf.Warning("Tên mã màu này đã được đăng ký, vui lòng thử lại!");
+				return View(model);
+			}
+			if (ModelState.IsValid && item is not null)
             {
                 try
                 {

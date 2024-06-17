@@ -26,18 +26,18 @@ namespace ShoeStore.Areas.Admin.Controllers
             this.db = db;
             _excelHandler = excelHandler;
         }
-		public IEnumerable<ProductDetail> search(string searchtext)
+		public IEnumerable<ProductDetail> search(string? searchtext)
 		{
-			IEnumerable<ProductDetail> items = db.ProductDetails.OrderBy(x => x.Id);
+			IEnumerable<ProductDetail> items = db.ProductDetails.OrderBy(x => x.Id).ToList();
 			if (!string.IsNullOrEmpty(searchtext))
 			{
-				items = items.Where(x => x.ProductId.ToString().Contains(searchtext) || x.ColorId.ToString().Contains(searchtext) && x.Status);
+				items = items.Where(x => x.Name.ToLower().ToString().Contains(searchtext.ToLower()) && x.Status).ToList();
 			}
 			return items;
 		}
-		public IActionResult GetList(string Searchtext, int? page)
+		public IActionResult GetList(string searchtext, int? page)
 		{
-            ViewBag.Searchtext = Searchtext;
+            ViewBag.searchtext = searchtext;
             ViewBag.Product = db.Products.ToList().OrderBy(x=>x.Name);
             ViewBag.Size = db.Sizes.ToList().OrderBy(x => x.Name);
             ViewBag.Color = db.Colors.ToList().OrderBy(x => x.Name);
@@ -46,11 +46,10 @@ namespace ShoeStore.Areas.Admin.Controllers
             {
                 page = 1;
             }
-            ViewBag.Searchtext = Searchtext;
             IEnumerable<ProductDetail> items = db.ProductDetails.ToList();
-            if (!string.IsNullOrEmpty(Searchtext))
+            if (!string.IsNullOrEmpty(searchtext))
             {
-                items = items.Where(x => x.ProductId.ToString().Contains(Searchtext) || x.ColorId.ToString().Contains(Searchtext) && x.Status);
+                items = items.Where(x => x.Name.ToString().Contains(searchtext) && x.Status);
             }
             var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
             items = items.ToPagedList(pageIndex, pageSize);
@@ -58,9 +57,9 @@ namespace ShoeStore.Areas.Admin.Controllers
             ViewBag.Page = page;
             return View(items);
         }
-        public IActionResult Index(string Searchtext, int? page, int id)
+        public IActionResult Index(string searchtext, int? page, int id)
         {
-            ViewBag.Size = db.Sizes.ToList().OrderBy(x => x.Name); ;
+            ViewBag.Size = db.Sizes.ToList().OrderBy(x => x.Name);
             ViewBag.Color = db.Colors.ToList().OrderBy(x => x.Name); 
             ViewBag.Product = db.Products.ToList().OrderBy(x => x.Name);
             ViewBag.ProductId = id;
@@ -69,14 +68,12 @@ namespace ShoeStore.Areas.Admin.Controllers
             {
                 page = 1;
             }
-            ViewBag.Searchtext = Searchtext;
-            var items = search(Searchtext).Where(x=>x.ProductId == id);
-           
+            ViewBag.searchtext = searchtext;
+            var items = search(searchtext).Where(x => x.ProductId == id).ToList();     
             var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
-            items = items.ToPagedList(pageIndex, pageSize);
             ViewBag.PageSize = pageSize;
             ViewBag.Page = page;
-            return View(items);
+            return View(items.ToPagedList(pageIndex, pageSize));
         }
         public IActionResult Add(int id)
         {
@@ -265,37 +262,38 @@ namespace ShoeStore.Areas.Admin.Controllers
             return Json(new { success = false });
         }
 
-		public async Task<IActionResult> ExportDataToExecl(string searchtext)
-		{
-			var items = search(searchtext).ToList(); // Gọi phương thức search đúng cách và chuyển kết quả thành một danh sách
-			List<ProductDetailVM_Excel> producdetailtexcel = new List<ProductDetailVM_Excel>();
+        public async Task<IActionResult> ExportDataToExcel(string? searchtext, int? productid)
+        {
+            var items = search(searchtext).Where(p=>p.ProductId == productid).ToList(); // Gọi phương thức search đúng cách và chuyển kết quả thành một danh sách
+            List<ProductDetailVM_Excel> producdetailtexcel = new List<ProductDetailVM_Excel>();
             var stt = 1;
-			foreach (var item in items)
-			{
-				var product = db.Products.FirstOrDefault(c => c.Id == item.ProductId);
+            foreach (var item in items)
+            {
+                var product = db.Products.FirstOrDefault(c => c.Id == item.ProductId);
                 var size = db.Sizes.FirstOrDefault(s => s.Id == item.SizeId);
-				var color = db.Colors.FirstOrDefault(c => c.Id == item.ColorId);
+                var color = db.Colors.FirstOrDefault(c => c.Id == item.ColorId);
                 ProductDetailVM_Excel excelitem = new ProductDetailVM_Excel
                 {
                     STT = stt++,
                     ProductDetailId = item.Id,
                     ProductName = product.Name,
-					Quantity = item.Quantity,
-					SizeName = size.Name,
-					ColorName = color.Name,
-					ProductDetailName = item.Name,
+                    Quantity = item.Quantity,
+                    SizeName = size.Name,
+                    ColorName = color.Name,
+                    ProductDetailName = item.Name,
                     Price = item.Price,
-                    PriceSale = item.PriceSale,                   
-					Status = item.Status ? "Hiển thị" : "Không hiển thị",
-					CreateAt = item.CreateAt.HasValue ? item.CreateAt.Value.ToString("dd/MM/yyyy hh:mm:ss") : "",
-					UpdateAt = item.UpdateAt.HasValue ? item.UpdateAt.Value.ToString("dd/MM/yyyy hh:mm:ss") : ""
-				};
+                    PriceSale = item.PriceSale,
+                    Status = item.Status ? "Hiển thị" : "Không hiển thị",
+                    CreateAt = item.CreateAt.HasValue ? item.CreateAt.Value.ToString("dd/MM/yyyy hh:mm:ss") : "",
+                    UpdateAt = item.UpdateAt.HasValue ? item.UpdateAt.Value.ToString("dd/MM/yyyy hh:mm:ss") : ""
+                };
 
-				producdetailtexcel.Add(excelitem);
-			}
-			var memoryStream = await _excelHandler.Export(producdetailtexcel); // Sử dụng phương thức Export của IExcelHandler
+                producdetailtexcel.Add(excelitem);
+            }
+            var memoryStream = await _excelHandler.Export(producdetailtexcel); // Sử dụng phương thức Export của IExcelHandler
 
-			return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"San_pham_chi_tiet_Report_Data.xlsx");
-		}
-	}
+            return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"San_pham_chi_tiet_Report_Data.xlsx");
+        }
+
+    }
 }
