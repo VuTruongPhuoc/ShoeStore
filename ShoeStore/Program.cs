@@ -48,7 +48,7 @@ builder.Services.AddAuthentication(options =>
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
         options.AccessDeniedPath = "/Error/AccessDenied/";
-        options.ReturnUrlParameter = "returnUrl";
+        options.ReturnUrlParameter = "ReturnUrl";
         options.SlidingExpiration = true;
     });
 builder.Services.AddAuthentication()

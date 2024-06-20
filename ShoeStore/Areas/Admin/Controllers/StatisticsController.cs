@@ -30,10 +30,14 @@ namespace ShoeStore.Areas.Admin.Controllers
         }
 		public IEnumerable<ProductDetail> search(string searchtext)
 		{
-			IEnumerable<ProductDetail> items = db.ProductDetails.OrderBy(x => x.Id);
+			IEnumerable<ProductDetail> items = db.ProductDetails.OrderBy(p => p.Product.Name).ThenBy(p => p.Size.Name).ToList();
 			if (!searchtext.IsNullOrEmpty())
 			{
-				items = db.ProductDetails.Where(p => p.Name.ToLower().Contains(searchtext.ToLower())).OrderBy(p => p.Name).ThenBy(p => p.SizeId).ToList();
+				items = db.ProductDetails
+                    .Where(p => p.Name.ToLower().Contains(searchtext.ToLower()))
+                    .OrderBy(p => p.Product.Name)
+                    .ThenBy(p => p.Size.Name)
+                    .ToList();
 			}
 			return items;
 		}

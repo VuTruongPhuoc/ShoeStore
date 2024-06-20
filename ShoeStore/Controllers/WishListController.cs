@@ -15,8 +15,9 @@ namespace ShoeStore.Controllers
         {
             this.db = db;
         }
-        public async  Task<IActionResult> Index(int? page)
+        public async  Task<IActionResult> Index(int? page, string ReturnUrl)
         {
+            ViewData["ReturnUrl"] = ReturnUrl;
             ViewBag.product = db.Products.ToList();
             ViewBag.productdetail = db.ProductDetails.ToList();
             ViewBag.category = db.Categories.ToList();

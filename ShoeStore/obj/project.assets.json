@@ -14533,11 +14533,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\ShoeStore.csproj",
+      "projectUniqueName": "D:\\CNTT4\\HOC_ROI\\Nam_4\\KI_2_NAM_4\\DATN\\ShoeStore\\ShoeStore\\ShoeStore.csproj",
       "projectName": "ShoeStore",
-      "projectPath": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\ShoeStore.csproj",
+      "projectPath": "D:\\CNTT4\\HOC_ROI\\Nam_4\\KI_2_NAM_4\\DATN\\ShoeStore\\ShoeStore\\ShoeStore.csproj",
       "packagesPath": "C:\\Users\\phuoc\\.nuget\\packages\\",
-      "outputPath": "D:\\CNTT4\\DATN\\ShoeStore\\ShoeStore\\obj\\",
+      "outputPath": "D:\\CNTT4\\HOC_ROI\\Nam_4\\KI_2_NAM_4\\DATN\\ShoeStore\\ShoeStore\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\phuoc\\AppData\\Roaming\\NuGet\\NuGet.Config",

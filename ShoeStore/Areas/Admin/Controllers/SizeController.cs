@@ -23,7 +23,7 @@ namespace ShoeStore.Areas.Admin.Controllers
         }
         public async Task<IActionResult> Index(string Searchtext, int? page)
         {
-            var pageSize = 5;
+            var pageSize = 10;
             if (page == null)
             {
                 page = 1;

@@ -116,7 +116,7 @@ function UpdateCheckQuantity(productid, quantity) {
 
                 }
                 if (rs.quantity <= 0) {
-                    alert("Chỉ được nhập tối tiểu 1 sản phẩm vui lòng");
+                    alert("Chỉ được nhập tối thiểu 1 sản phẩm vui lòng");
                     UpdateTotalAndCart(productid,1);
                 }
             } else {

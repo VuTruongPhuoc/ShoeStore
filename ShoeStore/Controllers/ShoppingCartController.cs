@@ -73,8 +73,8 @@ namespace ShoeStore.Controllers
 			};
 			return View(ordervm);
 		}
-		[HttpPost,Authorize(Roles = "Customer")]
-		[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
+        [HttpPost,Authorize(Roles = "Customer")]
 		public async Task<IActionResult> Checkout(OrderVM ordervm)
 		{
 			var cart = Cart;
@@ -117,6 +117,7 @@ namespace ShoeStore.Controllers
 					else {
 						order.Address = customer.Address;
                     }
+                    #region addorder
                     order.Phone = ordervm.Phone ?? customer.PhoneNumber;
 					order.Email = ordervm.Email ?? customer.Email;
 					order.Note = ordervm.Note;
@@ -129,8 +130,7 @@ namespace ShoeStore.Controllers
 					{
                         order.VoucherId = voucher.Id;
                         await db.SaveChangesAsync();
-                    }
-                    
+                    }                  
 					var voucherforacc = db.VoucherForAccs.FirstOrDefault(x => x.Code == ordervm.VoucherCode && x.IdAccount == userid);
 					if (voucherforacc != null)
 					{
@@ -143,8 +143,9 @@ namespace ShoeStore.Controllers
 						+ rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9);
 					order.CreateAt = DateTime.Now;
 					order.UpdateAt = DateTime.Now;
-					db.Orders.Add(order);
-					await db.SaveChangesAsync();
+                    #endregion
+                    db.Orders.Add(order);
+                    await db.SaveChangesAsync();
 					var orderdetail = new List<OrderDetail>();
 					foreach (var item in Cart)
 					{

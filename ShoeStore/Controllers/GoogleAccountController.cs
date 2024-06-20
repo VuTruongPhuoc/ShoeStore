@@ -21,19 +21,21 @@ namespace ShoeStore.Controllers
 
         [AllowAnonymous]
         [Route("/google/login")]
-        public IActionResult GoogleLogin(string returnUrl)
+        public IActionResult GoogleLogin(string ReturnUrl)
         {
+            ViewData["ReturnUrl"] = ReturnUrl;
             return new ChallengeResult(
                 GoogleDefaults.AuthenticationScheme,
                 new AuthenticationProperties
                 {
-                    RedirectUri = Url.Action(nameof(GoogleCallback), new { returnUrl }),
+                    RedirectUri = Url.Action(nameof(GoogleCallback), new { ReturnUrl }),
                 });
         }
         [AllowAnonymous]
         [Route("/google/callback")]
-        public async Task<ActionResult> GoogleCallback(string returnUrl)
+        public async Task<ActionResult> GoogleCallback(string ReturnUrl)
         {
+            ViewData["ReturnUrl"] = ReturnUrl;
             var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
             if (result?.Principal != null && result.Principal.Identity != null && result.Principal.Identity.IsAuthenticated)
             {

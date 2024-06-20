@@ -30,7 +30,7 @@
         <label for="">Bạn chưa có tài khoản?</label><a href="~/account/register" class="link ">Đăng ký</a> <br>
         <span class="line left"></span><span class="center">or</span><span class="line right"></span> <br>
         @*  <a href="~/facebook/login" class="btn face">Đăng nhập bằng Facebook</a> <br> *@
-        <a href="~/google/login" class="btn google">Đăng nhập bằng Google</a>
+        <a href="~/google/login?ReturnUrl=@ViewData["ReturnUrl"]" data-ReturnUrl="@ViewData["ReturnUrl"]" class="btn google">Đăng nhập bằng Google</a>
     </form>
 </div>
 @* <!DOCTYPE html>
