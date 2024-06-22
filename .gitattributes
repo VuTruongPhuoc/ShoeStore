@@ -2,3 +2,5 @@
 .vs/ProjectEvaluation/*.bin filter=lfs diff=lfs merge=lfs -text
 .vs/ProjectEvaluation/shoestore.projects.v7.bin filter=lfs diff=lfs merge=lfs -text
 ShoeStore/obj/Release/net8.0/PubTmp/ShoeStore-20240523210451443.zip filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
